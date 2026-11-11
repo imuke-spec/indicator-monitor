@@ -130,6 +130,42 @@
     #chart { width: 100%; height: 640px; }
     .chart-error { padding: 24px; color: var(--red); font-size: 14px; }
 
+    .mini-charts {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
+    }
+    .mini-panel {
+      background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px;
+      padding: 8px 8px 4px; min-width: 0; box-shadow: var(--shadow);
+    }
+    .mini-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 10px; padding: 6px 8px 4px; flex-wrap: wrap;
+    }
+    .mini-pair {
+      display: block; color: var(--muted); font-size: 11px; letter-spacing: 0.08em; font-weight: 650;
+    }
+    .mini-price {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 22px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.15;
+    }
+    .mini-chg {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 13px; font-weight: 500; margin-left: 8px;
+    }
+    .mini-chg.up { color: var(--green); } .mini-chg.down { color: var(--red); }
+    .tf-toggle {
+      display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; flex-shrink: 0;
+    }
+    .tf-toggle button {
+      background: transparent; color: var(--muted); border: 0; border-right: 1px solid var(--border);
+      padding: 5px 10px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .tf-toggle button:last-child { border-right: 0; }
+    .tf-toggle button:hover { color: var(--text); }
+    .tf-toggle button[aria-pressed="true"] { background: var(--bg-card); color: var(--text); }
+    .mini-strip { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 8px 8px; }
+    .mini-el { width: 100%; height: 320px; }
+
     .signals { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px 8px; }
     .sig-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
     .sig-head h2 { margin: 0; font-size: 15px; font-weight: 650; }
@@ -291,10 +327,11 @@
       .macro-grid { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 800px) {
-      .panel-grid, .tools-grid { grid-template-columns: 1fr; }
+      .panel-grid, .tools-grid, .mini-charts { grid-template-columns: 1fr; }
       .macro-grid { grid-template-columns: repeat(2, 1fr); }
       .mtf-table { font-size: 12px; }
       .mtf-scroll { overflow-x: auto; }
+      .mini-el { height: 280px; }
     }
     @media (max-width: 640px) {
       .macro-grid { grid-template-columns: repeat(2, 1fr); }
@@ -313,6 +350,7 @@
 
     @media (min-width: 1200px) {
       #chart { height: 680px; }
+      .mini-el { height: 360px; }
     }
     @media (max-width: 1100px) {
       .cards { grid-template-columns: repeat(3, 1fr); }
@@ -418,6 +456,55 @@
         <span class="lg amber" id="lg-strategy" style="display:none">Strategy avg 75,456</span>
       </div>
       <div id="chart" role="img" aria-label="Candlestick chart with indicators"></div>
+    </section>
+
+    <section class="mini-charts" id="alt-charts" aria-label="ETH and SOL charts">
+      <article class="mini-panel" data-mini-pair="ETHUSDT" id="mini-eth">
+        <div class="mini-head">
+          <div>
+            <span class="mini-pair">ETHUSDT</span>
+            <div>
+              <span class="mini-price" data-mini-price>—</span>
+              <span class="mini-chg" data-mini-chg>—</span>
+            </div>
+          </div>
+          <div class="tf-toggle" role="group" aria-label="ETH timeframe">
+            <button type="button" data-tf="1h" aria-pressed="false">1h</button>
+            <button type="button" data-tf="4h" aria-pressed="true">4h</button>
+            <button type="button" data-tf="1d" aria-pressed="false">1d</button>
+          </div>
+        </div>
+        <div class="mini-strip" data-mini-strip></div>
+        <div class="legend">
+          <span class="lg cyan">EMA 12</span>
+          <span class="lg amber">EMA 21</span>
+          <span class="lg violet">SMA 200</span>
+        </div>
+        <div class="mini-el" data-mini-chart role="img" aria-label="ETHUSDT candlestick chart with EMA and SMA"></div>
+      </article>
+      <article class="mini-panel" data-mini-pair="SOLUSDT" id="mini-sol">
+        <div class="mini-head">
+          <div>
+            <span class="mini-pair">SOLUSDT</span>
+            <div>
+              <span class="mini-price" data-mini-price>—</span>
+              <span class="mini-chg" data-mini-chg>—</span>
+            </div>
+          </div>
+          <div class="tf-toggle" role="group" aria-label="SOL timeframe">
+            <button type="button" data-tf="1h" aria-pressed="false">1h</button>
+            <button type="button" data-tf="4h" aria-pressed="true">4h</button>
+            <button type="button" data-tf="1d" aria-pressed="false">1d</button>
+          </div>
+        </div>
+        <div class="mini-strip" data-mini-strip></div>
+        <div class="legend">
+          <span class="lg cyan">EMA 12</span>
+          <span class="lg amber">EMA 21</span>
+          <span class="lg violet">SMA 200</span>
+        </div>
+        <div class="mini-el" data-mini-chart role="img" aria-label="SOLUSDT candlestick chart with EMA and SMA"></div>
+      </article>
     </section>
 
     <section class="strip mtf-wrap" id="mtf-wrap" aria-label="Multi-timeframe agreement">
@@ -579,7 +666,8 @@
     holdings: "im.holdings",
     concentration: "im.concentration",
     calc: "im.calc",
-    cgcache: "im.cgcache"
+    cgcache: "im.cgcache",
+    miniInterval: function (pair) { return "im.mini." + pair + ".interval"; }
   };
 
   /* Optional same-folder data.json schema (see data.json _schema):
@@ -1320,7 +1408,7 @@
     for (let i = 0; i < arr.length; i++) if (isNum(arr[i])) out.push({ time: candles[i].time, value: arr[i] });
     return out;
   }
-  function paintHist(hist) {
+  function paintHist(hist, candles) {
     return hist.map(function (v, i) {
       if (!isNum(v)) return null;
       const prev = i > 0 ? hist[i - 1] : v;
@@ -1328,7 +1416,7 @@
       let color;
       if (v >= 0) color = growing ? "#3dd68c" : "rgba(61,214,140,0.45)";
       else color = growing ? "#f0625d" : "rgba(240,98,93,0.45)";
-      return { time: S.candles[i].time, value: v, color: color };
+      return { time: (candles || S.candles)[i].time, value: v, color: color };
     }).filter(Boolean);
   }
   function applyPriceLines(levels) {
@@ -1589,6 +1677,7 @@
     getValues: snapshot,
     getCandles: function () { return S.candles.slice(); },
     getSignals: function () { return getSignalList(S.pair, S.interval); },
+    getMinis: function () { return typeof snapshotMinis === "function" ? snapshotMinis() : []; },
     getExt: function () { return S.ext; }
   };
 
@@ -2543,8 +2632,371 @@
     refreshStaticExt();
   }
 
+  /* ---------- ETH / SOL dedicated charts ---------- */
+  const MINI_PAIRS = ["ETHUSDT", "SOLUSDT"];
+  const minis = {};
+
+  function miniRoot(pair) {
+    return document.querySelector('[data-mini-pair="' + pair + '"]');
+  }
+  function createMiniState(pair) {
+    return {
+      pair: pair,
+      interval: "4h",
+      candles: [],
+      ticker: null,
+      ind: null,
+      ready: false,
+      chart: null,
+      series: {},
+      ws: null,
+      wsHostIndex: 0,
+      failedHosts: 0,
+      reconnectTimer: null,
+      backoff: 1000,
+      lastUpdate: null,
+      errors: []
+    };
+  }
+  function persistMini(m) {
+    try { localStorage.setItem(LS.miniInterval(m.pair), m.interval); } catch (e) {}
+  }
+  function restoreMinis() {
+    MINI_PAIRS.forEach(function (pair) {
+      const m = minis[pair] || (minis[pair] = createMiniState(pair));
+      try {
+        const saved = localStorage.getItem(LS.miniInterval(pair));
+        if (INTERVALS.indexOf(saved) >= 0) m.interval = saved;
+      } catch (e) {}
+      syncMiniTfButtons(m);
+    });
+  }
+  function syncMiniTfButtons(m) {
+    const root = miniRoot(m.pair);
+    if (!root) return;
+    root.querySelectorAll(".tf-toggle button").forEach(function (btn) {
+      btn.setAttribute("aria-pressed", btn.getAttribute("data-tf") === m.interval ? "true" : "false");
+    });
+  }
+  function destroyMiniChart(m) {
+    if (m.chart) { try { m.chart.remove(); } catch (e) {} }
+    m.chart = null; m.series = {};
+  }
+  function initMiniChart(m) {
+    destroyMiniChart(m);
+    const LC = window.LightweightCharts;
+    const root = miniRoot(m.pair);
+    const el = root && root.querySelector("[data-mini-chart]");
+    if (!el) return;
+    el.innerHTML = "";
+    if (!LC) {
+      el.innerHTML = "<div class=\"chart-error\">Chart library failed to load.</div>";
+      return;
+    }
+    const chart = LC.createChart(el, {
+      autoSize: true,
+      layout: {
+        background: { type: LC.ColorType.Solid, color: "#10161d" },
+        textColor: "#8b98a5",
+        fontFamily: "IBM Plex Sans, Segoe UI, system-ui, sans-serif"
+      },
+      grid: { vertLines: { color: "#1a222c" }, horzLines: { color: "#1a222c" } },
+      crosshair: { mode: LC.CrosshairMode.Normal },
+      rightPriceScale: { borderColor: "#273140" },
+      timeScale: {
+        borderColor: "#273140",
+        timeVisible: m.interval !== "1d",
+        secondsVisible: false,
+        rightOffset: 4,
+        minBarSpacing: 3
+      },
+      localization: { priceFormatter: function (p) { return fmtPrice(p, m.pair); } }
+    });
+    const candle = chart.addSeries(LC.CandlestickSeries, {
+      upColor: "#3dd68c", downColor: "#f0625d",
+      borderUpColor: "#3dd68c", borderDownColor: "#f0625d",
+      wickUpColor: "#3dd68c", wickDownColor: "#f0625d"
+    });
+    candle.priceScale().applyOptions({ scaleMargins: { top: 0.08, bottom: 0.08 } });
+    const ema12s = chart.addSeries(LC.LineSeries, { color: "#2ec4d6", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: "EMA12" });
+    const ema21s = chart.addSeries(LC.LineSeries, { color: "#f5a623", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: "EMA21" });
+    const sma200s = chart.addSeries(LC.LineSeries, { color: "#9b8cff", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: "SMA200" });
+    m.chart = chart;
+    m.series = { candle: candle, ema12: ema12s, ema21: ema21s, sma200: sma200s };
+  }
+  function initMiniCharts() {
+    MINI_PAIRS.forEach(function (pair) {
+      if (!minis[pair]) minis[pair] = createMiniState(pair);
+      initMiniChart(minis[pair]);
+    });
+  }
+  function fullMiniSet(m) {
+    if (!m.series.candle || !m.ind) return;
+    const c = m.candles, ind = m.ind;
+    m.series.candle.setData(c.map(function (x) { return { time: x.time, open: x.open, high: x.high, low: x.low, close: x.close }; }));
+    m.series.ema12.setData(seriesLine(ind.ema12, c));
+    m.series.ema21.setData(seriesLine(ind.ema21, c));
+    m.series.sma200.setData(seriesLine(ind.sma200, c));
+    const n = c.length;
+    const visible = m.interval === "1d" ? 160 : m.interval === "4h" ? 180 : 168;
+    m.chart.timeScale().setVisibleLogicalRange({
+      from: Math.max(0, n - visible),
+      to: n + 3
+    });
+  }
+  function updateMiniLastBar(m) {
+    if (!m.series.candle || !m.ind || !m.candles.length) return;
+    const i = m.candles.length - 1;
+    const x = m.candles[i], ind = m.ind;
+    m.series.candle.update({ time: x.time, open: x.open, high: x.high, low: x.low, close: x.close });
+    if (isNum(ind.ema12[i])) m.series.ema12.update({ time: x.time, value: ind.ema12[i] });
+    if (isNum(ind.ema21[i])) m.series.ema21.update({ time: x.time, value: ind.ema21[i] });
+    if (isNum(ind.sma200[i])) m.series.sma200.update({ time: x.time, value: ind.sma200[i] });
+  }
+  function renderMiniHeader(m) {
+    const root = miniRoot(m.pair);
+    if (!root) return;
+    const priceEl = root.querySelector("[data-mini-price]");
+    const chgEl = root.querySelector("[data-mini-chg]");
+    const price = m.ticker && isNum(m.ticker.last) ? m.ticker.last
+      : (m.candles.length ? m.candles[m.candles.length - 1].close : null);
+    priceEl.textContent = fmtPrice(price, m.pair);
+    if (m.ticker && isNum(m.ticker.pct)) {
+      chgEl.textContent = fmtPct(m.ticker.pct) + " 24h";
+      chgEl.className = "mini-chg " + (m.ticker.pct >= 0 ? "up" : "down");
+    } else {
+      chgEl.textContent = "—";
+      chgEl.className = "mini-chg";
+    }
+  }
+  function renderMiniStrip(m) {
+    const root = miniRoot(m.pair);
+    if (!root) return;
+    const strip = root.querySelector("[data-mini-strip]");
+    if (!m.candles.length || !m.ind) {
+      strip.innerHTML = "";
+      return;
+    }
+    const i = m.candles.length - 1;
+    const ind = m.ind;
+    const price = m.candles[i].close;
+    const chips = [];
+
+    const rsi = ind.rsi14[i];
+    const rsiTone = !isNum(rsi) ? "mixed" : rsi >= 70 ? "bear" : rsi <= 30 ? "bull" : "mixed";
+    const rsiLbl = !isNum(rsi) ? "RSI —" : "RSI " + fmtNum(rsi, 1) + (rsi >= 70 ? " OB" : rsi <= 30 ? " OS" : "");
+    chips.push({ tone: rsiTone, text: rsiLbl });
+
+    const hist = ind.hist[i];
+    const ht = histTrend(ind.hist, i);
+    const histTone = isNum(hist) ? (hist >= 0 ? "bull" : "bear") : "mixed";
+    const histSign = isNum(hist) ? (hist >= 0 ? "+" : "−") : "—";
+    const histLbl = "MACD hist " + histSign + (ht.label && ht.label !== "n/a" ? " " + ht.label : "");
+    chips.push({ tone: histTone, text: histLbl });
+
+    const emaUp = isNum(ind.ema12[i]) && isNum(ind.ema21[i]) && ind.ema12[i] > ind.ema21[i];
+    const emaOk = isNum(ind.ema12[i]) && isNum(ind.ema21[i]);
+    chips.push({ tone: emaOk ? (emaUp ? "bull" : "bear") : "mixed", text: emaOk ? (emaUp ? "EMA 12>21" : "EMA 12<21") : "EMA —" });
+
+    const pct = isNum(ind.sma200[i]) ? (price / ind.sma200[i] - 1) * 100 : NaN;
+    const smaUp = isNum(pct) && pct >= 0;
+    chips.push({
+      tone: isNum(pct) ? (smaUp ? "bull" : "bear") : "mixed",
+      text: isNum(pct) ? ("vs SMA200 " + fmtPct(pct)) : "vs SMA200 —"
+    });
+
+    const agr = biasFromInd(ind, i, price);
+    const biasTone = agr.bias === "bullish" ? "bull" : agr.bias === "bearish" ? "bear" : "mixed";
+    const biasWord = agr.bias === "bullish" ? "bull" : agr.bias === "bearish" ? "bear" : "mixed";
+    chips.push({ tone: biasTone, text: "Bias " + biasWord });
+
+    strip.innerHTML = chips.map(function (c) {
+      return "<span class=\"chip " + c.tone + "\">" + c.text + "</span>";
+    }).join("");
+  }
+  function recomputeMini(m, fullSet) {
+    if (!m.candles.length) return;
+    m.ind = computeAll(m.candles);
+    m.lastUpdate = Date.now();
+    renderMiniHeader(m);
+    renderMiniStrip(m);
+    if (fullSet) fullMiniSet(m);
+    else updateMiniLastBar(m);
+  }
+  function onMiniTicker(m, t) {
+    m.ticker = { last: +t.c, pct: +t.P, change: +t.p };
+    renderMiniHeader(m);
+  }
+  function onMiniKline(m, k) {
+    const bar = {
+      time: Math.floor(+k.t / 1000),
+      open: +k.o, high: +k.h, low: +k.l, close: +k.c, volume: +k.v,
+      closeTime: +k.T, closed: !!k.x
+    };
+    const candles = m.candles;
+    if (!candles.length) return;
+    const last = candles[candles.length - 1];
+    if (bar.time === last.time) {
+      candles[candles.length - 1] = bar;
+    } else if (bar.time > last.time) {
+      last.closed = true;
+      candles.push(bar);
+      if (candles.length > 520) candles.shift();
+    } else return;
+    if (m.ticker) m.ticker.last = bar.close;
+    else m.ticker = { last: bar.close, pct: null, change: null };
+    recomputeMini(m, false);
+  }
+  function stopMiniWs(m) {
+    if (m.reconnectTimer) { clearTimeout(m.reconnectTimer); m.reconnectTimer = null; }
+    if (m.ws) {
+      try { m.ws.onclose = null; m.ws.onerror = null; m.ws.close(); } catch (e) {}
+      m.ws = null;
+    }
+  }
+  function scheduleMiniReconnect(m, immediate) {
+    if (m.reconnectTimer) clearTimeout(m.reconnectTimer);
+    const wait = immediate ? 150 : m.backoff;
+    if (!immediate) m.backoff = Math.min(m.backoff * 2, 30000);
+    m.reconnectTimer = setTimeout(function () { connectMiniWs(m); }, wait);
+  }
+  function connectMiniWs(m) {
+    stopMiniWs(m);
+    if (S.destroyed) return;
+    const host = WS_HOSTS[m.wsHostIndex % WS_HOSTS.length];
+    let ws;
+    try { ws = new WebSocket(wsUrl(host, m.pair, m.interval)); }
+    catch (e) { scheduleMiniReconnect(m); return; }
+    m.ws = ws;
+    ws.onopen = function () {
+      m.backoff = 1000;
+      m.failedHosts = 0;
+    };
+    ws.onmessage = function (ev) {
+      try {
+        const msg = JSON.parse(ev.data);
+        const data = msg.data || msg;
+        if (data.e === "kline" || (data.k && data.k.t != null)) onMiniKline(m, data.k);
+        else if (data.e === "24hrTicker" || data.P != null) onMiniTicker(m, data);
+      } catch (e) {}
+    };
+    ws.onerror = function () {};
+    ws.onclose = function () {
+      if (S.destroyed) return;
+      m.wsHostIndex = (m.wsHostIndex + 1) % WS_HOSTS.length;
+      m.failedHosts += 1;
+      const immediate = m.failedHosts < WS_HOSTS.length;
+      if (!immediate) m.failedHosts = 0;
+      scheduleMiniReconnect(m, immediate);
+    };
+  }
+  async function loadMini(m) {
+    m.ready = false;
+    const root = miniRoot(m.pair);
+    const el = root && root.querySelector("[data-mini-chart]");
+    try {
+      const results = await Promise.all([fetchKlines(m.pair, m.interval, 500), fetchTicker(m.pair)]);
+      m.candles = results[0];
+      m.ticker = results[1];
+      recomputeMini(m, true);
+      m.ready = true;
+      connectMiniWs(m);
+    } catch (e) {
+      m.errors.push(String(e && e.message || e));
+      renderMiniHeader(m);
+      if (el) el.innerHTML = "<div class=\"chart-error\">Could not load " + m.pair + " data. " + (e && e.message ? e.message : "") + "</div>";
+    }
+  }
+  function loadAllMinis() {
+    return Promise.all(MINI_PAIRS.map(function (pair) {
+      if (!minis[pair]) minis[pair] = createMiniState(pair);
+      return loadMini(minis[pair]);
+    }));
+  }
+  function onMiniTfClick(m, interval) {
+    if (interval === m.interval) return;
+    m.interval = interval;
+    persistMini(m);
+    syncMiniTfButtons(m);
+    stopMiniWs(m);
+    loadMini(m).then(function () {
+      if (m.chart) m.chart.applyOptions({ timeScale: { timeVisible: m.interval !== "1d" } });
+    });
+  }
+  function bindMiniUi() {
+    MINI_PAIRS.forEach(function (pair) {
+      const root = miniRoot(pair);
+      if (!root) return;
+      root.querySelectorAll(".tf-toggle button").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          const tf = btn.getAttribute("data-tf");
+          if (INTERVALS.indexOf(tf) >= 0) onMiniTfClick(minis[pair], tf);
+        });
+      });
+    });
+  }
+  function fitChart(chart, el) {
+    if (!chart || !el || !chart.resize) return;
+    const w = el.clientWidth, h = el.clientHeight;
+    if (w > 0 && h > 0) {
+      try { chart.resize(w, h, true); } catch (e) {
+        try { chart.resize(w, h); } catch (e2) {}
+      }
+    }
+  }
+  function resizeAllCharts() {
+    fitChart(S.chart, document.getElementById("chart"));
+    MINI_PAIRS.forEach(function (pair) {
+      const m = minis[pair];
+      const root = miniRoot(pair);
+      const el = root && root.querySelector("[data-mini-chart]");
+      if (m) fitChart(m.chart, el);
+    });
+  }
+  function bindChartResize() {
+    let t = null;
+    window.addEventListener("resize", function () {
+      if (t) clearTimeout(t);
+      t = setTimeout(resizeAllCharts, 80);
+    });
+    if (typeof ResizeObserver === "function") {
+      const ro = new ResizeObserver(function () {
+        if (t) clearTimeout(t);
+        t = setTimeout(resizeAllCharts, 40);
+      });
+      const main = document.getElementById("chart");
+      if (main) ro.observe(main);
+      const grid = document.getElementById("alt-charts");
+      if (grid) ro.observe(grid);
+      MINI_PAIRS.forEach(function (pair) {
+        const root = miniRoot(pair);
+        const el = root && root.querySelector("[data-mini-chart]");
+        if (el) ro.observe(el);
+      });
+    }
+  }
+  function snapshotMinis() {
+    return MINI_PAIRS.map(function (pair) {
+      const m = minis[pair];
+      if (!m) return { pair: pair, ready: false };
+      const i = m.candles.length ? m.candles.length - 1 : -1;
+      return {
+        pair: m.pair, interval: m.interval, ready: m.ready,
+        price: i >= 0 ? m.candles[i].close : null,
+        candleCount: m.candles.length,
+        ema12: m.ind && i >= 0 ? m.ind.ema12[i] : null,
+        ema21: m.ind && i >= 0 ? m.ind.ema21[i] : null,
+        sma200: m.ind && i >= 0 ? m.ind.sma200[i] : null,
+        rsi14: m.ind && i >= 0 ? m.ind.rsi14[i] : null,
+        errors: m.errors.slice()
+      };
+    });
+  }
+
   async function init() {
     restore();
+    restoreMinis();
+    bindMiniUi();
     initExt();
     document.getElementById("pair").addEventListener("change", onPairOrTf);
     document.getElementById("interval").addEventListener("change", onPairOrTf);
@@ -2556,12 +3008,12 @@
       clearSignals(S.pair, S.interval); renderSignals();
     });
     renderSignals();
-    try { await loadChartsLib(); initChart(); }
+    try { await loadChartsLib(); initChart(); initMiniCharts(); bindChartResize(); }
     catch (e) {
       S.errors.push(String(e && e.message || e));
       document.getElementById("chart").innerHTML = "<div class=\"chart-error\">Chart library failed to load from the CDN. Cards will still update if Binance data loads.</div>";
     }
-    await loadAll();
+    await Promise.all([loadAll(), loadAllMinis()]);
   }
   init();
 })();
