@@ -52,15 +52,11 @@
     }
     h1 { font-size: 18px; margin: 0; font-weight: 650; letter-spacing: -0.02em; }
     .sub { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
-    .ticker { text-align: right; }
-    #live-pair { display: block; color: var(--muted); font-size: 12px; letter-spacing: 0.08em; font-weight: 600; }
-    #live-price {
-      font-family: "IBM Plex Mono", ui-monospace, monospace;
-      font-size: 32px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1;
+    .header-status {
+      display: flex; gap: 10px; justify-content: flex-end; align-items: center;
+      flex-wrap: wrap; font-size: 12px; color: var(--muted); padding-top: 4px;
     }
-    #live-chg { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 14px; font-weight: 500; margin-left: 8px; }
-    #live-chg.up { color: var(--green); } #live-chg.down { color: var(--red); }
-    .meta { margin-top: 6px; display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+    .meta { display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
     .pill {
       display: inline-flex; align-items: center; gap: 6px;
       border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px 2px 7px;
@@ -87,6 +83,10 @@
     .toggle { cursor: pointer; user-select: none; }
     .toggle input { accent-color: var(--accent); }
     #forming-note { margin-left: auto; font-size: 12px; color: var(--muted); }
+    .btc-tools {
+      display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
+      padding: 2px 8px 8px; font-size: 13px; color: var(--muted);
+    }
 
     .agreement {
       background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
@@ -390,9 +390,7 @@
     @media (max-width: 640px) {
       .app { padding: 12px 12px 28px; }
       header { flex-direction: column; }
-      .ticker { text-align: left; width: 100%; }
-      .meta { justify-content: flex-start; }
-      #live-price { font-size: 28px; }
+      .header-status, .meta { justify-content: flex-start; }
       .cards { grid-template-columns: repeat(2, 1fr); }
       #chart { height: 500px; }
       #forming-note { margin-left: 0; width: 100%; }
@@ -540,16 +538,9 @@
           <p class="sub">Public Binance data · no account · runs in your browser</p>
         </div>
       </div>
-      <div class="ticker">
-        <div>
-          <span id="live-pair">BTCUSDT</span>
-          <span id="live-price">—</span>
-          <span id="live-chg">—</span>
-        </div>
-        <div class="meta">
-          <span id="conn" class="pill connecting">Connecting</span>
-          <span id="last-upd">Last update: —</span>
-        </div>
+      <div class="header-status meta">
+        <span id="conn" class="pill connecting">Connecting</span>
+        <span id="last-upd">Last update: —</span>
       </div>
     </header>
 
@@ -584,26 +575,6 @@
     </section>
 
 
-    <section class="controls" aria-label="Controls">
-      <label class="ctrl">Pair
-        <select id="pair" aria-label="Trading pair">
-          <option value="BTCUSDT" selected>BTCUSDT</option>
-          <option value="ATOMUSDT">ATOMUSDT</option>
-          <option value="ETHUSDT">ETHUSDT</option>
-          <option value="SOLUSDT">SOLUSDT</option>
-        </select>
-      </label>
-      <label class="ctrl">Timeframe
-        <select id="interval" aria-label="Timeframe">
-          <option value="1h">1h</option>
-          <option value="4h">4h</option>
-          <option value="1d" selected>1d</option>
-        </select>
-      </label>
-      <label class="ctrl toggle"><input type="checkbox" id="notify"> Notifications</label>
-      <label class="ctrl toggle"><input type="checkbox" id="sound"> Sound</label>
-      <span id="forming-note"></span>
-    </section>
 
     <section class="strip" id="macro-strip" aria-label="Macro snapshot">
       <div class="strip-head">
@@ -639,7 +610,26 @@
       <article class="card neutral" id="card-atr"><h3>ATR 14</h3><div class="value">—</div><div class="detail"></div></article>
     </section>
 
-    <section class="chart-wrap">
+    <section class="chart-wrap" id="btc-chart" aria-label="BTC chart">
+      <div class="mini-head" id="btc-head">
+        <div>
+          <span class="mini-pair">BTCUSDT</span>
+          <div>
+            <span class="mini-price" id="live-price">—</span>
+            <span class="mini-chg" id="live-chg">—</span>
+          </div>
+        </div>
+        <div class="tf-toggle" id="btc-tf" role="group" aria-label="BTC timeframe">
+          <button type="button" data-tf="1h" aria-pressed="false">1h</button>
+          <button type="button" data-tf="4h" aria-pressed="false">4h</button>
+          <button type="button" data-tf="1d" aria-pressed="true">1d</button>
+        </div>
+      </div>
+      <div class="btc-tools">
+        <label class="ctrl toggle"><input type="checkbox" id="notify"> Notifications</label>
+        <label class="ctrl toggle"><input type="checkbox" id="sound"> Sound</label>
+        <span id="forming-note"></span>
+      </div>
       <div class="legend">
         <span class="lg cyan">EMA 12</span>
         <span class="lg amber">EMA 21</span>
@@ -707,7 +697,7 @@
       <h2>4h signal log</h2>
       <div class="setup-toolbar">
         <label class="ctrl toggle"><input type="checkbox" id="setup-lines-toggle"> Show setup lines on 4h BTC</label>
-        <span class="hint">Latest active setup draws on the main chart when BTCUSDT 4h is selected.</span>
+        <span class="hint">Latest active setup draws on the main chart when the 4h timeframe is selected.</span>
       </div>
       <div id="setups-body">Loading…</div>
     </section>
@@ -715,7 +705,7 @@
     <section class="strip mtf-wrap" id="mtf-wrap" aria-label="Multi-timeframe agreement">
       <div class="strip-head">
         <h2>Multi-timeframe agreement</h2>
-        <span class="hint" id="mtf-pair-hint">Selected pair</span>
+        <span class="hint" id="mtf-pair-hint">BTCUSDT</span>
       </div>
       <div class="mtf-scroll">
         <table class="mtf-table" id="mtf-table">
@@ -854,7 +844,6 @@
 (function () {
   "use strict";
 
-  const PAIRS = ["BTCUSDT", "ATOMUSDT", "ETHUSDT", "SOLUSDT"];
   const INTERVALS = ["1h", "4h", "1d"];
   const REST_HOSTS = ["https://data-api.binance.vision", "https://api.binance.com"];
   const WS_HOSTS = ["wss://data-stream.binance.vision", "wss://stream.binance.com", "wss://stream.binance.com:9443"];
@@ -863,7 +852,6 @@
     "https://cdn.jsdelivr.net/npm/lightweight-charts@5.3.0/dist/lightweight-charts.standalone.production.js"
   ];
   const LS = {
-    pair: "im.pair",
     interval: "im.interval",
     signals: "im.signals",
     notify: "im.notify",
@@ -1431,25 +1419,25 @@
   function renderTicker() {
     const price = S.ticker && isNum(S.ticker.last) ? S.ticker.last
       : (S.candles.length ? S.candles[S.candles.length - 1].close : null);
-    document.getElementById("live-pair").textContent = S.pair;
-    document.getElementById("live-price").textContent = fmtPrice(price, S.pair);
+    const px = document.getElementById("live-price");
+    if (px) px.textContent = fmtPrice(price, S.pair);
     const chg = document.getElementById("live-chg");
-    if (S.ticker && isNum(S.ticker.pct)) {
-      chg.textContent = fmtPct(S.ticker.pct) + " 24h";
-      chg.className = S.ticker.pct >= 0 ? "up" : "down";
-    } else if (S.candles.length >= 2) {
-      const last = S.candles[S.candles.length - 1];
-      // approximate 24h: vs previous daily close if 1d, else look back
-      let ref = null;
-      if (S.interval === "1d" && S.candles.length >= 2) ref = S.candles[S.candles.length - 2].close;
-      if (isNum(ref) && isNum(price)) {
-        const pct = (price / ref - 1) * 100;
-        chg.textContent = fmtPct(pct) + " vs prev close";
-        chg.className = pct >= 0 ? "up" : "down";
-      } else { chg.textContent = "—"; chg.className = ""; }
-    } else { chg.textContent = "—"; chg.className = ""; }
+    if (chg) {
+      if (S.ticker && isNum(S.ticker.pct)) {
+        chg.textContent = fmtPct(S.ticker.pct) + " 24h";
+        chg.className = "mini-chg " + (S.ticker.pct >= 0 ? "up" : "down");
+      } else if (S.candles.length >= 2 && S.interval === "1d") {
+        const ref = S.candles[S.candles.length - 2].close;
+        if (isNum(ref) && isNum(price)) {
+          const pct = (price / ref - 1) * 100;
+          chg.textContent = fmtPct(pct) + " vs prev close";
+          chg.className = "mini-chg " + (pct >= 0 ? "up" : "down");
+        } else { chg.textContent = "—"; chg.className = "mini-chg"; }
+      } else { chg.textContent = "—"; chg.className = "mini-chg"; }
+    }
     if (S.lastUpdate) {
-      document.getElementById("last-upd").textContent = "Last update: " + fmtUK(S.lastUpdate, true);
+      const lu = document.getElementById("last-upd");
+      if (lu) lu.textContent = "Last update: " + fmtUK(S.lastUpdate, true);
     }
   }
   function setCard(id, tone, value, detail, attrs) {
@@ -1811,25 +1799,35 @@
   /* ---------- settings / ui ---------- */
   function persist() {
     try {
-      localStorage.setItem(LS.pair, S.pair);
       localStorage.setItem(LS.interval, S.interval);
       localStorage.setItem(LS.notify, S.notify ? "1" : "0");
       localStorage.setItem(LS.sound, S.sound ? "1" : "0");
     } catch (e) {}
   }
   function restore() {
+    S.pair = "BTCUSDT";
     try {
-      const p = localStorage.getItem(LS.pair);
       const i = localStorage.getItem(LS.interval);
-      if (PAIRS.indexOf(p) >= 0) S.pair = p;
       if (INTERVALS.indexOf(i) >= 0) S.interval = i;
       S.notify = localStorage.getItem(LS.notify) === "1";
       S.sound = localStorage.getItem(LS.sound) === "1";
     } catch (e) {}
-    document.getElementById("pair").value = S.pair;
-    document.getElementById("interval").value = S.interval;
     document.getElementById("notify").checked = S.notify;
     document.getElementById("sound").checked = S.sound;
+    if (typeof syncBtcTfButtons === "function") syncBtcTfButtons();
+  }
+  function syncBtcTfButtons() {
+    document.querySelectorAll("#btc-tf button").forEach(function (btn) {
+      btn.setAttribute("aria-pressed", btn.getAttribute("data-tf") === S.interval ? "true" : "false");
+    });
+  }
+  function bindBtcTfUi() {
+    syncBtcTfButtons();
+    document.querySelectorAll("#btc-tf button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        onBtcTf(btn.getAttribute("data-tf"));
+      });
+    });
   }
   async function onNotifyToggle() {
     S.notify = document.getElementById("notify").checked;
@@ -1847,12 +1845,12 @@
     }
     persist();
   }
-  function onPairOrTf() {
-    const pair = document.getElementById("pair").value;
-    const interval = document.getElementById("interval").value;
-    if (pair === S.pair && interval === S.interval) return;
-    S.pair = pair; S.interval = interval;
+  function onBtcTf(interval) {
+    if (INTERVALS.indexOf(interval) < 0 || interval === S.interval) return;
+    S.pair = "BTCUSDT";
+    S.interval = interval;
     persist();
+    syncBtcTfButtons();
     stopWs();
     loadAll().then(function () {
       if (S.chart) {
@@ -3916,8 +3914,7 @@
     restoreMinis();
     bindMiniUi();
     initExt();
-    document.getElementById("pair").addEventListener("change", onPairOrTf);
-    document.getElementById("interval").addEventListener("change", onPairOrTf);
+    bindBtcTfUi();
     document.getElementById("notify").addEventListener("change", onNotifyToggle);
     document.getElementById("sound").addEventListener("change", function () {
       S.sound = document.getElementById("sound").checked; persist();
