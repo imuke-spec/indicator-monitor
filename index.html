@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>Indicator Monitor</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%23f5a623'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-size='13' font-family='Arial,sans-serif' font-weight='700' fill='%231a1206'%3EIM%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --bg-elev: #10161d;
+      --bg-card: #161d26;
+      --border: #273140;
+      --text: #e8eef4;
+      --muted: #8b98a5;
+      --green: #3dd68c;
+      --green-dim: rgba(61, 214, 140, 0.13);
+      --red: #f0625d;
+      --red-dim: rgba(240, 98, 93, 0.13);
+      --grey: #8b98a5;
+      --grey-dim: rgba(139, 152, 165, 0.12);
+      --accent: #f5a623;
+      --cyan: #2ec4d6;
+      --amber: #f5a623;
+      --violet: #9b8cff;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+    body {
+      font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    html, body { overflow-x: hidden; }
+    .app { max-width: none; width: 100%; box-sizing: border-box; margin: 0; padding: 16px 16px 32px; overflow-x: hidden; }
+    header {
+      display: flex; justify-content: space-between; gap: 16px; align-items: flex-start;
+      padding: 4px 0 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; gap: 12px; align-items: center; }
+    .logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, #f5a623, #e07a14);
+      color: #1a1206; font-weight: 700; display: grid; place-items: center;
+      letter-spacing: -0.04em; font-size: 15px; flex-shrink: 0;
+    }
+    h1 { font-size: 18px; margin: 0; font-weight: 650; letter-spacing: -0.02em; }
+    .sub { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+    .ticker { text-align: right; }
+    #live-pair { display: block; color: var(--muted); font-size: 12px; letter-spacing: 0.08em; font-weight: 600; }
+    #live-price {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 32px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1;
+    }
+    #live-chg { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 14px; font-weight: 500; margin-left: 8px; }
+    #live-chg.up { color: var(--green); } #live-chg.down { color: var(--red); }
+    .meta { margin-top: 6px; display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px 2px 7px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase;
+    }
+    .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--grey); }
+    .pill.live { color: var(--green); border-color: rgba(61,214,140,0.35); }
+    .pill.live::before { background: var(--green); box-shadow: 0 0 0 3px rgba(61,214,140,0.2); }
+    .pill.connecting { color: var(--amber); border-color: rgba(245,166,35,0.35); }
+    .pill.connecting::before { background: var(--amber); }
+    .pill.error, .pill.reconnect { color: var(--red); border-color: rgba(240,98,93,0.35); }
+    .pill.error::before, .pill.reconnect::before { background: var(--red); }
+
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center;
+      padding: 14px 0 12px;
+    }
+    label.ctrl { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+    select {
+      background: var(--bg-card); color: var(--text); border: 1px solid var(--border);
+      border-radius: 8px; padding: 7px 10px; font: inherit; font-size: 13px; font-weight: 500;
+    }
+    select:focus { outline: 2px solid rgba(245,166,35,0.45); outline-offset: 1px; }
+    .toggle { cursor: pointer; user-select: none; }
+    .toggle input { accent-color: var(--accent); }
+    #forming-note { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+    .agreement {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 16px; font-size: 14px; font-weight: 500; margin-bottom: 12px;
+    }
+    .agreement .bias { font-weight: 650; }
+    .agreement.bear { border-color: rgba(240,98,93,0.35); background: linear-gradient(90deg, var(--red-dim), var(--bg-card) 50%); }
+    .agreement.bull { border-color: rgba(61,214,140,0.35); background: linear-gradient(90deg, var(--green-dim), var(--bg-card) 50%); }
+    .agreement.mixed { border-color: rgba(245,166,35,0.35); }
+    .agreement .daily { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); font-weight: 400; }
+
+    .cards {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 14px;
+    }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 13px 13px; border-top: 3px solid var(--grey); min-width: 0; box-shadow: var(--shadow);
+    }
+    .card.bull { border-top-color: var(--green); background: linear-gradient(180deg, var(--green-dim), var(--bg-card) 42%); }
+    .card.bear { border-top-color: var(--red); background: linear-gradient(180deg, var(--red-dim), var(--bg-card) 42%); }
+    .card.neutral { border-top-color: var(--grey); }
+    .card h3 { margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+    .card .value {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 18px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .card.bull .value { color: var(--green); } .card.bear .value { color: var(--red); }
+    .card .detail { margin-top: 6px; font-size: 12px; color: var(--muted); line-height: 1.45; word-spacing: 0.02em; }
+    .card .detail strong { color: var(--text); font-weight: 550; }
+
+    .chart-wrap {
+      background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px;
+      padding: 8px 8px 4px; margin-bottom: 16px; box-shadow: var(--shadow);
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px 16px; padding: 4px 8px 8px; font-size: 12px; color: var(--muted); }
+    .lg { display: inline-flex; align-items: center; gap: 6px; }
+    .lg::before { content: ""; width: 14px; height: 2px; border-radius: 1px; background: currentColor; }
+    .lg.cyan { color: var(--cyan); } .lg.amber { color: var(--amber); } .lg.violet { color: var(--violet); }
+    .lg.red { color: var(--red); } .lg.green { color: var(--green); }
+    .lg.dash::before { background: repeating-linear-gradient(90deg, currentColor 0 5px, transparent 5px 8px); height: 2px; }
+    #chart { width: 100%; height: 640px; }
+    .chart-error { padding: 24px; color: var(--red); font-size: 14px; }
+
+    .signals { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px 8px; }
+    .sig-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+    .sig-head h2 { margin: 0; font-size: 15px; font-weight: 650; }
+    .sig-head p { margin: 0; color: var(--muted); font-size: 12px; flex: 1; }
+    #clear-signals {
+      background: transparent; color: var(--muted); border: 1px solid var(--border);
+      border-radius: 8px; padding: 4px 10px; font: inherit; font-size: 12px; cursor: pointer;
+    }
+    #clear-signals:hover { color: var(--text); border-color: var(--muted); }
+    #signal-list { list-style: none; margin: 0; padding: 0; }
+    #signal-list li {
+      border-top: 1px solid var(--border); padding: 10px 2px; font-size: 13px; line-height: 1.45;
+    }
+    #signal-list li .when { color: var(--muted); font-size: 12px; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    #signal-list li .type { font-weight: 650; margin-left: 8px; }
+    #signal-list li.bull .type { color: var(--green); } #signal-list li.bear .type { color: var(--red); }
+    #signal-list li .px { font-family: "IBM Plex Mono", ui-monospace, monospace; margin-left: 8px; }
+    #signal-list li .idea { display: block; margin-top: 4px; color: var(--muted); font-size: 12.5px; }
+    #signal-list .empty { border: 0; color: var(--muted); padding: 12px 2px 16px; }
+
+    footer { margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.5; text-align: center; }
+
+    @media (min-width: 1200px) {
+      #chart { height: 680px; }
+    }
+    @media (max-width: 1100px) {
+      .cards { grid-template-columns: repeat(3, 1fr); }
+      #chart { height: 560px; }
+    }
+    @media (max-width: 640px) {
+      .app { padding: 12px 12px 28px; }
+      header { flex-direction: column; }
+      .ticker { text-align: left; width: 100%; }
+      .meta { justify-content: flex-start; }
+      #live-price { font-size: 28px; }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      #chart { height: 500px; }
+      #forming-note { margin-left: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">IM</div>
+        <div>
+          <h1>Indicator Monitor</h1>
+          <p class="sub">Public Binance data · no account · runs in your browser</p>
+        </div>
+      </div>
+      <div class="ticker">
+        <div>
+          <span id="live-pair">BTCUSDT</span>
+          <span id="live-price">—</span>
+          <span id="live-chg">—</span>
+        </div>
+        <div class="meta">
+          <span id="conn" class="pill connecting">Connecting</span>
+          <span id="last-upd">Last update: —</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="controls" aria-label="Controls">
+      <label class="ctrl">Pair
+        <select id="pair" aria-label="Trading pair">
+          <option value="BTCUSDT" selected>BTCUSDT</option>
+          <option value="ATOMUSDT">ATOMUSDT</option>
+          <option value="ETHUSDT">ETHUSDT</option>
+          <option value="SOLUSDT">SOLUSDT</option>
+        </select>
+      </label>
+      <label class="ctrl">Timeframe
+        <select id="interval" aria-label="Timeframe">
+          <option value="1h">1h</option>
+          <option value="4h">4h</option>
+          <option value="1d" selected>1d</option>
+        </select>
+      </label>
+      <label class="ctrl toggle"><input type="checkbox" id="notify"> Notifications</label>
+      <label class="ctrl toggle"><input type="checkbox" id="sound"> Sound</label>
+      <span id="forming-note"></span>
+    </section>
+
+    <div id="agreement" class="agreement">Loading candles…</div>
+
+    <section class="cards" id="cards" aria-label="Indicator status">
+      <article class="card neutral" id="card-rmi"><h3>RMI Trend Sniper</h3><div class="value">—</div><div class="detail"></div></article>
+      <article class="card neutral" id="card-macd"><h3>MACD 12/26/9</h3><div class="value">—</div><div class="detail"></div></article>
+      <article class="card neutral" id="card-ema"><h3>EMA 12 / 21</h3><div class="value">—</div><div class="detail"></div></article>
+      <article class="card neutral" id="card-sma"><h3>SMA 200</h3><div class="value">—</div><div class="detail"></div></article>
+      <article class="card neutral" id="card-rsi"><h3>RSI 14</h3><div class="value">—</div><div class="detail"></div></article>
+      <article class="card neutral" id="card-atr"><h3>ATR 14</h3><div class="value">—</div><div class="detail"></div></article>
+    </section>
+
+    <section class="chart-wrap">
+      <div class="legend">
+        <span class="lg cyan">EMA 12</span>
+        <span class="lg amber">EMA 21</span>
+        <span class="lg violet">SMA 200</span>
+        <span class="lg red dash">Resistance</span>
+        <span class="lg green dash">Support</span>
+      </div>
+      <div id="chart" role="img" aria-label="Candlestick chart with indicators"></div>
+    </section>
+
+    <section class="signals">
+      <div class="sig-head">
+        <h2>Signals</h2>
+        <p>Logged on closed candles only · last 50 for this pair and timeframe</p>
+        <button type="button" id="clear-signals">Clear</button>
+      </div>
+      <ul id="signal-list"></ul>
+    </section>
+
+    <footer>Not investment advice. Past moves don't predict future ones. Signals are mechanical and can be wrong.</footer>
+  </div>
+
+  <script>
+(function () {
+  "use strict";
+
+  const PAIRS = ["BTCUSDT", "ATOMUSDT", "ETHUSDT", "SOLUSDT"];
+  const INTERVALS = ["1h", "4h", "1d"];
+  const REST_HOSTS = ["https://data-api.binance.vision", "https://api.binance.com"];
+  const WS_HOSTS = ["wss://data-stream.binance.vision", "wss://stream.binance.com", "wss://stream.binance.com:9443"];
+  const CHART_CDNS = [
+    "https://unpkg.com/lightweight-charts@5.3.0/dist/lightweight-charts.standalone.production.js",
+    "https://cdn.jsdelivr.net/npm/lightweight-charts@5.3.0/dist/lightweight-charts.standalone.production.js"
+  ];
+  const LS = {
+    pair: "im.pair",
+    interval: "im.interval",
+    signals: "im.signals",
+    notify: "im.notify",
+    sound: "im.sound"
+  };
+
+  const S = {
+    pair: "BTCUSDT",
+    interval: "1d",
+    candles: [],
+    dailyCandles: [],
+    ticker: null,
+    ind: null,
+    dailyInd: null,
+    levels: [],
+    ready: false,
+    lastClosedOpenTime: null,
+    scanned: false,
+    chart: null,
+    series: {},
+    priceLines: [],
+    ws: null,
+    wsHostIndex: 0,
+    failedHosts: 0,
+    reconnectTimer: null,
+    backoff: 1000,
+    destroyed: false,
+    notify: false,
+    sound: false,
+    errors: [],
+    lastUpdate: null
+  };
+
+  /* ---------- helpers ---------- */
+  function isNum(x) { return typeof x === "number" && !Number.isNaN(x); }
+
+  function fmtPrice(x, pair) {
+    if (!isNum(x)) return "—";
+    const abs = Math.abs(x);
+    let d = 2;
+    if (pair === "ATOMUSDT" || abs < 10) d = 4;
+    else if (abs < 100) d = 3;
+    else if (abs >= 1000) d = 2;
+    return x.toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  function fmtPxShort(x, pair) {
+    if (!isNum(x)) return "—";
+    const abs = Math.abs(x);
+    if (abs >= 1000) return x.toLocaleString("en-GB", { maximumFractionDigits: 0 });
+    return fmtPrice(x, pair);
+  }
+  function fmtNum(x, d) {
+    if (!isNum(x)) return "—";
+    return x.toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  function fmtPct(x) {
+    if (!isNum(x)) return "—";
+    const s = (x >= 0 ? "+" : "") + x.toFixed(2) + "%";
+    return s;
+  }
+  function fmtUK(ms, withSeconds) {
+    const d = new Date(ms);
+    const opts = {
+      timeZone: "Europe/London",
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", hour12: false
+    };
+    if (withSeconds) opts.second = "2-digit";
+    const tz = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", timeZoneName: "short" })
+      .formatToParts(d).find(p => p.type === "timeZoneName");
+    const label = tz && tz.value ? tz.value : "UK";
+    return new Intl.DateTimeFormat("en-GB", opts).format(d).replace(",", "") + " UK (" + label + ")";
+  }
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      const s = document.createElement("script");
+      s.src = src; s.async = true;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { reject(new Error("Failed to load " + src)); };
+      document.head.appendChild(s);
+    });
+  }
+  async function loadChartsLib() {
+    if (window.LightweightCharts) return;
+    let last;
+    for (const url of CHART_CDNS) {
+      try { await loadScript(url); if (window.LightweightCharts) return; }
+      catch (e) { last = e; }
+    }
+    throw last || new Error("Could not load lightweight-charts");
+  }
+
+  /* ---------- indicator math (ported from /workspace/btc-watch/rmi.py) ---------- */
+  function rma(arr, n) {
+    const out = new Array(arr.length).fill(NaN);
+    let s = null;
+    for (let i = 0; i < arr.length; i++) {
+      if (!isNum(arr[i])) continue;
+      if (s === null) {
+        if (i >= n - 1) {
+          let ok = true, sum = 0;
+          for (let j = i - n + 1; j <= i; j++) {
+            if (!isNum(arr[j])) { ok = false; break; }
+            sum += arr[j];
+          }
+          if (ok) s = sum / n; else continue;
+        } else continue;
+      } else s = (s * (n - 1) + arr[i]) / n;
+      out[i] = s;
+    }
+    return out;
+  }
+  function ema(arr, span) {
+    const out = new Array(arr.length).fill(NaN);
+    const alpha = 2 / (span + 1);
+    let prev = null;
+    for (let i = 0; i < arr.length; i++) {
+      if (!isNum(arr[i])) continue;
+      prev = prev === null ? arr[i] : alpha * arr[i] + (1 - alpha) * prev;
+      out[i] = prev;
+    }
+    return out;
+  }
+  function sma(arr, n) {
+    const out = new Array(arr.length).fill(NaN);
+    let sum = 0, count = 0;
+    for (let i = 0; i < arr.length; i++) {
+      if (isNum(arr[i])) { sum += arr[i]; count++; }
+      if (i >= n) { if (isNum(arr[i - n])) { sum -= arr[i - n]; count--; } }
+      if (i >= n - 1 && count === n) out[i] = sum / n;
+    }
+    return out;
+  }
+  function rollingSumNaN(arr, n) {
+    const out = new Array(arr.length).fill(NaN);
+    for (let i = n - 1; i < arr.length; i++) {
+      let sum = 0, ok = true;
+      for (let j = i - n + 1; j <= i; j++) {
+        if (!isNum(arr[j])) { ok = false; break; }
+        sum += arr[j];
+      }
+      if (ok) out[i] = sum;
+    }
+    return out;
+  }
+  function trueRange(h, l, c) {
+    const tr = new Array(c.length).fill(NaN);
+    for (let i = 0; i < c.length; i++) {
+      tr[i] = i === 0 ? h[i] - l[i] : Math.max(h[i] - l[i], Math.abs(h[i] - c[i - 1]), Math.abs(l[i] - c[i - 1]));
+    }
+    return tr;
+  }
+  function computeRSI(c, period) {
+    const ch = c.map((v, i) => i === 0 ? NaN : v - c[i - 1]);
+    const up = rma(ch.map(v => isNum(v) ? Math.max(v, 0) : NaN), period);
+    const dn = rma(ch.map(v => isNum(v) ? Math.max(-v, 0) : NaN), period);
+    const rsi = new Array(c.length).fill(NaN);
+    for (let i = 0; i < c.length; i++) {
+      if (!isNum(up[i]) || !isNum(dn[i])) continue;
+      if (dn[i] === 0) rsi[i] = 100;
+      else if (up[i] === 0) rsi[i] = 0;
+      else rsi[i] = 100 - 100 / (1 + up[i] / dn[i]);
+    }
+    return rsi;
+  }
+  function computeRmiSniper(h, l, c, v, L, PM, NM) {
+    L = L || 24; PM = PM || 62; NM = NM || 50;
+    const rsi = computeRSI(c, L);
+    const tp = c.map((_, i) => (h[i] + l[i] + c[i]) / 3);
+    const tpc = tp.map((val, i) => i === 0 ? NaN : val - tp[i - 1]);
+    const posRaw = tp.map((t, i) => (isNum(tpc[i]) && tpc[i] > 0) ? v[i] * t : 0);
+    const negRaw = tp.map((t, i) => (isNum(tpc[i]) && tpc[i] < 0) ? v[i] * t : 0);
+    const pos = rollingSumNaN(posRaw, L);
+    const neg = rollingSumNaN(negRaw, L);
+    const mfi = new Array(c.length).fill(NaN);
+    for (let i = 0; i < c.length; i++) {
+      if (!isNum(pos[i]) || !isNum(neg[i])) continue;
+      if (neg[i] === 0 && pos[i] === 0) continue;
+      mfi[i] = neg[i] === 0 ? 100 : 100 - 100 / (1 + pos[i] / neg[i]);
+    }
+    const rm = c.map((_, i) => (isNum(rsi[i]) && isNum(mfi[i])) ? (rsi[i] + mfi[i]) / 2 : NaN);
+    const ema5 = ema(c, 5);
+    const e5c = ema5.map((val, i) => (i === 0 || !isNum(val) || !isNum(ema5[i - 1])) ? NaN : val - ema5[i - 1]);
+    const state = new Array(c.length).fill(null);
+    let p = false, n = false;
+    for (let i = 0; i < c.length; i++) {
+      const prevRm = i > 0 ? rm[i - 1] : NaN;
+      const pmom = isNum(prevRm) && isNum(rm[i]) && isNum(e5c[i]) && prevRm < PM && rm[i] > PM && rm[i] > NM && e5c[i] > 0;
+      const nmom = isNum(rm[i]) && isNum(e5c[i]) && rm[i] < NM && e5c[i] < 0;
+      if (pmom) { p = true; n = false; }
+      if (nmom) { p = false; n = true; }
+      state[i] = p ? "buy" : n ? "sell" : null;
+    }
+    const br = h.map((_, i) => h[i] - l[i]);
+    const brSum = rollingSumNaN(br, 20);
+    const w = br.map((b, i) => isNum(brSum[i]) && brSum[i] !== 0 ? b / brSum[i] : NaN);
+    const cw = c.map((val, i) => isNum(w[i]) ? val * w[i] : NaN);
+    const cwSum = rollingSumNaN(cw, 20);
+    const wSum = rollingSumNaN(w, 20);
+    const rw = c.map((_, i) => isNum(cwSum[i]) && isNum(wSum[i]) && wSum[i] !== 0 ? cwSum[i] / wSum[i] : NaN);
+    const atr30 = rma(trueRange(h, l, c), 30);
+    const band = new Array(c.length).fill(NaN);
+    for (let i = 0; i < c.length; i++) {
+      const j = i - 20;
+      if (j < 0 || !isNum(atr30[j]) || !isNum(c[j])) continue;
+      band[i] = (Math.min(atr30[j] * 0.3, c[j] * 0.003) / 2) * 8;
+    }
+    const line = c.map((_, i) => {
+      if (!isNum(rw[i]) || !isNum(band[i]) || !state[i]) return NaN;
+      return state[i] === "buy" ? rw[i] - band[i] : rw[i] + band[i];
+    });
+    return { rm: rm, state: state, line: line };
+  }
+  function computeAll(candles) {
+    const h = candles.map(x => x.high);
+    const l = candles.map(x => x.low);
+    const c = candles.map(x => x.close);
+    const v = candles.map(x => x.volume);
+    const rmi = computeRmiSniper(h, l, c, v);
+    const ema12 = ema(c, 12);
+    const ema21 = ema(c, 21);
+    const ema26 = ema(c, 26);
+    const macd = c.map((_, i) => isNum(ema12[i]) && isNum(ema26[i]) ? ema12[i] - ema26[i] : NaN);
+    const signal = ema(macd, 9);
+    const hist = macd.map((m, i) => isNum(m) && isNum(signal[i]) ? m - signal[i] : NaN);
+    const sma200 = sma(c, 200);
+    const rsi14 = computeRSI(c, 14);
+    const atr14 = rma(trueRange(h, l, c), 14);
+    return { rmi: rmi, ema12: ema12, ema21: ema21, macd: macd, signal: signal, hist: hist, sma200: sma200, rsi14: rsi14, atr14: atr14 };
+  }
+
+  /* ---------- swings & signals ---------- */
+  function findPivots(candles, left, right) {
+    left = left || 5; right = right || 5;
+    const highs = [], lows = [];
+    const end = candles.length - right;
+    for (let i = left; i < end; i++) {
+      let isH = true, isL = true;
+      for (let j = i - left; j <= i + right; j++) {
+        if (j === i) continue;
+        if (candles[j].high >= candles[i].high) isH = false;
+        if (candles[j].low <= candles[i].low) isL = false;
+        if (!isH && !isL) break;
+      }
+      if (isH) highs.push({ i: i, time: candles[i].time, price: candles[i].high, kind: "high" });
+      if (isL) lows.push({ i: i, time: candles[i].time, price: candles[i].low, kind: "low" });
+    }
+    return { highs: highs, lows: lows };
+  }
+  function clusterAndPick(candles, atr, price) {
+    const piv = findPivots(candles, 5, 5);
+    const raw = piv.highs.concat(piv.lows).sort(function (a, b) { return a.price - b.price; });
+    const thresh = Math.max(isNum(atr) ? atr * 0.3 : 0, price * 0.0015);
+    const clusters = [];
+    raw.forEach(function (p) {
+      const last = clusters[clusters.length - 1];
+      if (last && Math.abs(p.price - last.price) <= thresh) {
+        if (p.i >= last.i) {
+          last.price = p.kind === "high" ? Math.max(last.price, p.price) : Math.min(last.price, p.price);
+          last.i = p.i; last.time = p.time; last.kind = p.kind;
+        }
+      } else clusters.push({ price: p.price, i: p.i, time: p.time, kind: p.kind });
+    });
+    const above = clusters.filter(x => x.price > price).sort((a, b) => a.price - b.price).slice(0, 3)
+      .map(x => Object.assign({ side: "resistance" }, x));
+    const below = clusters.filter(x => x.price < price).sort((a, b) => b.price - a.price).slice(0, 3)
+      .map(x => Object.assign({ side: "support" }, x));
+    return above.concat(below);
+  }
+  function histTrend(hist, i) {
+    const a = hist[i - 2], b = hist[i - 1], c = hist[i];
+    if (!isNum(a) || !isNum(b) || !isNum(c)) return { label: "n/a", path: "" };
+    const path = [a, b, c].map(v => fmtNum(v, 1)).join(" → ");
+    const A = Math.abs(a), B = Math.abs(b), C = Math.abs(c);
+    let label;
+    if (C < B && B < A) label = "shrinking";
+    else if (C > B && B > A) label = "widening";
+    else if (C < B) label = "shrinking";
+    else if (C > B) label = "widening";
+    else label = "flat";
+    return { label: label, path: path };
+  }
+  function biasFromInd(ind, idx, price) {
+    if (!ind || idx == null) return { bias: "mixed", text: "n/a", items: [] };
+    const items = [];
+    const st = ind.rmi.state[idx];
+    if (st === "buy") items.push({ name: "RMI", dir: "bullish" });
+    else if (st === "sell") items.push({ name: "RMI", dir: "bearish" });
+    if (isNum(ind.macd[idx]) && isNum(ind.signal[idx]))
+      items.push({ name: "MACD", dir: ind.macd[idx] > ind.signal[idx] ? "bullish" : "bearish" });
+    if (isNum(ind.ema12[idx]) && isNum(ind.ema21[idx]))
+      items.push({ name: "EMA", dir: ind.ema12[idx] > ind.ema21[idx] ? "bullish" : "bearish" });
+    if (isNum(ind.sma200[idx]) && isNum(price))
+      items.push({ name: "SMA200", dir: price > ind.sma200[idx] ? "bullish" : "bearish" });
+    const bull = items.filter(x => x.dir === "bullish").map(x => x.name);
+    const bear = items.filter(x => x.dir === "bearish").map(x => x.name);
+    let text, bias;
+    if (bull.length && bear.length) {
+      if (bear.length >= bull.length) { text = bear.join("/") + " bearish, " + bull.join("/") + " conflicts"; bias = bear.length >= 3 ? "bearish" : "mixed"; }
+      else { text = bull.join("/") + " bullish, " + bear.join("/") + " conflicts"; bias = bull.length >= 3 ? "bullish" : "mixed"; }
+    } else if (bear.length) { text = bear.join("/") + " bearish"; bias = "bearish"; }
+    else if (bull.length) { text = bull.join("/") + " bullish"; bias = "bullish"; }
+    else { text = "No clear agreement"; bias = "mixed"; }
+    // prevailing (for with/against): majority of RMI/MACD/EMA, ignoring SMA conflict
+    const core = items.filter(x => x.name !== "SMA200");
+    const cb = core.filter(x => x.dir === "bullish").length;
+    const ck = core.filter(x => x.dir === "bearish").length;
+    const prevailing = cb > ck ? "bullish" : ck > cb ? "bearish" : "mixed";
+    return { bias: bias, prevailing: prevailing, text: text, items: items };
+  }
+  function lastClosedIndex(candles) {
+    if (!candles.length) return -1;
+    const last = candles[candles.length - 1];
+    return last.closed ? candles.length - 1 : candles.length - 2;
+  }
+  function crossed(prev, curr, level) {
+    return (prev <= level && curr > level) || (prev >= level && curr < level);
+  }
+  function buildIdea(dir, price, atr, levels, higherPrev, pair) {
+    const bull = dir === "bullish";
+    const entryLo = price - (bull ? 0.15 : 0.35) * (atr || price * 0.01);
+    const entryHi = price + (bull ? 0.35 : 0.15) * (atr || price * 0.01);
+    const supports = levels.filter(l => l.side === "support" || l.price < price).sort((a, b) => b.price - a.price);
+    const resistances = levels.filter(l => l.side === "resistance" || l.price > price).sort((a, b) => a.price - b.price);
+    const atrStop = bull ? price - 1.5 * atr : price + 1.5 * atr;
+    let stop, stopWhy;
+    const near = bull ? supports[0] : resistances[0];
+    if (near && isNum(atr) && Math.abs(price - near.price) <= 2 * atr) {
+      stop = bull ? near.price - 0.1 * atr : near.price + 0.1 * atr;
+      stopWhy = "beyond " + (bull ? "support" : "resistance");
+    } else {
+      stop = atrStop;
+      stopWhy = "1.5×ATR";
+    }
+    const t1 = bull ? resistances[0] : supports[0];
+    const t2 = bull ? resistances[1] : supports[1];
+    const risk = Math.abs(price - stop);
+    const rr = t1 && risk > 0 ? Math.abs(t1.price - price) / risk : null;
+    let trendFlag;
+    if (higherPrev === "mixed") trendFlag = "mixed daily trend";
+    else if ((bull && higherPrev === "bullish") || (!bull && higherPrev === "bearish")) trendFlag = "with daily trend";
+    else trendFlag = "against daily trend";
+    const targets = [t1, t2].filter(Boolean).map(t => fmtPxShort(t.price, pair));
+    const parts = [
+      "Entry " + fmtPxShort(entryLo, pair) + "–" + fmtPxShort(entryHi, pair) + ".",
+      "Stop " + fmtPxShort(stop, pair) + " (" + stopWhy + ").",
+      targets.length ? ("Targets " + targets.join(" then ") + ".") : "No nearby target level.",
+      isNum(rr) ? ("R:R " + rr.toFixed(1) + " to first target.") : "",
+      trendFlag.charAt(0).toUpperCase() + trendFlag.slice(1) + "."
+    ].filter(Boolean);
+    return { text: parts.join(" "), rr: rr, trendFlag: trendFlag, stop: stop, entryLo: entryLo, entryHi: entryHi };
+  }
+  function detectAt(candles, ind, i, levels, higherPrev, pair, interval) {
+    if (i < 1) return [];
+    const out = [];
+    const price = candles[i].close;
+    const prev = candles[i - 1].close;
+    const atr = ind.atr14[i];
+    const tClosed = candles[i].closeTime;
+    function add(type, dir, label) {
+      const idea = buildIdea(dir, price, atr, levels, higherPrev, pair);
+      out.push({
+        id: pair + "|" + interval + "|" + tClosed + "|" + type,
+        pair: pair, interval: interval, time: tClosed, type: type, label: label,
+        dir: dir, price: price, idea: idea.text, rr: idea.rr, trendFlag: idea.trendFlag
+      });
+    }
+    const st = ind.rmi.state[i], pst = ind.rmi.state[i - 1];
+    if (st && pst && st !== pst) add("rmi_flip_" + st, st === "buy" ? "bullish" : "bearish", "RMI flip to " + st.toUpperCase());
+    if (isNum(ind.macd[i]) && isNum(ind.signal[i]) && isNum(ind.macd[i - 1]) && isNum(ind.signal[i - 1])) {
+      const up = ind.macd[i - 1] <= ind.signal[i - 1] && ind.macd[i] > ind.signal[i];
+      const dn = ind.macd[i - 1] >= ind.signal[i - 1] && ind.macd[i] < ind.signal[i];
+      if (up) add("macd_cross_up", "bullish", "MACD bullish cross");
+      if (dn) add("macd_cross_down", "bearish", "MACD bearish cross");
+    }
+    if (isNum(ind.ema12[i]) && isNum(ind.ema21[i]) && isNum(ind.ema12[i - 1]) && isNum(ind.ema21[i - 1])) {
+      const up = ind.ema12[i - 1] <= ind.ema21[i - 1] && ind.ema12[i] > ind.ema21[i];
+      const dn = ind.ema12[i - 1] >= ind.ema21[i - 1] && ind.ema12[i] < ind.ema21[i];
+      if (up) add("ema_cross_up", "bullish", "EMA 12/21 bullish cross");
+      if (dn) add("ema_cross_down", "bearish", "EMA 12/21 bearish cross");
+    }
+    if (isNum(ind.sma200[i]) && isNum(ind.sma200[i - 1])) {
+      if (prev <= ind.sma200[i - 1] && price > ind.sma200[i]) add("sma200_cross_up", "bullish", "Close above SMA 200");
+      if (prev >= ind.sma200[i - 1] && price < ind.sma200[i]) add("sma200_cross_down", "bearish", "Close below SMA 200");
+    }
+    let broken = null;
+    levels.forEach(function (lv) {
+      if (crossed(prev, price, lv.price)) {
+        const dist = Math.abs(price - lv.price);
+        if (!broken || dist < broken.dist) broken = { lv: lv, dist: dist };
+      }
+    });
+    if (broken) {
+      const bull = price > broken.lv.price;
+      add(bull ? "break_resistance" : "break_support", bull ? "bullish" : "bearish",
+        "Close beyond " + (bull ? "resistance" : "support") + " " + fmtPxShort(broken.lv.price, pair));
+    }
+    return out;
+  }
+
+  /* ---------- storage ---------- */
+  function sigKey(pair, interval) { return pair + "|" + interval; }
+  function loadSignals() {
+    try { return JSON.parse(localStorage.getItem(LS.signals) || "{}") || {}; }
+    catch (e) { return {}; }
+  }
+  function saveSignals(all) { try { localStorage.setItem(LS.signals, JSON.stringify(all)); } catch (e) {} }
+  function getSignalList(pair, interval) {
+    const all = loadSignals();
+    return all[sigKey(pair, interval)] || [];
+  }
+  function mergeSignals(pair, interval, incoming, limit) {
+    limit = limit || 50;
+    const all = loadSignals();
+    const key = sigKey(pair, interval);
+    const cur = all[key] || [];
+    const seen = {};
+    cur.forEach(s => { seen[s.id] = true; });
+    const added = [];
+    incoming.forEach(s => {
+      if (!seen[s.id]) { seen[s.id] = true; cur.push(s); added.push(s); }
+    });
+    cur.sort((a, b) => a.time - b.time);
+    all[key] = cur.slice(-limit);
+    saveSignals(all);
+    return added;
+  }
+  function clearSignals(pair, interval) {
+    const all = loadSignals();
+    delete all[sigKey(pair, interval)];
+    saveSignals(all);
+  }
+
+  /* ---------- data ---------- */
+  function parseKline(k) {
+    const closeTime = +k[6];
+    return {
+      time: Math.floor(+k[0] / 1000),
+      open: +k[1], high: +k[2], low: +k[3], close: +k[4], volume: +k[5],
+      closeTime: closeTime,
+      closed: Date.now() >= closeTime
+    };
+  }
+  async function fetchJson(pathAndQuery) {
+    let last;
+    for (let i = 0; i < REST_HOSTS.length; i++) {
+      try {
+        const r = await fetch(REST_HOSTS[i] + pathAndQuery, { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return await r.json();
+      } catch (e) { last = e; }
+    }
+    throw last || new Error("All REST hosts failed");
+  }
+  async function fetchKlines(symbol, interval, limit) {
+    const d = await fetchJson("/api/v3/klines?symbol=" + symbol + "&interval=" + interval + "&limit=" + (limit || 500));
+    if (!Array.isArray(d) || d.length < 50) throw new Error("Unexpected kline payload");
+    return d.map(parseKline);
+  }
+  async function fetchTicker(symbol) {
+    try {
+      const t = await fetchJson("/api/v3/ticker/24hr?symbol=" + symbol);
+      return { last: +t.lastPrice, pct: +t.priceChangePercent, change: +t.priceChange };
+    } catch (e) { return null; }
+  }
+
+  /* ---------- websocket ---------- */
+  function setConn(state, label) {
+    const el = document.getElementById("conn");
+    el.className = "pill " + state;
+    el.textContent = label;
+  }
+  function wsUrl(host, pair, interval) {
+    const s = pair.toLowerCase();
+    return host + "/stream?streams=" + s + "@kline_" + interval + "/" + s + "@ticker";
+  }
+  function stopWs() {
+    if (S.reconnectTimer) { clearTimeout(S.reconnectTimer); S.reconnectTimer = null; }
+    if (S.ws) {
+      try { S.ws.onclose = null; S.ws.onerror = null; S.ws.close(); } catch (e) {}
+      S.ws = null;
+    }
+  }
+  function connectWs() {
+    stopWs();
+    if (S.destroyed) return;
+    setConn("connecting", "Connecting");
+    const host = WS_HOSTS[S.wsHostIndex % WS_HOSTS.length];
+    let ws;
+    try { ws = new WebSocket(wsUrl(host, S.pair, S.interval)); }
+    catch (e) { scheduleReconnect(); return; }
+    S.ws = ws;
+    ws.onopen = function () {
+      S.backoff = 1000;
+      S.failedHosts = 0;
+      setConn("live", "Live");
+    };
+    ws.onmessage = function (ev) {
+      try {
+        const msg = JSON.parse(ev.data);
+        const data = msg.data || msg;
+        if (data.e === "kline" || (data.k && data.k.t != null)) onKline(data.k);
+        else if (data.e === "24hrTicker" || data.P != null) onTicker(data);
+      } catch (e) {}
+    };
+    ws.onerror = function () { /* onclose will handle */ };
+    ws.onclose = function () {
+      if (S.destroyed) return;
+      S.wsHostIndex = (S.wsHostIndex + 1) % WS_HOSTS.length;
+      S.failedHosts += 1;
+      const immediate = S.failedHosts < WS_HOSTS.length;
+      if (!immediate) S.failedHosts = 0;
+      scheduleReconnect(immediate);
+    };
+  }
+  function scheduleReconnect(immediate) {
+    setConn(immediate ? "connecting" : "reconnect", immediate ? "Connecting" : "Reconnecting");
+    if (S.reconnectTimer) clearTimeout(S.reconnectTimer);
+    const wait = immediate ? 150 : S.backoff;
+    if (!immediate) S.backoff = Math.min(S.backoff * 2, 30000);
+    S.reconnectTimer = setTimeout(connectWs, wait);
+  }
+  function onTicker(t) {
+    S.ticker = { last: +t.c, pct: +t.P, change: +t.p };
+    renderTicker();
+  }
+  function onKline(k) {
+    const bar = {
+      time: Math.floor(+k.t / 1000),
+      open: +k.o, high: +k.h, low: +k.l, close: +k.c, volume: +k.v,
+      closeTime: +k.T, closed: !!k.x
+    };
+    const candles = S.candles;
+    if (!candles.length) return;
+    const last = candles[candles.length - 1];
+    if (bar.time === last.time) {
+      candles[candles.length - 1] = bar;
+    } else if (bar.time > last.time) {
+      last.closed = true;
+      candles.push(bar);
+      if (candles.length > 520) candles.shift();
+    } else return;
+    if (S.ticker) S.ticker.last = bar.close;
+    else S.ticker = { last: bar.close, pct: null, change: null };
+    afterCandleUpdate(!!k.x || (last.time !== bar.time));
+  }
+
+  /* ---------- render ---------- */
+  function renderTicker() {
+    const price = S.ticker && isNum(S.ticker.last) ? S.ticker.last
+      : (S.candles.length ? S.candles[S.candles.length - 1].close : null);
+    document.getElementById("live-pair").textContent = S.pair;
+    document.getElementById("live-price").textContent = fmtPrice(price, S.pair);
+    const chg = document.getElementById("live-chg");
+    if (S.ticker && isNum(S.ticker.pct)) {
+      chg.textContent = fmtPct(S.ticker.pct) + " 24h";
+      chg.className = S.ticker.pct >= 0 ? "up" : "down";
+    } else if (S.candles.length >= 2) {
+      const last = S.candles[S.candles.length - 1];
+      // approximate 24h: vs previous daily close if 1d, else look back
+      let ref = null;
+      if (S.interval === "1d" && S.candles.length >= 2) ref = S.candles[S.candles.length - 2].close;
+      if (isNum(ref) && isNum(price)) {
+        const pct = (price / ref - 1) * 100;
+        chg.textContent = fmtPct(pct) + " vs prev close";
+        chg.className = pct >= 0 ? "up" : "down";
+      } else { chg.textContent = "—"; chg.className = ""; }
+    } else { chg.textContent = "—"; chg.className = ""; }
+    if (S.lastUpdate) {
+      document.getElementById("last-upd").textContent = "Last update: " + fmtUK(S.lastUpdate, true);
+    }
+  }
+  function setCard(id, tone, value, detail, attrs) {
+    const el = document.getElementById(id);
+    el.className = "card " + tone;
+    el.querySelector(".value").textContent = value;
+    el.querySelector(".detail").innerHTML = detail;
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      const v = attrs[k];
+      if (v == null) el.removeAttribute(k); else el.setAttribute(k, String(v));
+    });
+  }
+  function renderCards() {
+    const candles = S.candles, ind = S.ind;
+    if (!candles.length || !ind) return;
+    const i = candles.length - 1;
+    const price = candles[i].close;
+    const pair = S.pair;
+    const forming = !candles[i].closed;
+
+    const st = ind.rmi.state[i];
+    const rmiTone = st === "buy" ? "bull" : st === "sell" ? "bear" : "neutral";
+    setCard("card-rmi", rmiTone, st ? st.toUpperCase() : "—",
+      "RMI " + fmtNum(ind.rmi.rm[i], 1) + " · line " + fmtPrice(ind.rmi.line[i], pair) +
+      (st === "sell" ? " (price below the line)" : st === "buy" ? " (price above the line)" : ""),
+      { "data-state": st || "", "data-rm": isNum(ind.rmi.rm[i]) ? String(ind.rmi.rm[i]) : "", "data-line": isNum(ind.rmi.line[i]) ? String(ind.rmi.line[i]) : "" });
+
+    const macdAbove = isNum(ind.macd[i]) && isNum(ind.signal[i]) && ind.macd[i] > ind.signal[i];
+    const ht = histTrend(ind.hist, i);
+    const macdTone = macdAbove ? "bull" : "bear";
+    setCard("card-macd", macdTone, (macdAbove ? "Above signal" : "Below signal"),
+      "<strong>" + fmtNum(ind.macd[i], 1) + "</strong> / signal " + fmtNum(ind.signal[i], 1) +
+      " / hist " + fmtNum(ind.hist[i], 1) + "<br>Gap " + ht.label + (ht.path ? " (" + ht.path + ")" : ""),
+      { "data-macd": String(ind.macd[i] || ""), "data-signal": String(ind.signal[i] || ""), "data-hist": String(ind.hist[i] || "") });
+
+    const emaUp = isNum(ind.ema12[i]) && isNum(ind.ema21[i]) && ind.ema12[i] > ind.ema21[i];
+    const gap = isNum(ind.ema12[i]) && isNum(ind.ema21[i]) ? ind.ema12[i] - ind.ema21[i] : NaN;
+    const under = isNum(ind.ema12[i]) && price < Math.min(ind.ema12[i], ind.ema21[i]);
+    const over = isNum(ind.ema21[i]) && price > Math.max(ind.ema12[i], ind.ema21[i]);
+    setCard("card-ema", emaUp ? "bull" : "bear", emaUp ? "12 above 21" : "12 below 21",
+      "EMA12 " + fmtPrice(ind.ema12[i], pair) + " · EMA21 " + fmtPrice(ind.ema21[i], pair) +
+      "<br>Gap " + fmtPrice(gap, pair) + (under ? " · price under both" : over ? " · price over both" : ""),
+      { "data-ema12": String(ind.ema12[i] || ""), "data-ema21": String(ind.ema21[i] || "") });
+
+    const pct = isNum(ind.sma200[i]) ? (price / ind.sma200[i] - 1) * 100 : NaN;
+    const smaUp = isNum(pct) && pct >= 0;
+    setCard("card-sma", isNum(pct) ? (smaUp ? "bull" : "bear") : "neutral",
+      isNum(pct) ? (fmtPct(pct) + (smaUp ? " above" : " below")) : "—",
+      "SMA200 " + fmtPrice(ind.sma200[i], pair),
+      { "data-sma200": String(ind.sma200[i] || ""), "data-pct": isNum(pct) ? String(pct) : "" });
+
+    const rsi = ind.rsi14[i];
+    const rsiTone = !isNum(rsi) ? "neutral" : rsi >= 70 ? "bear" : rsi <= 30 ? "bull" : "neutral";
+    const rsiLbl = !isNum(rsi) ? "—" : rsi >= 70 ? "Overbought" : rsi <= 30 ? "Oversold" : "Mid range";
+    setCard("card-rsi", rsiTone, fmtNum(rsi, 1), rsiLbl, { "data-rsi": isNum(rsi) ? String(rsi) : "" });
+
+    const atr = ind.atr14[i];
+    const atrPct = isNum(atr) && price ? atr / price * 100 : NaN;
+    setCard("card-atr", "neutral", fmtPrice(atr, pair),
+      isNum(atrPct) ? (fmtNum(atrPct, 2) + "% of price") : "",
+      { "data-atr": isNum(atr) ? String(atr) : "" });
+
+    const agr = biasFromInd(ind, i, price);
+    const box = document.getElementById("agreement");
+    box.className = "agreement " + (agr.bias === "bearish" ? "bear" : agr.bias === "bullish" ? "bull" : "mixed");
+    let html = "Agreement: <span class=\"bias\">" + agr.text + "</span>";
+    if (S.interval !== "1d" && S.dailyInd && S.dailyCandles.length) {
+      const di = S.dailyCandles.length - 1;
+      const dAgr = biasFromInd(S.dailyInd, di, S.dailyCandles[di].close);
+      html += "<span class=\"daily\">Daily bias: " + dAgr.text + "</span>";
+    }
+    box.innerHTML = html;
+
+    const note = document.getElementById("forming-note");
+    if (forming) {
+      note.textContent = "Live candle is still forming — signals fire only when it closes.";
+    } else note.textContent = "";
+  }
+  function renderSignals() {
+    const list = getSignalList(S.pair, S.interval).slice().reverse();
+    const ul = document.getElementById("signal-list");
+    if (!list.length) {
+      ul.innerHTML = "<li class=\"empty\">No closed-candle signals stored for this pair and timeframe yet.</li>";
+      return;
+    }
+    ul.innerHTML = list.map(function (s) {
+      return "<li class=\"" + (s.dir === "bullish" ? "bull" : "bear") + "\">" +
+        "<span class=\"when\">" + fmtUK(s.time, false) + "</span>" +
+        "<span class=\"type\">" + s.label + "</span>" +
+        "<span class=\"px\">" + fmtPrice(s.price, s.pair) + "</span>" +
+        "<span class=\"idea\">" + s.idea + "</span></li>";
+    }).join("");
+  }
+
+  /* ---------- chart ---------- */
+  function destroyChart() {
+    if (S.chart) { try { S.chart.remove(); } catch (e) {} }
+    S.chart = null; S.series = {}; S.priceLines = [];
+  }
+  function initChart() {
+    destroyChart();
+    const LC = window.LightweightCharts;
+    const el = document.getElementById("chart");
+    el.innerHTML = "";
+    if (!LC) {
+      el.innerHTML = "<div class=\"chart-error\">Chart library failed to load. Indicator cards will still work if price data arrives.</div>";
+      return;
+    }
+    const chart = LC.createChart(el, {
+      autoSize: true,
+      layout: {
+        background: { type: LC.ColorType.Solid, color: "#10161d" },
+        textColor: "#8b98a5",
+        fontFamily: "IBM Plex Sans, Segoe UI, system-ui, sans-serif",
+        panes: { separatorColor: "#273140", separatorHoverColor: "#3a4656" }
+      },
+      grid: { vertLines: { color: "#1a222c" }, horzLines: { color: "#1a222c" } },
+      crosshair: { mode: LC.CrosshairMode.Normal },
+      rightPriceScale: { borderColor: "#273140" },
+      timeScale: {
+        borderColor: "#273140",
+        timeVisible: S.interval !== "1d",
+        secondsVisible: false,
+        rightOffset: 4,
+        minBarSpacing: 3
+      },
+      localization: { priceFormatter: function (p) { return fmtPrice(p, S.pair); } }
+    });
+    const candle = chart.addSeries(LC.CandlestickSeries, {
+      upColor: "#3dd68c", downColor: "#f0625d",
+      borderUpColor: "#3dd68c", borderDownColor: "#f0625d",
+      wickUpColor: "#3dd68c", wickDownColor: "#f0625d"
+    });
+    candle.priceScale().applyOptions({ scaleMargins: { top: 0.08, bottom: 0.08 } });
+    const ema12s = chart.addSeries(LC.LineSeries, { color: "#2ec4d6", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: "EMA12" });
+    const ema21s = chart.addSeries(LC.LineSeries, { color: "#f5a623", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: "EMA21" });
+    const sma200s = chart.addSeries(LC.LineSeries, { color: "#9b8cff", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: "SMA200" });
+
+    const macdPane = chart.addPane(true);
+    const macdHist = macdPane.addSeries(LC.HistogramSeries, { priceLineVisible: false, lastValueVisible: false, title: "Hist" });
+    const macdLine = macdPane.addSeries(LC.LineSeries, { color: "#6cb6ff", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: "MACD" });
+    const macdSig = macdPane.addSeries(LC.LineSeries, { color: "#f5a623", lineWidth: 1, priceLineVisible: false, lastValueVisible: true, title: "Signal" });
+    macdLine.createPriceLine({ price: 0, color: "#3a4656", lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: false });
+
+    const rsiPane = chart.addPane(true);
+    const rsiLine = rsiPane.addSeries(LC.LineSeries, {
+      color: "#c084fc", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: "RSI",
+      autoscaleInfoProvider: function () { return { priceRange: { minValue: 0, maxValue: 100 } }; }
+    });
+    rsiLine.createPriceLine({ price: 70, color: "rgba(240,98,93,0.55)", lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: true, title: "70" });
+    rsiLine.createPriceLine({ price: 30, color: "rgba(61,214,140,0.55)", lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: true, title: "30" });
+    rsiLine.createPriceLine({ price: 50, color: "#3a4656", lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: false });
+
+    const panes = chart.panes();
+    if (panes[0] && panes[0].setStretchFactor) panes[0].setStretchFactor(3.2);
+    if (macdPane.setStretchFactor) macdPane.setStretchFactor(1.05);
+    if (rsiPane.setStretchFactor) rsiPane.setStretchFactor(0.9);
+
+    S.chart = chart;
+    S.series = { candle: candle, ema12: ema12s, ema21: ema21s, sma200: sma200s, macdHist: macdHist, macdLine: macdLine, macdSig: macdSig, rsi: rsiLine };
+  }
+  function seriesLine(arr, candles) {
+    const out = [];
+    for (let i = 0; i < arr.length; i++) if (isNum(arr[i])) out.push({ time: candles[i].time, value: arr[i] });
+    return out;
+  }
+  function paintHist(hist) {
+    return hist.map(function (v, i) {
+      if (!isNum(v)) return null;
+      const prev = i > 0 ? hist[i - 1] : v;
+      const growing = Math.abs(v) >= Math.abs(prev);
+      let color;
+      if (v >= 0) color = growing ? "#3dd68c" : "rgba(61,214,140,0.45)";
+      else color = growing ? "#f0625d" : "rgba(240,98,93,0.45)";
+      return { time: S.candles[i].time, value: v, color: color };
+    }).filter(Boolean);
+  }
+  function applyPriceLines(levels) {
+    const LC = window.LightweightCharts;
+    if (!S.series.candle) return;
+    S.priceLines.forEach(function (pl) { try { S.series.candle.removePriceLine(pl); } catch (e) {} });
+    S.priceLines = [];
+    levels.forEach(function (lv) {
+      const res = lv.side === "resistance";
+      const pl = S.series.candle.createPriceLine({
+        price: lv.price,
+        color: res ? "rgba(240,98,93,0.85)" : "rgba(61,214,140,0.85)",
+        lineWidth: 1,
+        lineStyle: LC ? LC.LineStyle.Dashed : 2,
+        axisLabelVisible: true,
+        title: (res ? "R " : "S ") + fmtPxShort(lv.price, S.pair)
+      });
+      S.priceLines.push(pl);
+    });
+  }
+  function fullChartSet() {
+    if (!S.series.candle || !S.ind) return;
+    const c = S.candles, ind = S.ind;
+    S.series.candle.setData(c.map(x => ({ time: x.time, open: x.open, high: x.high, low: x.low, close: x.close })));
+    S.series.ema12.setData(seriesLine(ind.ema12, c));
+    S.series.ema21.setData(seriesLine(ind.ema21, c));
+    S.series.sma200.setData(seriesLine(ind.sma200, c));
+    S.series.macdLine.setData(seriesLine(ind.macd, c));
+    S.series.macdSig.setData(seriesLine(ind.signal, c));
+    S.series.macdHist.setData(paintHist(ind.hist));
+    S.series.rsi.setData(seriesLine(ind.rsi14, c));
+    applyPriceLines(S.levels);
+    const n = c.length;
+    const visible = S.interval === "1d" ? 160 : S.interval === "4h" ? 180 : 168;
+    S.chart.timeScale().setVisibleLogicalRange({
+      from: Math.max(0, n - visible),
+      to: n + 3
+    });
+  }
+  function updateLastBar() {
+    if (!S.series.candle || !S.ind || !S.candles.length) return;
+    const i = S.candles.length - 1;
+    const x = S.candles[i], ind = S.ind;
+    S.series.candle.update({ time: x.time, open: x.open, high: x.high, low: x.low, close: x.close });
+    if (isNum(ind.ema12[i])) S.series.ema12.update({ time: x.time, value: ind.ema12[i] });
+    if (isNum(ind.ema21[i])) S.series.ema21.update({ time: x.time, value: ind.ema21[i] });
+    if (isNum(ind.sma200[i])) S.series.sma200.update({ time: x.time, value: ind.sma200[i] });
+    if (isNum(ind.macd[i])) S.series.macdLine.update({ time: x.time, value: ind.macd[i] });
+    if (isNum(ind.signal[i])) S.series.macdSig.update({ time: x.time, value: ind.signal[i] });
+    if (isNum(ind.hist[i])) {
+      const prev = i > 0 ? ind.hist[i - 1] : ind.hist[i];
+      const growing = Math.abs(ind.hist[i]) >= Math.abs(prev);
+      const color = ind.hist[i] >= 0 ? (growing ? "#3dd68c" : "rgba(61,214,140,0.45)") : (growing ? "#f0625d" : "rgba(240,98,93,0.45)");
+      S.series.macdHist.update({ time: x.time, value: ind.hist[i], color: color });
+    }
+    if (isNum(ind.rsi14[i])) S.series.rsi.update({ time: x.time, value: ind.rsi14[i] });
+  }
+
+  /* ---------- alerts ---------- */
+  function playSound(bullish) {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(bullish ? 660 : 440, now);
+      osc.frequency.setValueAtTime(bullish ? 880 : 330, now + 0.11);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.07, now + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.3);
+      osc.onended = function () { try { ctx.close(); } catch (e) {} };
+    } catch (e) {}
+  }
+  function notifyNew(sigs) {
+    if (!sigs.length) return;
+    if (S.sound) playSound(sigs[0].dir === "bullish");
+    if (S.notify && "Notification" in window && Notification.permission === "granted") {
+      sigs.forEach(function (s) {
+        try {
+          new Notification(s.pair + " " + s.interval + " · " + s.label, {
+            body: "Price " + fmtPrice(s.price, s.pair) + ". " + s.idea,
+            tag: s.id
+          });
+        } catch (e) {}
+      });
+    }
+  }
+
+  /* ---------- pipeline ---------- */
+  function higherPrevailing() {
+    if (S.interval === "1d" && S.ind && S.candles.length) {
+      return biasFromInd(S.ind, S.candles.length - 1, S.candles[S.candles.length - 1].close).prevailing;
+    }
+    if (S.dailyInd && S.dailyCandles.length) {
+      const d = S.dailyCandles, i = d.length - 1;
+      return biasFromInd(S.dailyInd, i, d[i].close).prevailing;
+    }
+    return "mixed";
+  }
+  function recompute(fullSet) {
+    if (!S.candles.length) return;
+    S.ind = computeAll(S.candles);
+    const i = S.candles.length - 1;
+    const atr = S.ind.atr14[i];
+    S.levels = clusterAndPick(S.candles, atr, S.candles[i].close);
+    S.lastUpdate = Date.now();
+    renderTicker();
+    renderCards();
+    if (fullSet) fullChartSet();
+    else {
+      updateLastBar();
+      applyPriceLines(S.levels);
+    }
+  }
+  function scanHistory() {
+    const ci = lastClosedIndex(S.candles);
+    if (ci < 2 || !S.ind) return;
+    const higher = higherPrevailing();
+    const found = [];
+    // scan last 80 closed bars
+    const start = Math.max(2, ci - 79);
+    for (let i = start; i <= ci; i++) {
+      const lv = clusterAndPick(S.candles.slice(0, i + 1), S.ind.atr14[i], S.candles[i].close);
+      found.push.apply(found, detectAt(S.candles, S.ind, i, lv, higher, S.pair, S.interval));
+    }
+    mergeSignals(S.pair, S.interval, found, 50);
+    S.lastClosedOpenTime = S.candles[ci].time;
+    S.scanned = true;
+    renderSignals();
+  }
+  function afterCandleUpdate(maybeClosed) {
+    recompute(false);
+    if (!S.ready || !maybeClosed) return;
+    const ci = lastClosedIndex(S.candles);
+    if (ci < 1) return;
+    const closed = S.candles[ci];
+    if (S.lastClosedOpenTime != null && closed.time > S.lastClosedOpenTime) {
+      const higher = higherPrevailing();
+      const added = mergeSignals(S.pair, S.interval, detectAt(S.candles, S.ind, ci, S.levels, higher, S.pair, S.interval), 50);
+      S.lastClosedOpenTime = closed.time;
+      if (added.length) { renderSignals(); notifyNew(added); }
+    }
+  }
+
+  async function loadAll() {
+    S.ready = false;
+    S.scanned = false;
+    setConn("connecting", "Loading");
+    document.getElementById("agreement").className = "agreement";
+    document.getElementById("agreement").textContent = "Loading " + S.pair + " " + S.interval + " candles…";
+    try {
+      const jobs = [fetchKlines(S.pair, S.interval, 500), fetchTicker(S.pair)];
+      if (S.interval !== "1d") jobs.push(fetchKlines(S.pair, "1d", 500).catch(function () { return []; }));
+      const results = await Promise.all(jobs);
+      S.candles = results[0];
+      S.ticker = results[1];
+      if (S.interval !== "1d") {
+        S.dailyCandles = results[2] || [];
+        S.dailyInd = S.dailyCandles.length ? computeAll(S.dailyCandles) : null;
+      } else { S.dailyCandles = []; S.dailyInd = null; }
+      recompute(true);
+      scanHistory();
+      S.ready = true;
+      connectWs();
+    } catch (e) {
+      S.errors.push(String(e && e.message || e));
+      setConn("error", "Error");
+      document.getElementById("agreement").className = "agreement mixed";
+      document.getElementById("agreement").textContent = "Could not load data from Binance. Check your connection and try again. " + (e && e.message ? e.message : "");
+    }
+  }
+
+  /* ---------- settings / ui ---------- */
+  function persist() {
+    try {
+      localStorage.setItem(LS.pair, S.pair);
+      localStorage.setItem(LS.interval, S.interval);
+      localStorage.setItem(LS.notify, S.notify ? "1" : "0");
+      localStorage.setItem(LS.sound, S.sound ? "1" : "0");
+    } catch (e) {}
+  }
+  function restore() {
+    try {
+      const p = localStorage.getItem(LS.pair);
+      const i = localStorage.getItem(LS.interval);
+      if (PAIRS.indexOf(p) >= 0) S.pair = p;
+      if (INTERVALS.indexOf(i) >= 0) S.interval = i;
+      S.notify = localStorage.getItem(LS.notify) === "1";
+      S.sound = localStorage.getItem(LS.sound) === "1";
+    } catch (e) {}
+    document.getElementById("pair").value = S.pair;
+    document.getElementById("interval").value = S.interval;
+    document.getElementById("notify").checked = S.notify;
+    document.getElementById("sound").checked = S.sound;
+  }
+  async function onNotifyToggle() {
+    S.notify = document.getElementById("notify").checked;
+    if (S.notify && "Notification" in window && Notification.permission !== "granted") {
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm !== "granted") {
+          S.notify = false;
+          document.getElementById("notify").checked = false;
+        }
+      } catch (e) {
+        S.notify = false;
+        document.getElementById("notify").checked = false;
+      }
+    }
+    persist();
+  }
+  function onPairOrTf() {
+    const pair = document.getElementById("pair").value;
+    const interval = document.getElementById("interval").value;
+    if (pair === S.pair && interval === S.interval) return;
+    S.pair = pair; S.interval = interval;
+    persist();
+    stopWs();
+    loadAll().then(function () {
+      if (S.chart) {
+        S.chart.applyOptions({ timeScale: { timeVisible: S.interval !== "1d" } });
+      }
+    });
+  }
+
+  function snapshot() {
+    const i = S.candles.length ? S.candles.length - 1 : -1;
+    const ind = S.ind;
+    return {
+      pair: S.pair, interval: S.interval, ready: S.ready,
+      price: i >= 0 ? S.candles[i].close : null,
+      closed: i >= 0 ? !!S.candles[i].closed : null,
+      rmiState: ind && i >= 0 ? ind.rmi.state[i] : null,
+      rm: ind && i >= 0 ? ind.rmi.rm[i] : null,
+      line: ind && i >= 0 ? ind.rmi.line[i] : null,
+      macd: ind && i >= 0 ? ind.macd[i] : null,
+      signal: ind && i >= 0 ? ind.signal[i] : null,
+      hist: ind && i >= 0 ? ind.hist[i] : null,
+      hist3: ind && i >= 2 ? [ind.hist[i - 2], ind.hist[i - 1], ind.hist[i]] : null,
+      ema12: ind && i >= 0 ? ind.ema12[i] : null,
+      ema21: ind && i >= 0 ? ind.ema21[i] : null,
+      sma200: ind && i >= 0 ? ind.sma200[i] : null,
+      rsi14: ind && i >= 0 ? ind.rsi14[i] : null,
+      atr14: ind && i >= 0 ? ind.atr14[i] : null,
+      lastUpdate: S.lastUpdate,
+      errors: S.errors.slice(),
+      candleCount: S.candles.length
+    };
+  }
+  window.__im = {
+    getValues: snapshot,
+    getCandles: function () { return S.candles.slice(); },
+    getSignals: function () { return getSignalList(S.pair, S.interval); }
+  };
+
+  async function init() {
+    restore();
+    document.getElementById("pair").addEventListener("change", onPairOrTf);
+    document.getElementById("interval").addEventListener("change", onPairOrTf);
+    document.getElementById("notify").addEventListener("change", onNotifyToggle);
+    document.getElementById("sound").addEventListener("change", function () {
+      S.sound = document.getElementById("sound").checked; persist();
+    });
+    document.getElementById("clear-signals").addEventListener("click", function () {
+      clearSignals(S.pair, S.interval); renderSignals();
+    });
+    renderSignals();
+    try { await loadChartsLib(); initChart(); }
+    catch (e) {
+      S.errors.push(String(e && e.message || e));
+      document.getElementById("chart").innerHTML = "<div class=\"chart-error\">Chart library failed to load from the CDN. Cards will still update if Binance data loads.</div>";
+    }
+    await loadAll();
+  }
+  init();
+})();
+  </script>
+</body>
+</html>
