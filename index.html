@@ -396,7 +396,7 @@
       #forming-note { margin-left: 0; width: 100%; }
     }
 
-    /* ---- v4: summary, freshness, setups, collapsible ---- */
+    /* ---- v4: summary, freshness, setups ---- */
     #stale-banner {
       background: rgba(245,166,35,0.14);
       border: 1px solid rgba(245,166,35,0.45);
@@ -497,29 +497,9 @@
     .setup-empty { color: var(--muted); font-size: 13px; padding: 8px 0; }
     .setup-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-    .collapsible > .strip-head,
-    .collapsible > .sig-head,
-    .collapsible > h2 {
-      cursor: pointer;
-      user-select: none;
-    }
-    .collapsible > h2 {
+    .panel h2 {
       display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
     }
-    .collapsible > .strip-head,
-    .collapsible > .sig-head {
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .chevron {
-      display: inline-block; width: 0; height: 0; margin-left: 8px;
-      border-left: 5px solid transparent; border-right: 5px solid transparent;
-      border-top: 6px solid var(--muted); flex-shrink: 0;
-      transition: transform 0.15s ease;
-    }
-    .collapsible.is-collapsed .chevron { transform: rotate(-90deg); }
-    .collapsible.is-collapsed > .collapse-body { display: none; }
-    .collapse-hint { font-size: 11px; color: var(--muted); font-weight: 400; }
 
     @media (max-width: 600px) {
       .sum-cell { flex: 1 1 46%; padding: 7px 10px; }
@@ -861,7 +841,6 @@
     calc: "im.calc",
     cgcache: "im.cgcache",
     miniInterval: function (pair) { return "im.mini." + pair + ".interval"; },
-    collapse: "im.collapse",
     setupLines: "im.setupLines"
   };
 
@@ -2978,17 +2957,12 @@
   }
 
 
-  /* ---------- v4: summary, freshness, 4h setups, collapse, lazy load ---------- */
+  /* ---------- v4: summary, freshness, 4h setups, lazy load ---------- */
   const STALE_DJ = 36 * 3600 * 1000;
   const STALE_LIVE = 3 * 60 * 1000;
   const STALE_DERIV = 5 * 60 * 1000;
   const STALE_SLOW = 15 * 60 * 1000;
   const STALE_DAILY = 36 * 3600 * 1000;
-  const LOWER_PANEL_IDS = [
-    "mtf-wrap", "panel-setups", "panel-deriv", "panel-fng", "panel-cg",
-    "panel-ratio", "panel-etf", "panel-calc", "panel-hold", "panel-conc", "panel-signals"
-  ];
-
   function asOfMs(v) {
     if (v == null || v === "") return NaN;
     if (typeof v === "number" && isNum(v)) return String(Math.trunc(v)).length <= 10 ? v * 1000 : v;
@@ -3326,71 +3300,13 @@
     });
   }
 
-  function readCollapse() {
+  function clearCollapseState() {
     try {
-      const raw = localStorage.getItem(LS.collapse);
-      if (!raw) return {};
-      const o = JSON.parse(raw);
-      return o && typeof o === "object" ? o : {};
-    } catch (e) { return {}; }
-  }
-  function writeCollapse(map) {
-    try { localStorage.setItem(LS.collapse, JSON.stringify(map)); } catch (e) {}
-  }
-  function applyCollapse(el, collapsed) {
-    el.classList.toggle("is-collapsed", !!collapsed);
-    const btn = el.querySelector(".collapse-toggle, h2, .strip-head, .sig-head");
-    if (btn) btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
-  }
-  function initCollapsibles() {
-    const saved = readCollapse();
-    const defaultCollapsed = window.innerWidth <= 600;
-    LOWER_PANEL_IDS.forEach(function (id) {
-      const el = document.getElementById(id);
-      if (!el || el.dataset.collapseReady) return;
-      el.classList.add("collapsible");
-      let head = el.querySelector(":scope > .strip-head, :scope > .sig-head, :scope > h2");
-      if (!head) return;
-      const chev = document.createElement("span");
-      chev.className = "chevron";
-      chev.setAttribute("aria-hidden", "true");
-      head.appendChild(chev);
-      const body = document.createElement("div");
-      body.className = "collapse-body";
-      const move = [];
-      Array.prototype.forEach.call(el.children, function (ch) {
-        if (ch !== head && ch !== body) move.push(ch);
+      localStorage.removeItem("im.collapse");
+      Object.keys(localStorage).forEach(function (k) {
+        if (k === "im.collapse" || k.indexOf("im.collapse.") === 0) localStorage.removeItem(k);
       });
-      move.forEach(function (ch) { body.appendChild(ch); });
-      el.appendChild(body);
-      const collapsed = Object.prototype.hasOwnProperty.call(saved, id) ? !!saved[id] : defaultCollapsed;
-      applyCollapse(el, collapsed);
-      head.setAttribute("role", "button");
-      head.tabIndex = 0;
-      head.classList.add("collapse-toggle");
-      function toggle(ev) {
-        if (ev && ev.target && ev.target.closest && ev.target.closest("button, input, a, select, label")) return;
-        const now = !el.classList.contains("is-collapsed");
-        applyCollapse(el, now);
-        saved[id] = now;
-        writeCollapse(saved);
-      }
-      head.addEventListener("click", toggle);
-      head.addEventListener("keydown", function (ev) {
-        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(ev); }
-      });
-      el.dataset.collapseReady = "1";
-    });
-  }
-  function expandAllPanels() {
-    const saved = readCollapse();
-    LOWER_PANEL_IDS.forEach(function (id) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      applyCollapse(el, false);
-      saved[id] = false;
-    });
-    writeCollapse(saved);
+    } catch (e) {}
   }
   function ensureFreshNodes() {
     function add(root, key, into) {
@@ -3506,7 +3422,6 @@
     S.ext.lazy = Object.assign(S.ext.lazy || {}, {
       minis: true, mtf: true, deriv: true, fng: true, cg: true, ratio: true, hold: true, fx: true, setups: true
     });
-    expandAllPanels();
     if (!minis.ETHUSDT || !minis.ETHUSDT.chart) initMiniCharts();
     return Promise.all([
       loadAllMinis(),
@@ -3526,14 +3441,13 @@
     };
     window.__im.getSetupSignals = function () { return S.ext.signalsJson; };
     window.__im.wakeAll = wakeAll;
-    window.__im.expandAll = expandAllPanels;
     window.__im.renderSummary = renderSummary;
   }
 
   async function initExt() {
     bindExtUi();
     ensureFreshNodes();
-    initCollapsibles();
+    clearCollapseState();
     bindSetupToggle();
     attachV4Api();
     renderCalendar();
