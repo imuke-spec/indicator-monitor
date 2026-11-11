@@ -282,6 +282,35 @@
     .funds { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; font-size: 12px; color: var(--muted); }
     .funds b { color: var(--text); font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 550; }
 
+    .etf-sum { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .etf-kpi {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 8px 12px; min-width: 0; flex: 1 1 120px;
+    }
+    .etf-kpi .k { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .etf-kpi .v {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 16px; font-weight: 650; margin-top: 3px; letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .etf-chart { width: 100%; height: 150px; display: block; margin: 0 0 12px; }
+    .etf-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .etf-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 540px; }
+    .etf-table th, .etf-table td {
+      text-align: right; padding: 6px 8px; border-top: 1px solid var(--border);
+      vertical-align: top; white-space: nowrap;
+    }
+    .etf-table th:first-child, .etf-table td:first-child { text-align: left; }
+    .etf-table th {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); border-top: 0;
+    }
+    .etf-table td.dt { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; color: var(--muted); }
+    .etf-table td.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 550; }
+    .etf-table .others { display: block; font-size: 11px; color: var(--muted); font-weight: 400; white-space: normal; max-width: 240px; margin-top: 2px; line-height: 1.35; }
+    @media (max-width: 640px) {
+      .etf-chart { height: 132px; }
+    }
+
     .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
     .form-grid label, .stack-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
@@ -2001,6 +2030,56 @@
     });
   }
 
+  function etfShortDate(iso, withMonth) {
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso || "";
+    const p = iso.split("-");
+    const mon = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+p[1] - 1];
+    return withMonth ? (Number(p[2]) + " " + mon) : String(Number(p[2]));
+  }
+  function etfOthers(d) {
+    const main = { IBIT: 1, FBTC: 1, GBTC: 1, date: 1, total: 1 };
+    let sum = 0;
+    const bits = [];
+    Object.keys(d).forEach(function (k) {
+      if (main[k] || !isNum(d[k])) return;
+      sum += d[k];
+      if (d[k] !== 0) bits.push(k + " " + fmtUsdM(d[k]));
+    });
+    return { sum: Math.round(sum * 10) / 10, bits: bits };
+  }
+  function etfBarChart(daysChrono) {
+    const n = daysChrono.length;
+    if (!n) return "";
+    const W = 700, H = 150, padL = 6, padR = 6, padT = 10, padB = 26;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+    const vals = daysChrono.map(function (d) { return isNum(d.total) ? d.total : 0; });
+    const lo = Math.min(0, Math.min.apply(null, vals));
+    const hi = Math.max(0, Math.max.apply(null, vals));
+    const span = Math.max(hi - lo, 1) * 1.12;
+    const top = hi + (span - (hi - lo)) * 0.45;
+    function yAt(v) { return padT + (top - v) / span * plotH; }
+    const zeroY = yAt(0);
+    const slot = plotW / n;
+    const bw = Math.max(6, Math.min(28, slot * 0.62));
+    let svg = '<svg class="etf-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="US spot bitcoin ETF daily net flows, last ' + n + ' trading days">';
+    svg += '<line x1="' + padL + '" y1="' + zeroY.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + zeroY.toFixed(1) + '" stroke="#3a4656" stroke-width="1"/>';
+    daysChrono.forEach(function (d, i) {
+      const x = padL + i * slot + (slot - bw) / 2;
+      const y1 = yAt(isNum(d.total) ? d.total : 0);
+      const y = Math.min(zeroY, y1);
+      const h = Math.max(1.5, Math.abs(y1 - zeroY));
+      const color = d.total > 0 ? "#3dd68c" : d.total < 0 ? "#f0625d" : "#8b98a5";
+      const prev = i > 0 ? daysChrono[i - 1].date : null;
+      const showMon = !prev || prev.slice(0, 7) !== d.date.slice(0, 7);
+      const label = etfShortDate(d.date, showMon || i === n - 1);
+      const cx = padL + i * slot + slot / 2;
+      svg += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="2" fill="' + color + '"><title>' +
+        esc(etfShortDate(d.date, true)) + ": " + esc(fmtUsdM(d.total)) + "</title></rect>";
+      svg += '<text x="' + cx.toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#8b98a5" font-size="10" font-family="IBM Plex Sans, Segoe UI, system-ui, sans-serif">' + esc(label) + "</text>";
+    });
+    svg += "</svg>";
+    return svg;
+  }
   function renderEtf() {
     const body = document.getElementById("etf-body");
     const src = document.getElementById("etf-src");
@@ -2011,25 +2090,53 @@
       return;
     }
     const url = f.url || FARSIDE_URL;
-    const days = f.days.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
-    const latest = days[0];
-    let html = days.map(function (d, i) {
-      const cls = toneCls(d.total);
-      return '<div class="flow-day"><span class="dt">' + fmtAsOf(d.date) + (i === 0 ? " · latest" : "") +
-        '</span><span class="v ' + cls + '" style="font-family:IBM Plex Mono,ui-monospace,monospace;font-weight:600">' + fmtUsdM(d.total) + "</span></div>";
-    }).join("");
-    const tickers = ["IBIT", "FBTC", "MSBT"];
-    const bits = tickers.filter(function (t) { return isNum(latest[t]); }).map(function (t) {
-      return t + " <b class=\"" + toneCls(latest[t]) + "\">" + fmtUsdM(latest[t]) + "</b>";
+    const days = f.days.filter(function (d) { return d && d.date && isNum(d.total); })
+      .slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+    if (!days.length) {
+      if (body) body.innerHTML = '<span class="na">n/a</span> — no daily totals in etfFlows';
+      return;
+    }
+    const n = days.length;
+    const take5 = days.slice(0, Math.min(5, n));
+    const netN = days.reduce(function (s, d) { return s + d.total; }, 0);
+    const net5 = take5.reduce(function (s, d) { return s + d.total; }, 0);
+    let streak = 0, dir = 0;
+    for (let i = 0; i < days.length; i++) {
+      const s = days[i].total === 0 ? 0 : (days[i].total > 0 ? 1 : -1);
+      if (s === 0) break;
+      if (dir === 0) { dir = s; streak = 1; }
+      else if (s === dir) streak += 1;
+      else break;
+    }
+    const streakLbl = !dir ? "No current streak"
+      : (streak + "-day " + (dir > 0 ? "inflow" : "outflow") + " streak");
+    let html = '<div class="etf-sum">';
+    html += '<div class="etf-kpi"><div class="k">' + n + '-day net</div><div class="v ' + toneCls(netN) + '">' + fmtUsdM(Math.round(netN * 10) / 10) + "</div></div>";
+    html += '<div class="etf-kpi"><div class="k">' + take5.length + '-day net</div><div class="v ' + toneCls(net5) + '">' + fmtUsdM(Math.round(net5 * 10) / 10) + "</div></div>";
+    html += '<div class="etf-kpi"><div class="k">Streak</div><div class="v ' + (dir > 0 ? "up" : dir < 0 ? "down" : "") + '">' + streakLbl + "</div></div>";
+    html += "</div>";
+    const chrono = days.slice().reverse();
+    html += etfBarChart(chrono);
+    html += '<div class="etf-scroll"><table class="etf-table"><thead><tr><th>Date</th><th>Total</th><th>IBIT</th><th>FBTC</th><th>GBTC</th><th>Others</th></tr></thead><tbody>';
+    days.forEach(function (d, i) {
+      const oth = etfOthers(d);
+      html += "<tr>" +
+        '<td class="dt">' + esc(etfShortDate(d.date, true)) + (i === 0 ? " · latest" : "") + "</td>" +
+        '<td class="mono ' + toneCls(d.total) + '">' + fmtUsdM(d.total) + "</td>" +
+        '<td class="mono ' + toneCls(d.IBIT) + '">' + (isNum(d.IBIT) ? fmtUsdM(d.IBIT) : "—") + "</td>" +
+        '<td class="mono ' + toneCls(d.FBTC) + '">' + (isNum(d.FBTC) ? fmtUsdM(d.FBTC) : "—") + "</td>" +
+        '<td class="mono ' + toneCls(d.GBTC) + '">' + (isNum(d.GBTC) ? fmtUsdM(d.GBTC) : "—") + "</td>" +
+        '<td class="mono ' + toneCls(oth.sum) + '">' + fmtUsdM(oth.sum) +
+          (oth.bits.length ? '<span class="others">' + esc(oth.bits.join(" · ")) + "</span>" : "") +
+        "</td></tr>";
     });
-    Object.keys(latest).forEach(function (k) {
-      if (k === "date" || k === "total" || tickers.indexOf(k) >= 0) return;
-      if (isNum(latest[k])) bits.push(k + " <b class=\"" + toneCls(latest[k]) + "\">" + fmtUsdM(latest[k]) + "</b>");
-    });
-    if (bits.length) html += '<div class="funds">' + bits.join(" · ") + "</div>";
+    html += "</tbody></table></div>";
     if (body) body.innerHTML = html;
-    if (src) src.innerHTML = 'From data.json · <a class="src" href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(f.source || "Farside") + "</a>" +
-      (f.altUrl ? ' · <a class="src" href="' + esc(f.altUrl) + '" target="_blank" rel="noopener">SoSoValue</a>' : "");
+    const latest = days[0].date;
+    let srcHtml = 'From data.json · <a class="src" href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(f.source || "Farside") + "</a>";
+    srcHtml += " · " + n + " trading days to " + esc(etfShortDate(latest, true)) + " " + latest.slice(0, 4);
+    if (f.altUrl) srcHtml += ' · <a class="src" href="' + esc(f.altUrl) + '" target="_blank" rel="noopener">SoSoValue</a>';
+    if (src) src.innerHTML = srcHtml;
   }
 
   async function refreshFxAndGold() {
