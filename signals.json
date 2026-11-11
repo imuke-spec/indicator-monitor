@@ -1,0 +1,17 @@
+{
+  "updated": "2026-11-11T15:20:00Z",
+  "signals": [
+    {
+      "time": "2026-11-11T11:59:00Z",
+      "setup": "4h MACD bullish signal cross",
+      "direction": "long",
+      "entry": 74300,
+      "stop": 72500,
+      "targets": [74996, 76200],
+      "rr": 0.39,
+      "trend": "against",
+      "invalidation": "Close below 72,500",
+      "note": "Counter-trend, low quality. Entry zone 74,000–74,600."
+    }
+  ]
+}

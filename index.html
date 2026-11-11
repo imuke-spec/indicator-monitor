@@ -397,6 +397,137 @@
       #chart { height: 500px; }
       #forming-note { margin-left: 0; width: 100%; }
     }
+
+    /* ---- v4: summary, freshness, setups, collapsible ---- */
+    #stale-banner {
+      background: rgba(245,166,35,0.14);
+      border: 1px solid rgba(245,166,35,0.45);
+      color: var(--accent);
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 550;
+      line-height: 1.4;
+    }
+    #stale-banner[hidden] { display: none !important; }
+
+    .summary-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 0;
+    }
+    .sum-cell {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      flex: 1 1 150px;
+      min-width: 0;
+      box-shadow: var(--shadow);
+    }
+    .sum-cell .k {
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .sum-cell .v {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 15px;
+      font-weight: 650;
+      margin-top: 3px;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    .sum-cell .v.bull, .sum-cell .v.up { color: var(--green); }
+    .sum-cell .v.bear, .sum-cell .v.down { color: var(--red); }
+    .sum-cell .v.mixed { color: var(--accent); }
+    .sum-cell .sub {
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+    }
+    .sum-cell .cd { color: var(--accent); font-weight: 650; }
+
+    .stale-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #1a1206;
+      background: var(--accent);
+      vertical-align: middle;
+    }
+    .fresh-line {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      white-space: nowrap;
+    }
+    .fresh-line.is-stale { color: var(--accent); }
+
+    .setup-toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px 16px;
+      align-items: center; margin: 0 0 10px;
+      font-size: 12px; color: var(--muted);
+    }
+    .setup-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 720px; }
+    .setup-table th, .setup-table td {
+      text-align: left; padding: 6px 8px; border-top: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .setup-table th {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); border-top: 0;
+    }
+    .setup-table td.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 550; white-space: nowrap; }
+    .setup-table .dir-long { color: var(--green); font-weight: 650; text-transform: uppercase; }
+    .setup-table .dir-short { color: var(--red); font-weight: 650; text-transform: uppercase; }
+    .setup-table .dir-warning { color: var(--accent); font-weight: 650; text-transform: uppercase; }
+    .setup-table .trend-against { color: var(--accent); }
+    .setup-empty { color: var(--muted); font-size: 13px; padding: 8px 0; }
+    .setup-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    .collapsible > .strip-head,
+    .collapsible > .sig-head,
+    .collapsible > h2 {
+      cursor: pointer;
+      user-select: none;
+    }
+    .collapsible > h2 {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    }
+    .collapsible > .strip-head,
+    .collapsible > .sig-head {
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .chevron {
+      display: inline-block; width: 0; height: 0; margin-left: 8px;
+      border-left: 5px solid transparent; border-right: 5px solid transparent;
+      border-top: 6px solid var(--muted); flex-shrink: 0;
+      transition: transform 0.15s ease;
+    }
+    .collapsible.is-collapsed .chevron { transform: rotate(-90deg); }
+    .collapsible.is-collapsed > .collapse-body { display: none; }
+    .collapse-hint { font-size: 11px; color: var(--muted); font-weight: 400; }
+
+    @media (max-width: 600px) {
+      .sum-cell { flex: 1 1 46%; padding: 7px 10px; }
+      .sum-cell .v { font-size: 14px; }
+      .fresh-line { white-space: normal; }
+    }
   </style>
 </head>
 <body>
@@ -421,6 +552,37 @@
         </div>
       </div>
     </header>
+
+    <div id="stale-banner" hidden role="status"></div>
+
+    <section class="summary-row" id="summary-row" aria-label="Market snapshot">
+      <div class="sum-cell" id="sum-bias">
+        <div class="k">BTC bias</div>
+        <div class="v" id="sum-bias-v">—</div>
+      </div>
+      <div class="sum-cell" id="sum-sr">
+        <div class="k">Nearest S / R</div>
+        <div class="v" id="sum-sr-v">—</div>
+      </div>
+      <div class="sum-cell" id="sum-cal">
+        <div class="k">Next event</div>
+        <div class="v" id="sum-cal-v">—</div>
+        <div class="sub cd" id="sum-cal-cd"></div>
+      </div>
+      <div class="sum-cell" id="sum-etf">
+        <div class="k">ETF net 14d / 5d</div>
+        <div class="v" id="sum-etf-v">—</div>
+      </div>
+      <div class="sum-cell" id="sum-10y">
+        <div class="k">US 10y</div>
+        <div class="v" id="sum-10y-v">—</div>
+      </div>
+      <div class="sum-cell" id="sum-fng">
+        <div class="k">Fear &amp; Greed</div>
+        <div class="v" id="sum-fng-v">—</div>
+      </div>
+    </section>
+
 
     <section class="controls" aria-label="Controls">
       <label class="ctrl">Pair
@@ -485,6 +647,9 @@
         <span class="lg red dash">Resistance</span>
         <span class="lg green dash">Support</span>
         <span class="lg amber" id="lg-strategy" style="display:none">Strategy avg 75,456</span>
+        <span class="lg cyan" id="lg-entry" style="display:none">Entry</span>
+        <span class="lg red dash" id="lg-stop" style="display:none">Stop</span>
+        <span class="lg green dash" id="lg-targets" style="display:none">Targets</span>
       </div>
       <div id="chart" role="img" aria-label="Candlestick chart with indicators"></div>
     </section>
@@ -536,6 +701,15 @@
         </div>
         <div class="mini-el" data-mini-chart role="img" aria-label="SOLUSDT candlestick chart with EMA and SMA"></div>
       </article>
+    </section>
+
+    <section class="panel" id="panel-setups" style="margin-bottom:14px" aria-label="4h signal log">
+      <h2>4h signal log</h2>
+      <div class="setup-toolbar">
+        <label class="ctrl toggle"><input type="checkbox" id="setup-lines-toggle"> Show setup lines on 4h BTC</label>
+        <span class="hint">Latest active setup draws on the main chart when BTCUSDT 4h is selected.</span>
+      </div>
+      <div id="setups-body">Loading…</div>
     </section>
 
     <section class="strip mtf-wrap" id="mtf-wrap" aria-label="Multi-timeframe agreement">
@@ -664,7 +838,7 @@
       <p class="note">A Dalio-style mix keeps any one risk theme from dominating; crypto plus AI/tech often move together as a single risk-appetite bet. Figures stay in this browser only (localStorage).</p>
     </section>
 
-    <section class="signals">
+    <section class="signals" id="panel-signals">
       <div class="sig-head">
         <h2>Signals</h2>
         <p>Logged on closed candles only · last 50 for this pair and timeframe</p>
@@ -698,7 +872,9 @@
     concentration: "im.concentration",
     calc: "im.calc",
     cgcache: "im.cgcache",
-    miniInterval: function (pair) { return "im.mini." + pair + ".interval"; }
+    miniInterval: function (pair) { return "im.mini." + pair + ".interval"; },
+    collapse: "im.collapse",
+    setupLines: "im.setupLines"
   };
 
   /* Optional same-folder data.json schema (see data.json _schema):
@@ -1174,6 +1350,7 @@
     const el = document.getElementById("conn");
     el.className = "pill " + state;
     el.textContent = label;
+    if (typeof paintFreshness === "function") paintFreshness();
   }
   function wsUrl(host, pair, interval) {
     const s = pair.toLowerCase();
@@ -1468,6 +1645,7 @@
       S.priceLines.push(pl);
     });
     if (typeof addStrategyLine === "function") addStrategyLine();
+    if (typeof addSetupLines === "function") addSetupLines();
   }
   function fullChartSet() {
     if (!S.series.candle || !S.ind) return;
@@ -1487,6 +1665,7 @@
       from: Math.max(0, n - visible),
       to: n + 3
     });
+    if (typeof markChartReady === "function") markChartReady();
   }
   function updateLastBar() {
     if (!S.series.candle || !S.ind || !S.candles.length) return;
@@ -1562,6 +1741,8 @@
     S.lastUpdate = Date.now();
     renderTicker();
     renderCards();
+    if (typeof renderSummary === "function") renderSummary();
+    if (typeof paintFreshness === "function") paintFreshness();
     if (fullSet) fullChartSet();
     else {
       updateLastBar();
@@ -1743,7 +1924,20 @@
     mtf: null,
     prices: {},
     calcDirty: false,
-    strategyLine: null
+    strategyLine: null,
+    lazy: {},
+    setupLinesOn: true,
+    signalsJson: null,
+    signalsJsonOk: false,
+    signalsJsonFailed: false,
+    btcSnap: null,
+    chartReadyMs: null,
+    chartReadySinceNav: null,
+    fngFailed: false,
+    cgFailed: false,
+    ratioFailed: false,
+    mtfFailed: false,
+    mtfAsOf: null
   };
 
   function esc(s) {
@@ -1921,6 +2115,9 @@
     renderMacro();
     renderCalendar();
     renderEtf();
+    if (typeof renderSummary === "function") renderSummary();
+    if (typeof updateDataJsonBanner === "function") updateDataJsonBanner();
+    if (typeof paintFreshness === "function") paintFreshness();
     if (S.series && S.series.candle) applyPriceLines(S.levels || []);
   }
 
@@ -2028,6 +2225,8 @@
       const ms = +el.getAttribute("data-t");
       if (ms) el.textContent = fmtCountdown(ms);
     });
+    if (typeof tickSummaryCountdown === "function") tickSummaryCountdown();
+    if (typeof paintFreshness === "function") paintFreshness();
   }
 
   function etfShortDate(iso, withMonth) {
@@ -2173,14 +2372,17 @@
     const j = await quietFetch("https://api.alternative.me/fng/?limit=30", 10000);
     const rows = j && Array.isArray(j.data) ? j.data : null;
     if (!rows || !rows.length) {
+      S.ext.fngFailed = true;
       document.getElementById("fg-val").innerHTML = '<span class="na">n/a</span>';
       document.getElementById("fg-cls").textContent = "Could not reach alternative.me";
       renderFgDial(null);
       sparkSvg(document.getElementById("fg-spark"), []);
+      if (typeof paintFreshness === "function") paintFreshness();
       return;
     }
     const latest = rows[0];
     const val = +latest.value;
+    S.ext.fngFailed = false;
     S.ext.fng = { value: val, cls: latest.value_classification, asOf: latest.timestamp };
     document.getElementById("fg-val").textContent = isNum(val) ? String(Math.round(val)) : "n/a";
     const cls = document.getElementById("fg-cls");
@@ -2190,6 +2392,8 @@
     renderFgDial(val);
     const series = rows.slice().reverse().map(function (r) { return +r.value; });
     sparkSvg(document.getElementById("fg-spark"), series, fgColor(val));
+    if (typeof renderSummary === "function") renderSummary();
+    if (typeof paintFreshness === "function") paintFreshness();
   }
 
   function readCgCache() {
@@ -2206,19 +2410,23 @@
   }
   function paintCg(data, fromCache) {
     if (!data) {
+      S.ext.cgFailed = true;
       document.getElementById("cg-dom").innerHTML = '<span class="na">n/a</span>';
       document.getElementById("cg-mcap").innerHTML = '<span class="na">n/a</span>';
       document.getElementById("cg-src").innerHTML = 'n/a · <a class="src" href="https://www.coingecko.com/en/global-charts" target="_blank" rel="noopener">CoinGecko</a>';
+      if (typeof paintFreshness === "function") paintFreshness();
       return;
     }
     const btc = data.market_cap_percentage && data.market_cap_percentage.btc;
     const cap = data.total_market_cap && data.total_market_cap.usd;
     const upd = data.updated_at;
+    S.ext.cgFailed = false;
     S.ext.cg = { btc: btc, cap: cap, asOf: upd };
     document.getElementById("cg-dom").textContent = isNum(btc) ? btc.toFixed(2) + "%" : "n/a";
     document.getElementById("cg-mcap").textContent = fmtCompactUsd(cap);
     const asOf = upd ? fmtAsOf(typeof upd === "number" ? (String(upd).length < 13 ? upd * 1000 : upd) : upd) : "";
     document.getElementById("cg-src").textContent = "CoinGecko /api/v3/global · " + (fromCache ? "cached · " : "") + (asOf ? "as of " + asOf : "cached 5 minutes");
+    if (typeof paintFreshness === "function") paintFreshness();
   }
   async function refreshCg() {
     const cached = readCgCache();
@@ -2233,16 +2441,19 @@
   async function refreshRatio() {
     const kl = await fetchKlines("ETHBTC", "1d", 60).catch(function () { return []; });
     if (!kl || kl.length < 2) {
+      S.ext.ratioFailed = true;
       document.getElementById("ratio-val").innerHTML = '<span class="na">n/a</span>';
       document.getElementById("ratio-trend").textContent = "ETHBTC candles unavailable";
       sparkSvg(document.getElementById("ratio-spark"), []);
+      if (typeof paintFreshness === "function") paintFreshness();
       return;
     }
     const series = kl.map(function (c) { return c.close > 0 ? 1 / c.close : null; }).slice(-30);
     const last = series[series.length - 1];
     const first = series[0];
     const chg = isNum(last) && isNum(first) && first ? (last / first - 1) * 100 : null;
-    S.ext.ratio = { value: last, chg: chg, n: series.length };
+    S.ext.ratioFailed = false;
+    S.ext.ratio = { value: last, chg: chg, n: series.length, asOf: Date.now() };
     document.getElementById("ratio-val").textContent = isNum(last) ? last.toFixed(2) : "n/a";
     const sub = document.getElementById("ratio-sub");
     sub.textContent = "ETH per 1 BTC · Binance ETHBTC";
@@ -2370,7 +2581,9 @@
     if (!d) d = await tryBybit(pair);
     if (!d) d = await tryOkx(pair);
     S.ext.deriv = d || { ok: false };
+    if (S.ext.deriv.ok) S.ext.deriv.asOf = Date.now();
     renderDeriv(S.ext.deriv);
+    if (typeof paintFreshness === "function") paintFreshness();
   }
 
   function mtfChip(dir) {
@@ -2436,6 +2649,9 @@
       else { msg = "Alignment: mixed (" + bull + " bull / " + bear + " bear of " + n + ")"; cls = "mixed"; }
       align.innerHTML = '<span class="chip ' + cls + '">' + msg + "</span>";
     }
+    S.ext.mtfAsOf = Date.now();
+    S.ext.mtfFailed = !rows.filter(function (r) { return mtfStateFromInd(r.ind, r.candles); }).length;
+    if (typeof paintFreshness === "function") paintFreshness();
   }
 
   function usdToGbp(usd) {
@@ -2688,8 +2904,13 @@
   }
 
   async function refreshPairExt() {
-    await Promise.all([refreshDeriv(), refreshMtf()]);
+    const jobs = [];
+    if (S.ext.lazy && S.ext.lazy.deriv) jobs.push(refreshDeriv());
+    if (S.ext.lazy && S.ext.lazy.mtf) jobs.push(refreshMtf());
+    if (jobs.length) await Promise.all(jobs);
     maybePrefillCalc();
+    if (typeof refreshBtcSnap === "function") refreshBtcSnap();
+    if (typeof renderSummary === "function") renderSummary();
   }
   async function refreshStaticExt() {
     await Promise.all([refreshFng(), refreshCg(), refreshFxAndGold(), refreshRatio(), refreshHoldingPrices()]);
@@ -2745,21 +2966,585 @@
   }
 
   function startExtLoops() {
+    if (S.ext.loopsStarted) return;
+    S.ext.loopsStarted = true;
     setInterval(tickCountdowns, 30000);
-    setInterval(function () { refreshCg(); }, CG_CACHE_MS);
-    setInterval(function () { refreshFng(); }, 10 * 60 * 1000);
-    setInterval(function () { refreshFxAndGold(); refreshRatio(); refreshHoldingPrices(); }, 3 * 60 * 1000);
-    setInterval(function () { refreshDeriv(); }, 60 * 1000);
+    setInterval(function () { if (S.ext.lazy && S.ext.lazy.cg) refreshCg(); }, CG_CACHE_MS);
+    setInterval(function () { if (S.ext.lazy && S.ext.lazy.fng) refreshFng(); }, 10 * 60 * 1000);
+    setInterval(function () {
+      if (S.ext.lazy && S.ext.lazy.fx) refreshFxAndGold();
+      if (S.ext.lazy && S.ext.lazy.ratio) refreshRatio();
+      if (S.ext.lazy && S.ext.lazy.hold) refreshHoldingPrices();
+    }, 3 * 60 * 1000);
+    setInterval(function () { if (S.ext.lazy && S.ext.lazy.deriv) refreshDeriv(); }, 60 * 1000);
+  }
+
+
+  /* ---------- v4: summary, freshness, 4h setups, collapse, lazy load ---------- */
+  const STALE_DJ = 36 * 3600 * 1000;
+  const STALE_LIVE = 3 * 60 * 1000;
+  const STALE_DERIV = 5 * 60 * 1000;
+  const STALE_SLOW = 15 * 60 * 1000;
+  const STALE_DAILY = 36 * 3600 * 1000;
+  const LOWER_PANEL_IDS = [
+    "mtf-wrap", "panel-setups", "panel-deriv", "panel-fng", "panel-cg",
+    "panel-ratio", "panel-etf", "panel-calc", "panel-hold", "panel-conc", "panel-signals"
+  ];
+
+  function asOfMs(v) {
+    if (v == null || v === "") return NaN;
+    if (typeof v === "number" && isNum(v)) return String(Math.trunc(v)).length <= 10 ? v * 1000 : v;
+    const s = String(v).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return Date.parse(s + "T23:59:59Z");
+    if (/^\d{10}$/.test(s)) return +s * 1000;
+    if (/^\d{13}$/.test(s)) return +s;
+    const t = Date.parse(s);
+    return isNaN(t) ? NaN : t;
+  }
+  function isStale(asOf, maxAge, failed) {
+    if (failed) return true;
+    const ms = asOfMs(asOf);
+    if (!isNum(ms)) return false;
+    return (Date.now() - ms) > maxAge;
+  }
+  function freshLabel(asOf) {
+    if (asOf == null || asOf === "") return "as of —";
+    const s = String(asOf);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return "as of " + fmtAsOf(s);
+    const ms = asOfMs(asOf);
+    return isNum(ms) ? ("as of " + fmtUK(ms, false)) : "as of —";
+  }
+  function setFresh(key, asOf, maxAge, failed) {
+    const el = document.querySelector('[data-fresh="' + key + '"]');
+    if (!el) return;
+    const stale = isStale(asOf, maxAge, failed);
+    el.innerHTML = freshLabel(asOf) + (stale ? ' <span class="stale-tag">Stale</span>' : "");
+    el.classList.toggle("is-stale", stale);
+  }
+  function dataJsonAsOfValue() {
+    const d = S.ext.dataJson;
+    if (!d) return null;
+    if (d.asOf) return d.asOf;
+    if (d.etfFlows && d.etfFlows.latestDate) return d.etfFlows.latestDate;
+    return null;
+  }
+  function updateDataJsonBanner() {
+    const el = document.getElementById("stale-banner");
+    if (!el) return;
+    if (!S.ext.dataJsonOk) {
+      el.hidden = false;
+      el.textContent = "data.json could not be loaded. Yields, ETF flows and calendar extras may be missing.";
+      return;
+    }
+    const asOf = dataJsonAsOfValue();
+    if (isStale(asOf, STALE_DJ, false)) {
+      el.hidden = false;
+      el.textContent = "data.json is stale (" + freshLabel(asOf) + "). Yields, ETF flows and calendar extras may be out of date.";
+    } else {
+      el.hidden = true;
+      el.textContent = "";
+    }
+  }
+  function liveFailed() {
+    const el = document.getElementById("conn");
+    if (!S.ready) return false;
+    if (el && (el.classList.contains("error") || el.classList.contains("reconnect"))) return true;
+    return false;
+  }
+  function miniAsOf(pair) {
+    const m = minis[pair];
+    if (!m) return null;
+    return m.lastUpdate || (m.ready && m.candles && m.candles.length ? Date.now() : null);
+  }
+  function paintFreshness() {
+    if (typeof setFresh !== "function") return;
+    const liveFail = liveFailed();
+    setFresh("live", S.lastUpdate, STALE_LIVE, liveFail);
+    const last = document.getElementById("last-upd");
+    if (last) {
+      const base = S.lastUpdate ? ("Last update: " + fmtUK(S.lastUpdate, true)) : "Last update: —";
+      const stale = isStale(S.lastUpdate, STALE_LIVE, liveFail);
+      last.innerHTML = base + (stale ? ' <span class="stale-tag">Stale</span>' : "");
+    }
+    const djAsOf = dataJsonAsOfValue();
+    const djFail = !S.ext.dataJsonOk;
+    setFresh("macro", djAsOf, STALE_DJ, djFail);
+    setFresh("calendar", Date.now(), STALE_LIVE, false);
+    const lazy = S.ext.lazy || {};
+    setFresh("mtf", S.ext.mtfAsOf, STALE_DERIV, !!(lazy.mtf && S.ext.mtfFailed));
+    setFresh("deriv", S.ext.deriv && S.ext.deriv.asOf, STALE_DERIV, !!(lazy.deriv && !(S.ext.deriv && S.ext.deriv.ok)));
+    setFresh("fng", S.ext.fng && S.ext.fng.asOf, STALE_DAILY, !!(lazy.fng && S.ext.fngFailed));
+    setFresh("cg", S.ext.cg && S.ext.cg.asOf, STALE_SLOW, !!(lazy.cg && S.ext.cgFailed));
+    setFresh("ratio", S.ext.ratio && S.ext.ratio.asOf, STALE_SLOW, !!(lazy.ratio && S.ext.ratioFailed));
+    const etfDate = S.ext.dataJson && S.ext.dataJson.etfFlows && S.ext.dataJson.etfFlows.latestDate;
+    setFresh("etf", etfDate || djAsOf, STALE_DJ, djFail);
+    setFresh("hold", S.ext.gbpAsOf, STALE_SLOW, !!(lazy.fx && !S.ext.gbpUsdt));
+    setFresh("calc", Date.now(), STALE_LIVE, false);
+    setFresh("conc", Date.now(), STALE_LIVE, false);
+    setFresh("signals", S.lastUpdate, STALE_LIVE, liveFail);
+    setFresh("setups", S.ext.signalsJson && S.ext.signalsJson.updated, STALE_DJ, S.ext.signalsJsonFailed);
+    setFresh("eth", miniAsOf("ETHUSDT"), STALE_LIVE, !!(minis.ETHUSDT && minis.ETHUSDT.ready === false && minis.ETHUSDT.errors && minis.ETHUSDT.errors.length));
+    setFresh("sol", miniAsOf("SOLUSDT"), STALE_LIVE, !!(minis.SOLUSDT && minis.SOLUSDT.ready === false && minis.SOLUSDT.errors && minis.SOLUSDT.errors.length));
+    const gold = S.ext.gold && S.ext.gold.asOf;
+    const dxy = S.ext.dxy && S.ext.dxy.asOf;
+    // already shown per macro cell; panel-level covers yields
+    updateDataJsonBanner();
+  }
+
+  function etfNets() {
+    const f = S.ext.dataJson && S.ext.dataJson.etfFlows;
+    if (!f || !Array.isArray(f.days)) return null;
+    const days = f.days.filter(function (d) { return d && d.date && isNum(d.total); })
+      .slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+    if (!days.length) return null;
+    const netN = days.reduce(function (s, d) { return s + d.total; }, 0);
+    const take5 = days.slice(0, Math.min(5, days.length));
+    const net5 = take5.reduce(function (s, d) { return s + d.total; }, 0);
+    return { n: days.length, netN: Math.round(netN * 10) / 10, net5: Math.round(net5 * 10) / 10, n5: take5.length };
+  }
+  function btcSnapSource() {
+    if (S.pair === "BTCUSDT" && S.ind && S.candles && S.candles.length) {
+      return { ind: S.ind, candles: S.candles, levels: S.levels, interval: S.interval, asOf: S.lastUpdate };
+    }
+    return S.ext.btcSnap || null;
+  }
+  function nextCalendarEvent() {
+    const evs = calendarEvents();
+    const now = Date.now();
+    const upcoming = evs.filter(function (e) { return Date.parse(e.time) + 6 * 3600000 > now; });
+    return (upcoming.length ? upcoming : evs)[0] || null;
+  }
+  function renderSummary() {
+    const biasEl = document.getElementById("sum-bias-v");
+    const srEl = document.getElementById("sum-sr-v");
+    const calV = document.getElementById("sum-cal-v");
+    const calCd = document.getElementById("sum-cal-cd");
+    const etfEl = document.getElementById("sum-etf-v");
+    const yEl = document.getElementById("sum-10y-v");
+    const fgEl = document.getElementById("sum-fng-v");
+    if (!biasEl) return;
+    const snap = btcSnapSource();
+    if (snap && snap.ind && snap.candles && snap.candles.length) {
+      const i = snap.candles.length - 1;
+      const agr = biasFromInd(snap.ind, i, snap.candles[i].close);
+      biasEl.textContent = agr.text || "n/a";
+      biasEl.className = "v " + (agr.bias === "bearish" ? "bear" : agr.bias === "bullish" ? "bull" : "mixed");
+      const price = snap.candles[i].close;
+      const levels = snap.levels || [];
+      const sup = levels.filter(function (l) { return l.side === "support" || (isNum(price) && l.price < price); })
+        .sort(function (a, b) { return b.price - a.price; })[0];
+      const res = levels.filter(function (l) { return l.side === "resistance" || (isNum(price) && l.price > price); })
+        .sort(function (a, b) { return a.price - b.price; })[0];
+      const sTxt = sup ? fmtPxShort(sup.price, "BTCUSDT") : "—";
+      const rTxt = res ? fmtPxShort(res.price, "BTCUSDT") : "—";
+      srEl.innerHTML = sTxt + " <span style=\"color:var(--muted);font-weight:400\">/</span> " + rTxt;
+    } else {
+      biasEl.textContent = "—";
+      biasEl.className = "v";
+      if (srEl) srEl.textContent = "—";
+    }
+    const ev = nextCalendarEvent();
+    if (ev) {
+      const ms = Date.parse(ev.time);
+      if (calV) calV.textContent = ev.title;
+      if (calCd) {
+        calCd.setAttribute("data-t", isNaN(ms) ? "" : String(ms));
+        calCd.textContent = isNaN(ms) ? "" : fmtCountdown(ms);
+        calCd.className = "sub cd";
+      }
+    } else {
+      if (calV) calV.textContent = "None listed";
+      if (calCd) { calCd.textContent = ""; calCd.removeAttribute("data-t"); }
+    }
+    const nets = etfNets();
+    if (etfEl) {
+      if (nets) {
+        etfEl.innerHTML = '<span class="' + toneCls(nets.netN) + '">' + nets.n + "d " + fmtUsdM(nets.netN) +
+          "</span> · <span class=\"" + toneCls(nets.net5) + "\">" + nets.n5 + "d " + fmtUsdM(nets.net5) + "</span>";
+      } else etfEl.textContent = "—";
+    }
+    const y10 = djMacro("us10y");
+    if (yEl) {
+      yEl.textContent = y10 ? fmtYieldPct(y10.value) : "—";
+      yEl.className = "v";
+    }
+    const fng = S.ext.fng;
+    if (fgEl) {
+      if (fng && isNum(fng.value)) {
+        fgEl.textContent = Math.round(fng.value) + (fng.cls ? " " + fng.cls : "");
+        fgEl.style.color = fgColor(fng.value);
+      } else {
+        fgEl.textContent = "—";
+        fgEl.style.color = "";
+      }
+    }
+  }
+  function tickSummaryCountdown() {
+    const el = document.getElementById("sum-cal-cd");
+    if (!el) return;
+    const ms = +el.getAttribute("data-t");
+    if (ms) el.textContent = fmtCountdown(ms);
+  }
+
+  async function refreshBtcSnap() {
+    if (S.pair === "BTCUSDT" && S.ind && S.candles && S.candles.length) {
+      S.ext.btcSnap = { ind: S.ind, candles: S.candles, levels: S.levels, interval: S.interval, asOf: S.lastUpdate };
+      renderSummary();
+      return;
+    }
+    if (S.ext.btcSnap && S.ext.btcSnap.asOf && (Date.now() - S.ext.btcSnap.asOf) < STALE_LIVE) {
+      renderSummary();
+      return;
+    }
+    try {
+      const c = await fetchKlines("BTCUSDT", "4h", 500);
+      if (!c || !c.length) return;
+      const ind = computeAll(c);
+      const i = c.length - 1;
+      const levels = clusterAndPick(c, ind.atr14[i], c[i].close);
+      S.ext.btcSnap = { ind: ind, candles: c, levels: levels, interval: "4h", asOf: Date.now() };
+    } catch (e) {}
+    renderSummary();
+  }
+
+  function latestActiveSetup() {
+    const list = (S.ext.signalsJson && Array.isArray(S.ext.signalsJson.signals)) ? S.ext.signalsJson.signals : [];
+    const px = (function () {
+      const snap = btcSnapSource();
+      if (snap && snap.candles && snap.candles.length) return snap.candles[snap.candles.length - 1].close;
+      if (S.pair === "BTCUSDT" && S.ticker && isNum(S.ticker.last)) return S.ticker.last;
+      return null;
+    })();
+    for (let i = 0; i < list.length; i++) {
+      const s = list[i];
+      if (!s || s.direction === "warning") continue;
+      if (!isNum(s.entry) || !isNum(s.stop)) continue;
+      if (isNum(px)) {
+        if (s.direction === "long" && px < s.stop) continue;
+        if (s.direction === "short" && px > s.stop) continue;
+      }
+      return s;
+    }
+    return null;
+  }
+  function addSetupLines() {
+    const showLg = function (on) {
+      ["lg-entry", "lg-stop", "lg-targets"].forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = on ? "" : "none";
+      });
+    };
+    if (!S.ext.setupLinesOn || S.pair !== "BTCUSDT" || S.interval !== "4h" || !S.series.candle) {
+      showLg(false);
+      return;
+    }
+    const s = latestActiveSetup();
+    if (!s) { showLg(false); return; }
+    const LC = window.LightweightCharts;
+    const items = [
+      { price: s.entry, color: "rgba(46,196,214,0.95)", title: "Entry " + fmtPxShort(s.entry, "BTCUSDT"), style: LC ? LC.LineStyle.Solid : 0, width: 2 },
+      { price: s.stop, color: "rgba(240,98,93,0.95)", title: "Stop " + fmtPxShort(s.stop, "BTCUSDT"), style: LC ? LC.LineStyle.Solid : 0, width: 2 }
+    ];
+    (s.targets || []).forEach(function (t, i) {
+      if (!isNum(t)) return;
+      items.push({
+        price: t, color: "rgba(61,214,140,0.9)",
+        title: "T" + (i + 1) + " " + fmtPxShort(t, "BTCUSDT"),
+        style: LC ? LC.LineStyle.Dashed : 2, width: 1
+      });
+    });
+    items.forEach(function (it) {
+      try {
+        const pl = S.series.candle.createPriceLine({
+          price: it.price, color: it.color, lineWidth: it.width,
+          lineStyle: it.style, axisLabelVisible: true, title: it.title
+        });
+        S.priceLines.push(pl);
+      } catch (e) {}
+    });
+    showLg(true);
+  }
+  function renderSetupLog() {
+    const body = document.getElementById("setups-body");
+    if (!body) return;
+    const data = S.ext.signalsJson;
+    const list = (data && Array.isArray(data.signals)) ? data.signals.slice() : [];
+    list.sort(function (a, b) { return Date.parse(b.time) - Date.parse(a.time); });
+    const rows = list.slice(0, 10);
+    if (!rows.length) {
+      body.innerHTML = '<div class="setup-empty">No setups yet</div>';
+      return;
+    }
+    let html = '<div class="setup-scroll"><table class="setup-table"><thead><tr>' +
+      "<th>Time</th><th>Setup</th><th>Dir</th><th>Entry</th><th>Stop</th><th>Targets</th><th>R:R</th><th>Trend</th><th>Invalidation</th>" +
+      "</tr></thead><tbody>";
+    rows.forEach(function (s) {
+      const ms = Date.parse(s.time);
+      const when = isNaN(ms) ? esc(s.time) : fmtUK(ms, false);
+      const dir = s.direction || "";
+      const tgs = Array.isArray(s.targets) ? s.targets.filter(isNum).map(function (t) { return fmtPxShort(t, "BTCUSDT"); }).join(", ") : "—";
+      html += "<tr title=\"" + esc(s.note || "") + "\">" +
+        '<td class="mono">' + when + "</td>" +
+        "<td>" + esc(s.setup || "") + "</td>" +
+        '<td class="dir-' + esc(dir) + '">' + esc(dir) + "</td>" +
+        '<td class="mono">' + (isNum(s.entry) ? fmtPxShort(s.entry, "BTCUSDT") : "—") + "</td>" +
+        '<td class="mono">' + (isNum(s.stop) ? fmtPxShort(s.stop, "BTCUSDT") : "—") + "</td>" +
+        '<td class="mono">' + tgs + "</td>" +
+        '<td class="mono">' + (isNum(s.rr) ? s.rr.toFixed(2) : "—") + "</td>" +
+        '<td class="' + (s.trend === "against" ? "trend-against" : "") + '">' + esc(s.trend || "—") + "</td>" +
+        "<td>" + esc(s.invalidation || "—") + "</td></tr>";
+    });
+    html += "</tbody></table></div>";
+    body.innerHTML = html;
+  }
+  async function loadSignalsJson() {
+    const data = await quietFetch("signals.json", 8000);
+    if (data && typeof data === "object") {
+      const sigs = Array.isArray(data.signals) ? data.signals : [];
+      S.ext.signalsJson = { updated: data.updated || new Date().toISOString(), signals: sigs };
+      S.ext.signalsJsonOk = true;
+      S.ext.signalsJsonFailed = false;
+    } else {
+      S.ext.signalsJson = { updated: new Date().toISOString(), signals: [] };
+      S.ext.signalsJsonOk = false;
+      S.ext.signalsJsonFailed = true;
+    }
+    renderSetupLog();
+    if (S.series && S.series.candle) applyPriceLines(S.levels || []);
+    paintFreshness();
+  }
+  function bindSetupToggle() {
+    const el = document.getElementById("setup-lines-toggle");
+    if (!el) return;
+    try {
+      const v = localStorage.getItem(LS.setupLines);
+      S.ext.setupLinesOn = v == null ? true : v === "1";
+    } catch (e) { S.ext.setupLinesOn = true; }
+    el.checked = !!S.ext.setupLinesOn;
+    el.addEventListener("change", function () {
+      S.ext.setupLinesOn = el.checked;
+      try { localStorage.setItem(LS.setupLines, S.ext.setupLinesOn ? "1" : "0"); } catch (e) {}
+      if (S.series && S.series.candle) applyPriceLines(S.levels || []);
+    });
+  }
+
+  function readCollapse() {
+    try {
+      const raw = localStorage.getItem(LS.collapse);
+      if (!raw) return {};
+      const o = JSON.parse(raw);
+      return o && typeof o === "object" ? o : {};
+    } catch (e) { return {}; }
+  }
+  function writeCollapse(map) {
+    try { localStorage.setItem(LS.collapse, JSON.stringify(map)); } catch (e) {}
+  }
+  function applyCollapse(el, collapsed) {
+    el.classList.toggle("is-collapsed", !!collapsed);
+    const btn = el.querySelector(".collapse-toggle, h2, .strip-head, .sig-head");
+    if (btn) btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  }
+  function initCollapsibles() {
+    const saved = readCollapse();
+    const defaultCollapsed = window.innerWidth <= 600;
+    LOWER_PANEL_IDS.forEach(function (id) {
+      const el = document.getElementById(id);
+      if (!el || el.dataset.collapseReady) return;
+      el.classList.add("collapsible");
+      let head = el.querySelector(":scope > .strip-head, :scope > .sig-head, :scope > h2");
+      if (!head) return;
+      const chev = document.createElement("span");
+      chev.className = "chevron";
+      chev.setAttribute("aria-hidden", "true");
+      head.appendChild(chev);
+      const body = document.createElement("div");
+      body.className = "collapse-body";
+      const move = [];
+      Array.prototype.forEach.call(el.children, function (ch) {
+        if (ch !== head && ch !== body) move.push(ch);
+      });
+      move.forEach(function (ch) { body.appendChild(ch); });
+      el.appendChild(body);
+      const collapsed = Object.prototype.hasOwnProperty.call(saved, id) ? !!saved[id] : defaultCollapsed;
+      applyCollapse(el, collapsed);
+      head.setAttribute("role", "button");
+      head.tabIndex = 0;
+      head.classList.add("collapse-toggle");
+      function toggle(ev) {
+        if (ev && ev.target && ev.target.closest && ev.target.closest("button, input, a, select, label")) return;
+        const now = !el.classList.contains("is-collapsed");
+        applyCollapse(el, now);
+        saved[id] = now;
+        writeCollapse(saved);
+      }
+      head.addEventListener("click", toggle);
+      head.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(ev); }
+      });
+      el.dataset.collapseReady = "1";
+    });
+  }
+  function expandAllPanels() {
+    const saved = readCollapse();
+    LOWER_PANEL_IDS.forEach(function (id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      applyCollapse(el, false);
+      saved[id] = false;
+    });
+    writeCollapse(saved);
+  }
+  function ensureFreshNodes() {
+    function add(root, key, into) {
+      if (!root) return;
+      if (root.querySelector('[data-fresh="' + key + '"]')) return;
+      const span = document.createElement("span");
+      span.className = "fresh-line";
+      span.setAttribute("data-fresh", key);
+      span.textContent = "as of —";
+      const host = into ? root.querySelector(into) : root;
+      (host || root).appendChild(span);
+    }
+    add(document.getElementById("macro-strip"), "macro", ".strip-head");
+    add(document.getElementById("calendar-strip"), "calendar", ".strip-head");
+    add(document.getElementById("mtf-wrap"), "mtf", ".strip-head");
+    add(document.getElementById("panel-deriv"), "deriv", "h2");
+    add(document.getElementById("panel-fng"), "fng", "h2");
+    add(document.getElementById("panel-cg"), "cg", "h2");
+    add(document.getElementById("panel-ratio"), "ratio", "h2");
+    add(document.getElementById("panel-etf"), "etf", "h2");
+    add(document.getElementById("panel-calc"), "calc", "h2");
+    add(document.getElementById("panel-hold"), "hold", "h2");
+    add(document.getElementById("panel-conc"), "conc", "h2");
+    add(document.getElementById("panel-setups"), "setups", "h2");
+    add(document.getElementById("panel-signals"), "signals", ".sig-head");
+    add(document.getElementById("mini-eth"), "eth", ".mini-head");
+    add(document.getElementById("mini-sol"), "sol", ".mini-head");
+  }
+
+  function markChartReady() {
+    if (S.ext.chartReadyMs) return;
+    const now = performance.now();
+    S.ext.chartReadyMs = Math.round(now);
+    try {
+      performance.mark("im-chart-ready");
+      const nav = performance.getEntriesByType("navigation")[0];
+      S.ext.chartReadySinceNav = nav ? Math.round(now - nav.startTime) : S.ext.chartReadyMs;
+    } catch (e) {
+      S.ext.chartReadySinceNav = S.ext.chartReadyMs;
+    }
+  }
+
+  function whenNear(el, fn) {
+    if (!el) { fn(); return; }
+    if (typeof IntersectionObserver !== "function") { fn(); return; }
+    let done = false;
+    const run = function () {
+      if (done) return;
+      done = true;
+      try { obs.disconnect(); } catch (e) {}
+      fn();
+    };
+    const obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) run(); });
+    }, { rootMargin: "280px 0px", threshold: 0.01 });
+    obs.observe(el);
+  }
+
+  function scheduleDeferred() {
+    startExtLoops();
+    setTimeout(function () {
+      refreshBtcSnap();
+      loadSignalsJson();
+      if (!S.ext.lazy.fng) {
+        S.ext.lazy.fng = true;
+        refreshFng().then(function () { renderSummary(); paintFreshness(); });
+      }
+    }, 0);
+    setTimeout(function () {
+      if (!S.ext.lazy.fx) {
+        S.ext.lazy.fx = true;
+        refreshFxAndGold();
+      }
+    }, 400);
+    whenNear(document.getElementById("alt-charts"), function () {
+      if (S.ext.lazy.minis) return;
+      S.ext.lazy.minis = true;
+      initMiniCharts();
+      loadAllMinis();
+    });
+    whenNear(document.getElementById("mtf-wrap"), function () {
+      S.ext.lazy.mtf = true;
+      refreshMtf();
+    });
+    whenNear(document.getElementById("panel-deriv"), function () {
+      S.ext.lazy.deriv = true;
+      refreshDeriv();
+    });
+    whenNear(document.getElementById("panel-fng"), function () {
+      S.ext.lazy.fng = true;
+      refreshFng().then(function () { renderSummary(); paintFreshness(); });
+    });
+    whenNear(document.getElementById("panel-cg"), function () {
+      S.ext.lazy.cg = true;
+      refreshCg();
+    });
+    whenNear(document.getElementById("panel-ratio"), function () {
+      S.ext.lazy.ratio = true;
+      refreshRatio();
+    });
+    whenNear(document.getElementById("panel-hold"), function () {
+      S.ext.lazy.hold = true;
+      if (!S.ext.lazy.fx) {
+        S.ext.lazy.fx = true;
+        refreshFxAndGold();
+      } else {
+        refreshHoldingPrices();
+      }
+    });
+  }
+
+  function wakeAll() {
+    S.ext.lazy = Object.assign(S.ext.lazy || {}, {
+      minis: true, mtf: true, deriv: true, fng: true, cg: true, ratio: true, hold: true, fx: true, setups: true
+    });
+    expandAllPanels();
+    if (!minis.ETHUSDT || !minis.ETHUSDT.chart) initMiniCharts();
+    return Promise.all([
+      loadAllMinis(),
+      refreshMtf(),
+      refreshDeriv(),
+      refreshFng().then(function () { renderSummary(); }),
+      refreshCg(),
+      refreshRatio(),
+      refreshFxAndGold(),
+      loadSignalsJson()
+    ]);
+  }
+
+  function attachV4Api() {
+    window.__im.timing = function () {
+      return { chartReadyMs: S.ext.chartReadyMs || null, chartReadySinceNav: S.ext.chartReadySinceNav || null };
+    };
+    window.__im.getSetupSignals = function () { return S.ext.signalsJson; };
+    window.__im.wakeAll = wakeAll;
+    window.__im.expandAll = expandAllPanels;
+    window.__im.renderSummary = renderSummary;
   }
 
   async function initExt() {
     bindExtUi();
+    ensureFreshNodes();
+    initCollapsibles();
+    bindSetupToggle();
+    attachV4Api();
     renderCalendar();
     renderMacro();
     renderEtf();
-    await loadDataJson();
-    startExtLoops();
-    refreshStaticExt();
+    renderSetupLog();
+    renderSummary();
+    updateDataJsonBanner();
+    paintFreshness();
   }
 
   /* ---------- ETH / SOL dedicated charts ---------- */
@@ -3060,6 +3845,9 @@
       root.querySelectorAll(".tf-toggle button").forEach(function (btn) {
         btn.addEventListener("click", function () {
           const tf = btn.getAttribute("data-tf");
+          if (!minis[pair]) minis[pair] = createMiniState(pair);
+          if (!minis[pair].chart) initMiniChart(minis[pair]);
+          S.ext.lazy.minis = true;
           if (INTERVALS.indexOf(tf) >= 0) onMiniTfClick(minis[pair], tf);
         });
       });
@@ -3138,12 +3926,20 @@
       clearSignals(S.pair, S.interval); renderSignals();
     });
     renderSignals();
-    try { await loadChartsLib(); initChart(); initMiniCharts(); bindChartResize(); }
+    const dj = loadDataJson();
+    try { await loadChartsLib(); initChart(); bindChartResize(); }
     catch (e) {
       S.errors.push(String(e && e.message || e));
       document.getElementById("chart").innerHTML = "<div class=\"chart-error\">Chart library failed to load from the CDN. Cards will still update if Binance data loads.</div>";
     }
-    await Promise.all([loadAll(), loadAllMinis()]);
+    await loadAll();
+    if (typeof markChartReady === "function") markChartReady();
+    scheduleDeferred();
+    dj.then(function () {
+      renderSummary();
+      updateDataJsonBanner();
+      paintFreshness();
+    });
   }
   init();
 })();
