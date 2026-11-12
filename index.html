@@ -534,9 +534,9 @@
       color: var(--muted); border-top: 0;
     }
     .setup-table td.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 550; white-space: nowrap; }
-    .setup-table .dir-long { color: var(--green); font-weight: 650; text-transform: uppercase; }
-    .setup-table .dir-short { color: var(--red); font-weight: 650; text-transform: uppercase; }
-    .setup-table .dir-warning { color: var(--accent); font-weight: 650; text-transform: uppercase; }
+    .setup-table .dir-long, .setup-card .dir-long { color: var(--green); font-weight: 650; text-transform: uppercase; }
+    .setup-table .dir-short, .setup-card .dir-short { color: var(--red); font-weight: 650; text-transform: uppercase; }
+    .setup-table .dir-warning, .setup-card .dir-warning { color: var(--accent); font-weight: 650; text-transform: uppercase; }
     .setup-table .trend-against { color: var(--accent); }
     .setup-empty { color: var(--muted); font-size: 13px; padding: 8px 0; }
     .setup-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -708,6 +708,80 @@
       .conf-val { font-size: 28px; }
       .conf-rationale { font-size: 12.5px; margin: 2px 0 6px; }
     }
+
+    /* ---- v12: confidence factors + signal track record ---- */
+    .conf-factors { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .conf-factors-title { font-size: 14px; font-weight: 650; margin: 0 0 6px; letter-spacing: -0.01em; }
+    .conf-tally { font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+    .conf-tally .n-pos { color: var(--green); font-weight: 650; }
+    .conf-tally .n-neg { color: var(--red); font-weight: 650; }
+    .conf-tally .n-neu { color: var(--muted); font-weight: 650; }
+    .conf-fg { margin: 0 0 12px; }
+    .conf-fg:last-child { margin-bottom: 0; }
+    .conf-fg-h {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 2px;
+    }
+    .conf-frow {
+      display: flex; gap: 10px; align-items: flex-start; justify-content: space-between;
+      padding: 6px 0; border-top: 1px solid var(--border);
+    }
+    .conf-fmain { min-width: 0; flex: 1; }
+    .conf-fname { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+    .conf-fstate { font-size: 12px; color: var(--muted); margin-top: 1px; overflow-wrap: anywhere; line-height: 1.4; }
+    .impact-pill {
+      display: inline-flex; align-items: center; flex-shrink: 0;
+      border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      white-space: nowrap; margin-top: 2px;
+    }
+    .impact-pill.positive { color: var(--green); background: var(--green-dim); border-color: rgba(61,214,140,0.35); }
+    .impact-pill.negative { color: var(--red); background: var(--red-dim); border-color: rgba(240,98,93,0.35); }
+    .impact-pill.neutral { color: var(--grey); background: var(--grey-dim); border-color: rgba(139,152,165,0.35); }
+    .setup-track {
+      display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline;
+      margin: 0 0 10px; font-size: 12px; color: var(--muted);
+    }
+    .setup-track .k { font-weight: 650; color: var(--text); }
+    .setup-track .wins { color: var(--green); font-weight: 650; }
+    .setup-track .losses { color: var(--red); font-weight: 650; }
+    .setup-track-note { flex: 1 1 100%; font-size: 11.5px; color: var(--accent); margin: 0; }
+    .out-pill {
+      display: inline-flex; align-items: center; border: 1px solid var(--border);
+      border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
+    }
+    .out-pill.out-stop { color: var(--red); background: var(--red-dim); border-color: rgba(240,98,93,0.35); }
+    .out-pill.out-target { color: var(--green); background: var(--green-dim); border-color: rgba(61,214,140,0.35); }
+    .out-pill.out-open { color: var(--cyan); background: rgba(46,196,214,0.12); border-color: rgba(46,196,214,0.35); }
+    .out-pill.out-pending { color: var(--muted); }
+    .out-pill.out-miss { color: var(--muted); background: var(--grey-dim); }
+    .out-pill.out-warn { color: var(--accent); background: rgba(245,166,35,0.14); border-color: rgba(245,166,35,0.4); }
+    .out-pill.out-err { color: var(--muted); }
+    .setup-table { min-width: 860px; }
+    .setup-table .out-note { display: block; font-size: 10.5px; color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; margin-top: 3px; max-width: 220px; overflow-wrap: anywhere; white-space: normal; }
+
+    .setup-cards { display: none; }
+    .setup-card {
+      border-top: 1px solid var(--border); padding: 10px 0;
+    }
+    .setup-card .sc-top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+    .setup-card .sc-time { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; color: var(--muted); }
+    .setup-card .sc-name { font-weight: 650; font-size: 13px; margin: 3px 0 6px; overflow-wrap: anywhere; }
+    .setup-card .sc-kv { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); }
+    .setup-card .sc-kv .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--text); font-weight: 550; }
+    .setup-card .sc-out { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+    .setup-card .sc-inv { font-size: 11.5px; color: var(--muted); margin-top: 4px; overflow-wrap: anywhere; }
+    .setup-card .out-note { display: block; font-size: 10.5px; color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; margin-top: 2px; overflow-wrap: anywhere; white-space: normal; }
+    @media (max-width: 600px) {
+      .setup-scroll { display: none; }
+      .setup-cards { display: block; }
+    }
+
+    @media (max-width: 640px) {
+      .conf-frow { gap: 8px; padding: 7px 0; }
+      .impact-pill, .out-pill { font-size: 9.5px; padding: 2px 7px; }
+    }
   </style>
 </head>
 <body>
@@ -775,6 +849,7 @@
       <div class="conf-hist" id="conf-hist" role="img" aria-label="Recent confidence scores"></div>
       <div class="spark-lbl" id="conf-spark-lbl">Recent daily scores (0–100)</div>
       <div class="src-line" id="conf-note">Assistant's daily score, not investment advice.</div>
+      <div id="conf-factors" class="conf-factors" hidden></div>
     </section>
 
     <nav class="jump-nav" id="jump-nav" aria-label="Section shortcuts">
@@ -1107,6 +1182,7 @@
      etfFlows = {source, url, altUrl?, latestDate, days:[{date,total,IBIT?,FBTC?,...}]}
      strategyAvgCost = number (USD/BTC line on the BTC chart)
      calendar = [{id, title, time (ISO-8601), note?}]
+     confidence = {score, prev?, asOf, rationale?, history?, factors?:[{category,factor,state,impact}]}
      Present fields override live values or fill gaps when a source is not CORS-accessible.
      The page has no secret keys; anything shipped in HTML or data.json is public. */
 
@@ -2596,7 +2672,8 @@
       prev: prev,
       asOf: c.asOf || null,
       rationale: c.rationale ? String(c.rationale) : "",
-      history: Array.isArray(c.history) ? c.history : []
+      history: Array.isArray(c.history) ? c.history : [],
+      factors: Array.isArray(c.factors) ? c.factors : []
     };
   }
   function renderConfidence() {
@@ -2616,6 +2693,7 @@
       if (ratEl) ratEl.textContent = "";
       renderConfDial(null);
       renderConfHistory(document.getElementById("conf-hist"), []);
+      if (typeof renderConfFactors === "function") renderConfFactors([]);
       if (typeof paintFreshness === "function") paintFreshness();
       return;
     }
@@ -2644,7 +2722,96 @@
     if (ratEl) ratEl.textContent = conf.rationale || "";
     renderConfDial(conf.score);
     renderConfHistory(document.getElementById("conf-hist"), conf.history);
+    if (typeof renderConfFactors === "function") renderConfFactors(conf.factors);
     if (typeof paintFreshness === "function") paintFreshness();
+  }
+
+
+  const FACTOR_CATS = [
+    "Macro / Cost of Money",
+    "Flows & Positioning",
+    "Market Structure & Sentiment",
+    "Event Risk",
+    "Structural"
+  ];
+  function normImpact(v) {
+    const s = String(v || "").trim().toLowerCase();
+    if (s === "positive" || s === "negative" || s === "neutral") return s;
+    return "";
+  }
+  function renderConfFactors(list) {
+    const root = document.getElementById("conf-factors");
+    if (!root) return;
+    root.textContent = "";
+    const rows = Array.isArray(list) ? list.filter(function (r) { return r && (r.factor || r.state); }) : [];
+    if (!rows.length) { root.hidden = true; return; }
+    root.hidden = false;
+    const title = document.createElement("h3");
+    title.className = "conf-factors-title";
+    title.textContent = "Factors Affecting BTC";
+    root.appendChild(title);
+    let pos = 0, neg = 0, neu = 0;
+    const groups = {};
+    const extra = [];
+    rows.forEach(function (r) {
+      const imp = normImpact(r.impact);
+      if (imp === "positive") pos += 1;
+      else if (imp === "negative") neg += 1;
+      else neu += 1;
+      const cat = String(r.category || "").trim() || "Other";
+      if (!groups[cat]) {
+        groups[cat] = [];
+        if (FACTOR_CATS.indexOf(cat) < 0) extra.push(cat);
+      }
+      groups[cat].push(r);
+    });
+    const tally = document.createElement("div");
+    tally.className = "conf-tally";
+    tally.setAttribute("id", "conf-tally");
+    function bit(cls, n, label) {
+      const s = document.createElement("span");
+      s.className = cls;
+      s.textContent = n + " " + label;
+      return s;
+    }
+    tally.appendChild(bit("n-pos", pos, "positive"));
+    tally.appendChild(document.createTextNode(" / "));
+    tally.appendChild(bit("n-neg", neg, "negative"));
+    tally.appendChild(document.createTextNode(" / "));
+    tally.appendChild(bit("n-neu", neu, "neutral"));
+    root.appendChild(tally);
+    FACTOR_CATS.concat(extra).forEach(function (cat) {
+      const items = groups[cat];
+      if (!items || !items.length) return;
+      const g = document.createElement("div");
+      g.className = "conf-fg";
+      const h = document.createElement("div");
+      h.className = "conf-fg-h";
+      h.textContent = cat;
+      g.appendChild(h);
+      items.forEach(function (r) {
+        const row = document.createElement("div");
+        row.className = "conf-frow";
+        const main = document.createElement("div");
+        main.className = "conf-fmain";
+        const name = document.createElement("div");
+        name.className = "conf-fname";
+        name.textContent = r.factor ? String(r.factor) : "—";
+        const state = document.createElement("div");
+        state.className = "conf-fstate";
+        state.textContent = r.state ? String(r.state) : "";
+        main.appendChild(name);
+        main.appendChild(state);
+        const pill = document.createElement("span");
+        const imp = normImpact(r.impact);
+        pill.className = "impact-pill" + (imp ? " " + imp : "");
+        pill.textContent = imp ? (imp.charAt(0).toUpperCase() + imp.slice(1)) : "—";
+        row.appendChild(main);
+        row.appendChild(pill);
+        g.appendChild(row);
+      });
+      root.appendChild(g);
+    });
   }
 
   async function loadDataJson() {
@@ -3739,6 +3906,171 @@
     });
     showLg(true);
   }
+  const setupKlineCache = {};
+  function setupKey(s) {
+    return String(s.time || "") + "|" + String(s.setup || "") + "|" + String(s.direction || "") + "|" + String(s.entry || "");
+  }
+  function setupSymbol(s) { return s && (s.symbol || s.pair) ? String(s.symbol || s.pair) : "BTCUSDT"; }
+  function fmtR(r) {
+    if (!isNum(r)) return "—";
+    const sign = r > 0 ? "+" : "";
+    return sign + r.toFixed(2) + "R";
+  }
+  function scoreSetupOutcome(s, candles, lastPx) {
+    const dir = String(s.direction || "").trim().toLowerCase();
+    if (dir === "warning" || dir === "info" || dir === "informational") {
+      return { status: "warning", label: "warning", r: null, t2: false, note: "Informational — excluded from stats", inStats: false, closed: false };
+    }
+    if (dir !== "long" && dir !== "short") {
+      return { status: "warning", label: "warning", r: null, t2: false, note: "Unknown direction — excluded from stats", inStats: false, closed: false };
+    }
+    const isLong = dir === "long";
+    const sigMs = Date.parse(s.time);
+    if (isNaN(sigMs) || !isNum(s.entry) || !isNum(s.stop) || s.entry === s.stop) {
+      return { status: "error", label: "n/a", r: null, t2: false, note: "Incomplete setup", inStats: false, closed: false };
+    }
+    const after = (candles || []).filter(function (c) { return c.time * 1000 > sigMs; });
+    const t1 = Array.isArray(s.targets) && isNum(s.targets[0]) ? s.targets[0] : null;
+    const t2 = Array.isArray(s.targets) && isNum(s.targets[1]) ? s.targets[1] : null;
+    const risk = Math.abs(s.entry - s.stop);
+    function rFrom(px) { return isLong ? (px - s.entry) / risk : (s.entry - px) / risk; }
+    function touchesEntry(c) { return isLong ? c.low <= s.entry : c.high >= s.entry; }
+    function touchesStop(c) { return isLong ? c.low <= s.stop : c.high >= s.stop; }
+    function touchesTarget(c, t) {
+      if (!isNum(t)) return false;
+      return isLong ? c.high >= t : c.low <= t;
+    }
+    let i = 0;
+    for (; i < after.length; i++) { if (touchesEntry(after[i])) break; }
+    if (i === after.length) {
+      return { status: "not triggered", label: "not triggered", r: null, t2: false, note: "", inStats: true, closed: false };
+    }
+    for (let j = i; j < after.length; j++) {
+      const c = after[j];
+      const hitStop = touchesStop(c);
+      const hitT1 = touchesTarget(c, t1);
+      if (hitStop && hitT1) {
+        return { status: "stop", label: "stop", r: rFrom(s.stop), t2: false, note: "Same candle touched stop and target 1 — counted as stop", inStats: true, closed: true, ambiguous: true };
+      }
+      if (hitStop) {
+        return { status: "stop", label: "stop", r: rFrom(s.stop), t2: false, note: "", inStats: true, closed: true };
+      }
+      if (hitT1) {
+        let t2Hit = false;
+        if (isNum(t2)) {
+          for (let k = j; k < after.length; k++) {
+            if (touchesTarget(after[k], t2)) { t2Hit = true; break; }
+          }
+        }
+        return { status: "target 1", label: "target 1", r: rFrom(t1), t2: t2Hit, note: t2Hit ? "Target 2 also hit" : "", inStats: true, closed: true };
+      }
+    }
+    const px = isNum(lastPx) ? lastPx : (after.length ? after[after.length - 1].close : null);
+    return { status: "open", label: "open", r: isNum(px) ? rFrom(px) : null, t2: false, note: "", inStats: true, closed: false, last: px };
+  }
+  function summariseOutcomes(list) {
+    let total = 0, closed = 0, wins = 0, losses = 0, sumR = 0;
+    (list || []).forEach(function (o) {
+      if (!o || !o.inStats) return;
+      total += 1;
+      if (o.closed) {
+        closed += 1;
+        if (o.status === "target 1") wins += 1;
+        else if (o.status === "stop") losses += 1;
+        if (isNum(o.r)) sumR += o.r;
+      }
+    });
+    return {
+      total: total,
+      closed: closed,
+      wins: wins,
+      losses: losses,
+      winRate: closed ? wins / closed : null,
+      avgR: closed ? sumR / closed : null,
+      totalR: closed ? sumR : 0,
+      smallSample: closed < 10
+    };
+  }
+  async function loadSetupKlines(symbol, interval, sinceMs) {
+    const key = symbol + "|" + interval;
+    let st = setupKlineCache[key];
+    if (st && st.candles.length && (!sinceMs || st.candles[0].time * 1000 <= sinceMs)) return st.candles;
+    if (st && st.pending) return st.pending;
+    if (!st) st = setupKlineCache[key] = { candles: [], eof: false, pending: null };
+    st.pending = (async function () {
+      try {
+        let all = await fetchKlinesPage(symbol, interval, { limit: 1000 });
+        let guard = 0;
+        while (sinceMs && all.length && all[0].time * 1000 > sinceMs && !st.eof && guard++ < 8) {
+          const older = await fetchKlinesPage(symbol, interval, { limit: 1000, endTimeMs: all[0].time * 1000 - 1 });
+          if (!older.length) { st.eof = true; break; }
+          const first = all[0].time;
+          const prepend = older.filter(function (c) { return c.time < first; });
+          if (!prepend.length) { st.eof = true; break; }
+          all = prepend.concat(all);
+          if (older.length < 1000) { st.eof = true; break; }
+        }
+        st.candles = all;
+        return all;
+      } finally {
+        st.pending = null;
+      }
+    })();
+    return st.pending;
+  }
+  async function refreshSetupOutcomes() {
+    if (S.ext.setupOutcomesLoading) return S.ext.setupOutcomesLoading;
+    const data = S.ext.signalsJson;
+    const list = (data && Array.isArray(data.signals)) ? data.signals : [];
+    if (!list.length) {
+      S.ext.setupOutcomes = { map: {}, summary: summariseOutcomes([]), asOf: Date.now() };
+      renderSetupLog();
+      return S.ext.setupOutcomes;
+    }
+    S.ext.setupOutcomesLoading = (async function () {
+      try {
+        let since = Infinity;
+        const symbols = {};
+        list.forEach(function (s) {
+          symbols[setupSymbol(s)] = true;
+          const ms = Date.parse(s.time);
+          if (!isNaN(ms) && ms < since) since = ms;
+        });
+        const map = {};
+        const scored = [];
+        const syms = Object.keys(symbols);
+        for (let i = 0; i < syms.length; i++) {
+          const sym = syms[i];
+          const candles = await loadSetupKlines(sym, "4h", isFinite(since) ? since : null);
+          const last = (sym === "BTCUSDT" && S.ticker && isNum(S.ticker.last)) ? S.ticker.last
+            : (candles.length ? candles[candles.length - 1].close : null);
+          list.forEach(function (s) {
+            if (setupSymbol(s) !== sym) return;
+            const o = scoreSetupOutcome(s, candles, last);
+            map[setupKey(s)] = o;
+            scored.push(o);
+          });
+        }
+        S.ext.setupOutcomes = { map: map, summary: summariseOutcomes(scored), asOf: Date.now() };
+      } catch (e) {
+        S.ext.setupOutcomes = { map: {}, summary: null, error: String(e && e.message || e), asOf: Date.now() };
+      } finally {
+        S.ext.setupOutcomesLoading = null;
+      }
+      renderSetupLog();
+      return S.ext.setupOutcomes;
+    })();
+    return S.ext.setupOutcomesLoading;
+  }
+  function outcomeClass(status) {
+    if (status === "stop") return "out-stop";
+    if (status === "target 1") return "out-target";
+    if (status === "open") return "out-open";
+    if (status === "not triggered") return "out-miss";
+    if (status === "warning") return "out-warn";
+    if (status === "error") return "out-err";
+    return "out-pending";
+  }
   function renderSetupLog() {
     const body = document.getElementById("setups-body");
     if (!body) return;
@@ -3750,26 +4082,100 @@
       body.innerHTML = '<div class="setup-empty">No setups yet</div>';
       return;
     }
-    let html = '<div class="setup-scroll"><table class="setup-table"><thead><tr>' +
-      "<th>Time</th><th>Setup</th><th>Dir</th><th>Entry</th><th>Stop</th><th>Targets</th><th>R:R</th><th>Trend</th><th>Invalidation</th>" +
+    const outcomes = S.ext.setupOutcomes;
+    const map = outcomes && outcomes.map ? outcomes.map : {};
+    let html = "";
+    const sum = outcomes && outcomes.summary;
+    html += '<div class="setup-track" id="setup-track">';
+    if (outcomes && outcomes.error && !sum) {
+      html += '<span>Outcome check failed</span>';
+    } else if (!outcomes) {
+      html += "<span>Checking outcomes…</span>";
+    } else {
+      const wr = sum && isNum(sum.winRate) ? Math.round(sum.winRate * 100) + "%" : "—";
+      html += '<span><span class="k">Total</span> ' + sum.total + "</span>";
+      html += '<span><span class="k">Closed</span> ' + sum.closed + "</span>";
+      html += '<span class="wins">Wins ' + sum.wins + "</span>";
+      html += '<span class="losses">Losses ' + sum.losses + "</span>";
+      html += '<span><span class="k">Win rate</span> ' + wr + "</span>";
+      html += '<span><span class="k">Avg R</span> ' + fmtR(sum.avgR) + "</span>";
+      html += '<span><span class="k">Total R</span> ' + (sum.closed ? fmtR(sum.totalR) : "—") + "</span>";
+      if (sum.smallSample) html += '<p class="setup-track-note">Too few signals to judge</p>';
+    }
+    html += "</div>";
+    html += '<div class="setup-scroll"><table class="setup-table"><thead><tr>' +
+      "<th>Time</th><th>Setup</th><th>Dir</th><th>Entry</th><th>Stop</th><th>Targets</th><th>R:R</th><th>Outcome</th><th>R</th><th>Trend</th><th>Invalidation</th>" +
       "</tr></thead><tbody>";
     rows.forEach(function (s) {
       const ms = Date.parse(s.time);
       const when = isNaN(ms) ? esc(s.time) : fmtUK(ms, false);
       const dir = s.direction || "";
-      const tgs = Array.isArray(s.targets) ? s.targets.filter(isNum).map(function (t) { return fmtPxShort(t, "BTCUSDT"); }).join(", ") : "—";
+      const pair = setupSymbol(s);
+      const tgs = Array.isArray(s.targets) ? s.targets.filter(isNum).map(function (t) { return fmtPxShort(t, pair); }).join(", ") : "—";
+      const o = map[setupKey(s)];
+      let outCell, rCell;
+      if (!outcomes) {
+        outCell = '<span class="out-pill out-pending">…</span>';
+        rCell = "—";
+      } else if (!o) {
+        outCell = '<span class="out-pill out-err">n/a</span>';
+        rCell = "—";
+      } else {
+        outCell = '<span class="out-pill ' + outcomeClass(o.status) + '">' + esc(o.label || o.status) + "</span>";
+        if (o.t2) outCell += '<span class="out-note">Target 2 also hit</span>';
+        else if (o.note) outCell += '<span class="out-note">' + esc(o.note) + "</span>";
+        rCell = fmtR(o.r);
+      }
       html += "<tr title=\"" + esc(s.note || "") + "\">" +
         '<td class="mono">' + when + "</td>" +
         "<td>" + esc(s.setup || "") + "</td>" +
         '<td class="dir-' + esc(dir) + '">' + esc(dir) + "</td>" +
-        '<td class="mono">' + (isNum(s.entry) ? fmtPxShort(s.entry, "BTCUSDT") : "—") + "</td>" +
-        '<td class="mono">' + (isNum(s.stop) ? fmtPxShort(s.stop, "BTCUSDT") : "—") + "</td>" +
+        '<td class="mono">' + (isNum(s.entry) ? fmtPxShort(s.entry, pair) : "—") + "</td>" +
+        '<td class="mono">' + (isNum(s.stop) ? fmtPxShort(s.stop, pair) : "—") + "</td>" +
         '<td class="mono">' + tgs + "</td>" +
         '<td class="mono">' + (isNum(s.rr) ? s.rr.toFixed(2) : "—") + "</td>" +
+        "<td>" + outCell + "</td>" +
+        '<td class="mono">' + rCell + "</td>" +
         '<td class="' + (s.trend === "against" ? "trend-against" : "") + '">' + esc(s.trend || "—") + "</td>" +
         "<td>" + esc(s.invalidation || "—") + "</td></tr>";
     });
     html += "</tbody></table></div>";
+    html += '<div class="setup-cards">';
+    rows.forEach(function (s) {
+      const ms = Date.parse(s.time);
+      const when = isNaN(ms) ? esc(s.time) : fmtUK(ms, false);
+      const dir = s.direction || "";
+      const pair = setupSymbol(s);
+      const tgs = Array.isArray(s.targets) ? s.targets.filter(isNum).map(function (t) { return fmtPxShort(t, pair); }).join(", ") : "—";
+      const o = map[setupKey(s)];
+      let outCell, rCell;
+      if (!outcomes) {
+        outCell = '<span class="out-pill out-pending">…</span>';
+        rCell = "—";
+      } else if (!o) {
+        outCell = '<span class="out-pill out-err">n/a</span>';
+        rCell = "—";
+      } else {
+        outCell = '<span class="out-pill ' + outcomeClass(o.status) + '">' + esc(o.label || o.status) + "</span>";
+        if (o.t2) outCell += '<span class="out-note">Target 2 also hit</span>';
+        else if (o.note) outCell += '<span class="out-note">' + esc(o.note) + "</span>";
+        rCell = fmtR(o.r);
+      }
+      html += '<div class="setup-card" title="' + esc(s.note || "") + '">';
+      html += '<div class="sc-top"><span class="sc-time">' + when + '</span><span class="dir-' + esc(dir) + '">' + esc(dir) + "</span></div>";
+      html += '<div class="sc-name">' + esc(s.setup || "") + "</div>";
+      html += '<div class="sc-kv">';
+      html += '<span>Entry <span class="mono">' + (isNum(s.entry) ? fmtPxShort(s.entry, pair) : "—") + "</span></span>";
+      html += '<span>Stop <span class="mono">' + (isNum(s.stop) ? fmtPxShort(s.stop, pair) : "—") + "</span></span>";
+      html += '<span>Targets <span class="mono">' + tgs + "</span></span>";
+      html += '<span>R:R <span class="mono">' + (isNum(s.rr) ? s.rr.toFixed(2) : "—") + "</span></span>";
+      if (s.trend) html += '<span class="' + (s.trend === "against" ? "trend-against" : "") + '">Trend ' + esc(s.trend) + "</span>";
+      html += "</div>";
+      html += '<div class="sc-out">' + outCell + '<span class="mono">' + rCell + "</span></div>";
+      if (s.invalidation) html += '<div class="sc-inv">' + esc(s.invalidation) + "</div>";
+      html += "</div>";
+    });
+    html += "</div>";
     body.innerHTML = html;
   }
   async function loadSignalsJson() {
@@ -3784,7 +4190,9 @@
       S.ext.signalsJsonOk = false;
       S.ext.signalsJsonFailed = true;
     }
+    S.ext.setupOutcomes = null;
     renderSetupLog();
+    refreshSetupOutcomes();
     if (S.series && S.series.candle) applyPriceLines(S.levels || []);
     paintFreshness();
   }
@@ -3952,6 +4360,26 @@
     window.__im.getTop10 = function () { return S.ext.top10; };
     window.__im.getNews = function () { return S.ext.news; };
     window.__im.getConfidence = function () { return typeof confidenceFromDj === "function" ? confidenceFromDj() : null; };
+    window.__im.getFactors = function () {
+      const conf = typeof confidenceFromDj === "function" ? confidenceFromDj() : null;
+      const list = conf && Array.isArray(conf.factors) ? conf.factors : [];
+      const tally = { positive: 0, negative: 0, neutral: 0 };
+      list.forEach(function (r) {
+        const imp = String(r && r.impact || "").toLowerCase();
+        if (imp === "positive") tally.positive += 1;
+        else if (imp === "negative") tally.negative += 1;
+        else tally.neutral += 1;
+      });
+      return { factors: list, tally: tally };
+    };
+    window.__im.getTrackRecord = function () {
+      return {
+        signals: S.ext.signalsJson,
+        outcomes: S.ext.setupOutcomes || null,
+        loading: !!S.ext.setupOutcomesLoading
+      };
+    };
+    window.__im.refreshSetupOutcomes = function () { return refreshSetupOutcomes(); };
     window.__im.getChartDepth = function () {
       const c = S.candles || [];
       const sma = S.ind && S.ind.sma200 ? seriesLine(S.ind.sma200, c) : [];

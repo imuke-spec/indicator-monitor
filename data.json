@@ -1,11 +1,11 @@
 {
-  "_schema": "Optional sidecar for the Indicator Monitor (same folder as index.html). The page is static and has no API keys. Fields here OVERRIDE live values when present, or FILL gaps when a live CORS-friendly source is unavailable (US Treasury yields and the HY credit spread cannot be fetched in-browser without a key). Omitted fields are left to live APIs or shown as n/a with a source link. All dates are calendar dates (YYYY-MM-DD) or ISO-8601 timestamps; the page displays times in Europe/London. Numbers: yields and spreads in percent (4.98 means 4.98%), ETF flows in millions of USD (−95 means −$95.0M), gold and DXY in the usual spot units, strategyAvgCost in USD per BTC. Optional confidence is the assistant's daily BTC Investment Confidence Dial (0–100) and is ignored if omitted.",
+  "_schema": "Optional sidecar for the Indicator Monitor (same folder as index.html). The page is static and has no API keys. Fields here OVERRIDE live values when present, or FILL gaps when a live CORS-friendly source is unavailable (US Treasury yields and the HY credit spread cannot be fetched in-browser without a key). Omitted fields are left to live APIs or shown as n/a with a source link. All dates are calendar dates (YYYY-MM-DD) or ISO-8601 timestamps; the page displays times in Europe/London. Numbers: yields and spreads in percent (4.98 means 4.98%), ETF flows in millions of USD (−95 means −$95.0M), gold and DXY in the usual spot units, strategyAvgCost in USD per BTC. Optional confidence is the assistant's daily BTC Investment Confidence Dial (0–100) and is ignored if omitted. Optional confidence.factors is the brief's Factors Affecting BTC table (category, factor, state, impact) and is ignored if omitted.",
   "_fields": {
     "macro.us2y / us10y / hyCredit / dxy / gold": "{ value: number, asOf: 'YYYY-MM-DD' or ISO, source?: string, url?: string }. 2s10s is computed from 10y−2y when both are present; you may also set macro.us2s10s the same way.",
     "etfFlows": "{ source, url, latestDate, days: [{ date, total, IBIT?, FBTC?, MSBT?, ...other tickers }] }. Totals and per-fund flows are USD millions.",
     "strategyAvgCost": "USD average cost to mark as a labelled line on the BTC chart (Strategy / MicroStrategy).",
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
-    "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }] }. Backward compatible: omit the field on older files. The page renders the dial from this object only (no live API)."
+    "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
   "asOf": "2026-11-12",
   "macro": {
@@ -268,11 +268,142 @@
     "asOf": "2026-11-12T07:05:00Z",
     "rationale": "ETF selling picked up again, Nvidia's leadership shock hit AI-heavy indexes, and the 2y keeps rising with a hike priced in. BTC holding the SMA200, a shrinking MACD histogram, lower open interest and tight credit spreads keep it off the floor.",
     "history": [
-      { "date": "2026-11-08", "score": 26 },
-      { "date": "2026-11-09", "score": 23 },
-      { "date": "2026-11-10", "score": 25 },
-      { "date": "2026-11-11", "score": 20 },
-      { "date": "2026-11-12", "score": 18 }
+      {
+        "date": "2026-11-08",
+        "score": 26
+      },
+      {
+        "date": "2026-11-09",
+        "score": 23
+      },
+      {
+        "date": "2026-11-10",
+        "score": 25
+      },
+      {
+        "date": "2026-11-11",
+        "score": 20
+      },
+      {
+        "date": "2026-11-12",
+        "score": 18
+      }
+    ],
+    "factors": [
+      {
+        "category": "Macro / Cost of Money",
+        "factor": "UST 10y",
+        "state": "~4.99%, pinned near 5%",
+        "impact": "negative"
+      },
+      {
+        "category": "Macro / Cost of Money",
+        "factor": "2y / curve",
+        "state": "2y 4.78% Asia, 2s10s ~22bp flattening",
+        "impact": "negative"
+      },
+      {
+        "category": "Macro / Cost of Money",
+        "factor": "Credit spreads",
+        "state": "HY OAS 3.34%, tighter",
+        "impact": "positive"
+      },
+      {
+        "category": "Macro / Cost of Money",
+        "factor": "Fed path",
+        "state": "Dec hike priced; 50bp / Jan talk",
+        "impact": "negative"
+      },
+      {
+        "category": "Macro / Cost of Money",
+        "factor": "Oil",
+        "state": "Brent $92.8, rebounding",
+        "impact": "negative"
+      },
+      {
+        "category": "Macro / Cost of Money",
+        "factor": "Dollar",
+        "state": "DXY two-week high",
+        "impact": "negative"
+      },
+      {
+        "category": "Flows & Positioning",
+        "factor": "Spot BTC ETFs",
+        "state": "−$299.8M, 5th outflow, IBIT-led",
+        "impact": "negative"
+      },
+      {
+        "category": "Flows & Positioning",
+        "factor": "Whales / treasuries",
+        "state": "Whales net selling; Strategy under cost",
+        "impact": "negative"
+      },
+      {
+        "category": "Flows & Positioning",
+        "factor": "Leverage",
+        "state": "OI −1.9%, L/S 2.74 long",
+        "impact": "neutral"
+      },
+      {
+        "category": "Flows & Positioning",
+        "factor": "Funding",
+        "state": "BTC +0.0071%, baseline",
+        "impact": "neutral"
+      },
+      {
+        "category": "Market Structure & Sentiment",
+        "factor": "Trend",
+        "state": "RMI SELL; under EMA12/21",
+        "impact": "negative"
+      },
+      {
+        "category": "Market Structure & Sentiment",
+        "factor": "MACD",
+        "state": "Below signal, hist shrinking",
+        "impact": "neutral"
+      },
+      {
+        "category": "Market Structure & Sentiment",
+        "factor": "SMA200",
+        "state": "Holding, +0.4% cushion",
+        "impact": "neutral"
+      },
+      {
+        "category": "Market Structure & Sentiment",
+        "factor": "Fear & Greed",
+        "state": "28 Fear",
+        "impact": "neutral"
+      },
+      {
+        "category": "Event Risk",
+        "factor": "Nvidia CEO / board",
+        "state": "Ouster report, −8% AH",
+        "impact": "negative"
+      },
+      {
+        "category": "Event Risk",
+        "factor": "PPI Fri",
+        "state": "Hot print = 50bp talk",
+        "impact": "negative"
+      },
+      {
+        "category": "Event Risk",
+        "factor": "Nvidia earnings 17 Nov",
+        "state": "Leadership + earnings risk",
+        "impact": "negative"
+      },
+      {
+        "category": "Structural",
+        "factor": "AI concentration",
+        "state": "NVDA ~6.3% of S&P, narrow rallies",
+        "impact": "negative"
+      },
+      {
+        "category": "Structural",
+        "factor": "Wealth-channel ETF bid",
+        "state": "MSBT inflows daily",
+        "impact": "positive"
+      }
     ]
   },
   "calendar": []
