@@ -971,10 +971,41 @@
       html.compact .mini-charts { grid-template-columns: 1fr 1fr; }
       html.compact #chart { height: 200px; }
       html.compact .mini-el { height: 130px; }
-      html.compact #conf-factors { max-height: 200px; }
+
+      /* Calendar is a horizontal strip under Cost of Money / F&G — not a tall third column.
+         Conf and macro stretch to the same row height; the calendar strip grows to fill
+         any leftover so there is no hole under the shorter side. Factors stay capped. */
+      html.compact #panel-conf,
+      html.compact #sec-macro { align-self: stretch; margin-top: 0; }
+      html.compact #sec-btc,
+      html.compact #sec-flows { align-self: stretch; }
+      html.compact #sec-macro {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-height: 0;
+      }
+      html.compact #sec-macro > .im-sec-title { flex: 0 0 auto; }
+      html.compact #sec-macro .pair-macro { flex: 0 0 auto; }
+      html.compact #calendar-strip { flex: 1 1 auto; min-height: 0; }
+      html.compact #calendar-strip .cal-row {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 6px;
+        -webkit-overflow-scrolling: touch;
+      }
+      html.compact #calendar-strip .cal-item {
+        min-width: 132px; flex: 1 1 132px; padding: 4px 7px;
+      }
+      html.compact #calendar-strip .cal-item .when { font-size: 10px; }
+      html.compact #calendar-strip .cal-item .title { font-size: 11px; margin-top: 1px; }
+      html.compact #calendar-strip .cal-item .cd { font-size: 12px; margin-top: 1px; }
+      html.compact #calendar-strip .cal-item .note { display: block; font-size: 9px; margin-top: 0; line-height: 1.25; }
+
       html.compact #panel-conf {
         display: grid;
-        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+        grid-template-columns: minmax(190px, 1fr) minmax(0, 1.15fr);
         gap: 2px 10px;
         align-items: start;
       }
@@ -987,18 +1018,69 @@
       html.compact #panel-conf #conf-factors {
         grid-column: 2;
         grid-row: 2 / 8;
-        max-height: 210px;
+        max-height: 250px;
+        min-height: 0;
         margin-top: 0;
         padding-top: 0;
         border-top: 0;
+        overflow-y: auto;
       }
       html.compact .conf-hist { max-width: 100%; }
-      html.compact #etf-body { max-height: 160px; }
+
+      /* BTC: chart beside agreement / cards / MTF (from 1024 up) */
+      html.compact #sec-btc {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(200px, 0.9fr);
+        gap: 6px;
+        align-items: stretch;
+      }
+      html.compact #sec-btc > .im-sec-title { grid-column: 1 / -1; }
+      html.compact #btc-chart { grid-column: 1; grid-row: 2 / 5; }
+      html.compact #agreement { grid-column: 2; grid-row: 2; }
+      html.compact #cards { grid-column: 2; grid-row: 3; grid-template-columns: repeat(2, 1fr); margin-bottom: 0; max-height: 150px; overflow-y: auto; }
+      html.compact #mtf-wrap { grid-column: 2; grid-row: 4; max-height: 96px; overflow: auto; }
+      html.compact .card { padding: 4px 6px 5px; }
+      html.compact .card .value { font-size: 12px; }
+      html.compact .card .detail { font-size: 9px; }
+      html.compact .mtf-table { font-size: 10px; }
+      html.compact .mtf-table th, html.compact .mtf-table td { padding: 2px 4px; }
+      html.compact .mtf-align { margin-top: 2px; font-size: 10px; }
+
+      html.compact #sec-flows {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-height: 0;
+        overflow: auto;
+      }
+      html.compact #sec-flows > .im-sec-title { flex: 0 0 auto; }
+      html.compact #sec-flows { max-height: 340px; overflow: auto; }
+      html.compact #sec-flows #panel-etf { margin-bottom: 0; }
+      html.compact #etf-body { max-height: 160px; overflow-y: auto; }
       html.compact #setups-body { max-height: 130px; }
       html.compact #top10-body { max-height: 140px; }
       html.compact #news-body { max-height: 140px; }
       html.compact #signal-list { max-height: 90px; }
       html.compact #panel-calc, html.compact #panel-conc { max-height: 150px; }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1279px) {
+      html.compact #sec-market,
+      html.compact #sec-signals { max-height: 500px; overflow: auto; align-self: stretch; }
+      html.compact #panel-conf { grid-template-columns: 1fr; }
+      html.compact #panel-conf > h2,
+      html.compact #panel-conf .conf-row,
+      html.compact #panel-conf .conf-rationale,
+      html.compact #panel-conf .conf-hist,
+      html.compact #panel-conf #conf-spark-lbl,
+      html.compact #panel-conf #conf-note,
+      html.compact #panel-conf #conf-factors { grid-column: 1; grid-row: auto; }
+      html.compact #panel-conf #conf-factors {
+        max-height: 120px;
+        margin-top: 4px;
+        padding-top: 4px;
+        border-top: 1px solid var(--border);
+      }
     }
     @media (min-width: 1280px) {
       html.compact .app {
@@ -1011,77 +1093,39 @@
           "mkt  mkt  mkt  mkt  mkt  sig  sig  sig  news news news news"
           "foot foot foot foot foot foot foot foot foot foot foot foot";
       }
-      /* Macro: cost of money | F&G | calendar in one row */
-      html.compact #sec-macro {
-        display: grid;
-        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.75fr) minmax(0, 1.1fr);
-        gap: 6px;
-        align-items: start;
-      }
-      html.compact #sec-macro > .im-sec-title { grid-column: 1 / -1; }
-      html.compact #sec-macro .pair-macro { display: contents; }
-      html.compact #calendar-strip .cal-row { flex-direction: column; overflow: visible; gap: 4px; }
-      html.compact #calendar-strip .cal-item { min-width: 0; padding: 4px 7px; }
-      html.compact #conf-factors { max-height: 200px; }
-
-      /* BTC: chart beside agreement / cards / MTF */
-      html.compact #sec-btc {
-        display: grid;
-        grid-template-columns: minmax(0, 1.45fr) minmax(240px, 0.9fr);
-        gap: 6px;
-        align-items: start;
-      }
-      html.compact #sec-btc > .im-sec-title { grid-column: 1 / -1; }
-      html.compact #btc-chart { grid-column: 1; grid-row: 2 / 5; }
-      html.compact #agreement { grid-column: 2; grid-row: 2; }
-      html.compact #cards { grid-column: 2; grid-row: 3; grid-template-columns: repeat(2, 1fr); margin-bottom: 0; max-height: 150px; overflow-y: auto; }
-      html.compact #mtf-wrap { grid-column: 2; grid-row: 4; max-height: 96px; overflow: auto; }
-      html.compact #chart { height: 260px; }
-      html.compact .card { padding: 4px 6px 5px; }
-      html.compact .card .value { font-size: 12px; }
-      html.compact .card .detail { font-size: 9px; }
-      html.compact .mtf-table { font-size: 10px; }
-      html.compact .mtf-table th, html.compact .mtf-table td { padding: 2px 4px; }
-      html.compact .mtf-align { margin-top: 2px; font-size: 10px; }
-      html.compact #calendar-strip .cal-item .when { font-size: 10px; }
-      html.compact #calendar-strip .cal-item .title { font-size: 11px; margin-top: 1px; }
-      html.compact #calendar-strip .cal-item .cd { font-size: 12px; margin-top: 1px; }
-      html.compact #calendar-strip .cal-item .note { display: block; font-size: 9px; margin-top: 0; line-height: 1.25; }
-      html.compact #calendar-strip .cal-item { padding: 3px 6px; }
+      html.compact #chart { height: 220px; }
       html.compact .mini-el { height: 120px; }
+      html.compact #sec-btc { grid-template-columns: minmax(0, 1.45fr) minmax(240px, 0.9fr); }
 
       /* Market: top10 | dominance/ratio | ETH/SOL */
       html.compact #sec-market {
         display: grid;
         grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr) minmax(0, 1.1fr);
         gap: 6px;
-        align-items: start;
+        align-items: stretch;
+        align-self: stretch;
       }
       html.compact #sec-market > .im-sec-title { grid-column: 1 / -1; }
       html.compact #sec-market .pair-structure { display: flex; flex-direction: column; gap: 6px; }
       html.compact #alt-charts { display: flex; flex-direction: column; gap: 6px; }
       html.compact #alt-charts .mini-el { height: 110px; }
 
-      /* Signals column: setups + tools + journal, all capped */
-      html.compact #sec-signals { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
-      html.compact #sec-signals > .pair-tools { grid-template-columns: 1fr; gap: 6px; }
+      html.compact #sec-signals { display: flex; flex-direction: column; gap: 6px; min-height: 0; align-self: stretch; }
       html.compact #sec-signals > .pair-tools { grid-template-columns: 1fr 1fr; gap: 6px; }
-      html.compact #sec-flows { max-height: 340px; overflow: auto; }
+      html.compact #sec-flows { max-height: 340px; }
       html.compact #sec-market,
       html.compact #sec-signals,
-      html.compact #sec-news { max-height: 320px; overflow: auto; }
+      html.compact #sec-news { max-height: 320px; overflow: auto; align-self: stretch; }
       html.compact #news-body { max-height: none; }
       html.compact #sec-news { display: flex; flex-direction: column; min-height: 0; }
       html.compact #sec-news > .panel { flex: 1; display: flex; flex-direction: column; min-height: 0; margin-bottom: 0; }
       html.compact #news-body { flex: 1; min-height: 0; max-height: none; overflow-y: auto; }
-      html.compact #panel-conf #conf-factors { max-height: 180px; }
     }
     @media (min-width: 1440px) {
       html.compact .app { gap: 5px 8px; padding: 6px 10px 8px; }
       html.compact #chart { height: 220px; }
       html.compact .mini-el { height: 110px; }
       html.compact #alt-charts .mini-el { height: 110px; }
-      html.compact #panel-conf #conf-factors { max-height: 170px; }
       html.compact #cards { max-height: 150px; }
       html.compact #mtf-wrap { max-height: 96px; }
       html.compact #sec-flows { max-height: 360px; }
@@ -1093,11 +1137,8 @@
       html.compact #chart { height: 170px; }
       html.compact .mini-el { height: 100px; }
       html.compact #alt-charts .mini-el { height: 100px; }
-      html.compact #conf-factors { max-height: 150px; }
-      html.compact #etf-body { max-height: 130px; }
       html.compact #setups-body { max-height: 110px; }
       html.compact #top10-body { max-height: 120px; }
-      html.compact #news-body { max-height: 200px; }
       html.compact #signal-list { max-height: 80px; }
       html.compact #panel-calc, html.compact #panel-conc { max-height: 120px; }
       html.compact .etf-chart { height: 56px; }
