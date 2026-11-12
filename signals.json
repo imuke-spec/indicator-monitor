@@ -1,6 +1,21 @@
 {
-  "updated": "2026-11-12T15:15:00Z",
+  "updated": "2026-11-12T19:17:00Z",
   "signals": [
+    {
+      "time": "2026-11-12T19:17:00Z",
+      "setup": "4h close below support 72,727 + MACD bearish cross (breakdown)",
+      "direction": "warning",
+      "entry": "72,300-72,700",
+      "stop": 73700,
+      "targets": [
+        70000,
+        69000
+      ],
+      "rr": 2.1,
+      "trend": "with",
+      "invalidation": "4h close back above 72,727",
+      "note": "Reduce, hedge or bear-token idea, not a must-trade. 4h close 71,710, volume 2.4x avg, RSI 27 (oversold, bounce risk). Entry is retest zone."
+    },
     {
       "time": "2026-11-12T11:59:00Z",
       "setup": "4h close below support 73,510 and daily SMA200 73,173 (breakdown)",
