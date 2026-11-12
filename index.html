@@ -493,6 +493,8 @@
       font-family: "IBM Plex Mono", ui-monospace, monospace;
     }
     .sum-cell .cd { color: var(--accent); font-weight: 650; }
+    .sum-cell .sub.up { color: var(--green); }
+    .sum-cell .sub.down { color: var(--red); }
 
     .stale-tag {
       display: inline-block;
@@ -659,6 +661,53 @@
       .jump-nav a { padding: 4px 9px; font-size: 10px; }
       .im-sec { scroll-margin-top: 46px; }
     }
+
+    /* ---- v10: BTC confidence dial ---- */
+    #panel-conf { margin: 12px 0 0; scroll-margin-top: 52px; }
+    .conf-row { display: flex; gap: 16px; align-items: center; margin-bottom: 8px; }
+    .conf-dial {
+      width: 170px; height: 110px; flex-shrink: 0; overflow: hidden; display: block;
+    }
+    .conf-meta { min-width: 0; flex: 1; }
+    .conf-val {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 32px; font-weight: 650; letter-spacing: -0.03em; line-height: 1;
+    }
+    .conf-val .over { font-size: 16px; font-weight: 550; color: var(--muted); margin-left: 4px; }
+    .conf-chg { margin-top: 6px; font-size: 13px; font-weight: 650; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    .conf-chg.up { color: var(--green); } .conf-chg.down { color: var(--red); } .conf-chg.flat { color: var(--muted); }
+    .conf-band { margin-top: 4px; font-weight: 650; font-size: 13px; }
+    .conf-rationale {
+      margin: 4px 0 8px; font-size: 13px; line-height: 1.45; color: var(--text);
+      overflow-wrap: anywhere;
+    }
+    .conf-hist {
+      display: flex; align-items: stretch; gap: 6px;
+      height: 76px; max-width: 300px; margin: 6px 0 2px; min-width: 0;
+    }
+    .conf-hist-col {
+      flex: 1 1 0; min-width: 0; display: flex; flex-direction: column;
+      align-items: center; height: 100%;
+    }
+    .conf-hist-barwrap {
+      flex: 1; width: 100%; display: flex; flex-direction: column;
+      justify-content: flex-end; align-items: center; min-height: 0;
+    }
+    .conf-hist-bar {
+      width: 70%; max-width: 32px; min-height: 3px;
+      border-radius: 3px 3px 1px 1px; opacity: 0.75;
+    }
+    .conf-hist-col.is-last .conf-hist-bar { opacity: 1; }
+    .conf-hist-score {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; font-weight: 650; margin-bottom: 2px; line-height: 1;
+    }
+    .conf-hist-date { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1; white-space: nowrap; }
+    @media (max-width: 640px) {
+      .conf-dial { width: 132px; height: 86px; }
+      .conf-val { font-size: 28px; }
+      .conf-rationale { font-size: 12.5px; margin: 2px 0 6px; }
+    }
   </style>
 </head>
 <body>
@@ -680,6 +729,11 @@
     <div id="stale-banner" hidden role="status"></div>
 
     <section class="summary-row" id="summary-row" aria-label="Market snapshot">
+      <div class="sum-cell" id="sum-conf">
+        <div class="k">BTC confidence</div>
+        <div class="v" id="sum-conf-v">—</div>
+        <div class="sub" id="sum-conf-chg"></div>
+      </div>
       <div class="sum-cell" id="sum-bias">
         <div class="k">BTC bias</div>
         <div class="v" id="sum-bias-v">—</div>
@@ -707,7 +761,24 @@
       </div>
     </section>
 
+    <section class="panel" id="panel-conf" aria-label="BTC confidence dial">
+      <h2>BTC Confidence Dial</h2>
+      <div class="conf-row">
+        <svg class="conf-dial" id="conf-dial" viewBox="0 0 200 130" role="img" aria-label="BTC confidence gauge"></svg>
+        <div class="conf-meta">
+          <div class="conf-val" id="conf-val">—</div>
+          <div class="conf-chg" id="conf-chg"></div>
+          <div class="conf-band" id="conf-band"></div>
+        </div>
+      </div>
+      <p class="conf-rationale" id="conf-rationale"></p>
+      <div class="conf-hist" id="conf-hist" role="img" aria-label="Recent confidence scores"></div>
+      <div class="spark-lbl" id="conf-spark-lbl">Recent daily scores (0–100)</div>
+      <div class="src-line" id="conf-note">Assistant's daily score, not investment advice.</div>
+    </section>
+
     <nav class="jump-nav" id="jump-nav" aria-label="Section shortcuts">
+      <a href="#panel-conf">Dial</a>
       <a href="#sec-macro">Macro</a>
       <a href="#sec-flows">Flows</a>
       <a href="#sec-btc">BTC</a>
@@ -2265,6 +2336,170 @@
     el.innerHTML = html;
   }
 
+
+  function confBand(score) {
+    if (!isNum(score)) return { key: "", label: "—", color: "#8b98a5" };
+    const v = Math.max(0, Math.min(100, score));
+    if (v <= 20) return { key: "avoid", label: "Avoid", color: "#f0625d" };
+    if (v <= 40) return { key: "cautious", label: "Cautious", color: "#f5a623" };
+    if (v <= 60) return { key: "neutral", label: "Neutral", color: "#8b98a5" };
+    if (v <= 80) return { key: "constructive", label: "Constructive", color: "#3dd68c" };
+    return { key: "high", label: "High conviction", color: "#1faa6a" };
+  }
+  function renderConfDial(val) {
+    const el = document.getElementById("conf-dial");
+    if (!el) return;
+    const W = 200, H = 130;
+    el.setAttribute("viewBox", "0 0 " + W + " " + H);
+    el.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    const cx = 100, cy = 104, r = 78, sw = 14;
+    function pt(t, radius) {
+      const a = Math.PI * (1 - Math.max(0, Math.min(100, t)) / 100);
+      const rr = radius == null ? r : radius;
+      return { x: cx + rr * Math.cos(a), y: cy - rr * Math.sin(a) };
+    }
+    function arc(t0, t1, color, width, cap) {
+      const p1 = pt(t0), p2 = pt(t1);
+      const large = (t1 - t0) > 50 ? 1 : 0;
+      return '<path d="M ' + p1.x.toFixed(2) + ' ' + p1.y.toFixed(2) +
+        ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + p2.x.toFixed(2) + ' ' + p2.y.toFixed(2) +
+        '" fill="none" stroke="' + color + '" stroke-width="' + (width || sw) +
+        '" stroke-linecap="' + (cap || "butt") + '"/>';
+    }
+    const bands = [
+      [0, 20, "#f0625d"],
+      [20, 40, "#f5a623"],
+      [40, 60, "#8b98a5"],
+      [60, 80, "#3dd68c"],
+      [80, 100, "#1faa6a"]
+    ];
+    let html = arc(0, 100, "#1a222c", sw + 6, "round");
+    bands.forEach(function (b) { html += arc(b[0], b[1], b[2], sw, "butt"); });
+    [20, 40, 60, 80].forEach(function (t) {
+      const a = pt(t, r - sw / 2 - 1);
+      const b = pt(t, r - sw / 2 - 8);
+      html += '<line x1="' + a.x.toFixed(2) + '" y1="' + a.y.toFixed(2) +
+        '" x2="' + b.x.toFixed(2) + '" y2="' + b.y.toFixed(2) +
+        '" stroke="#0b0f14" stroke-width="1.5" stroke-linecap="round"/>';
+    });
+    const p0 = pt(0), p100 = pt(100);
+    html += '<circle cx="' + p0.x.toFixed(2) + '" cy="' + p0.y.toFixed(2) + '" r="' + (sw / 2) + '" fill="#f0625d"/>';
+    html += '<circle cx="' + p100.x.toFixed(2) + '" cy="' + p100.y.toFixed(2) + '" r="' + (sw / 2) + '" fill="#1faa6a"/>';
+    html += '<text x="' + p0.x.toFixed(2) + '" y="' + (p0.y + 20).toFixed(1) + '" fill="#8b98a5" font-size="11" font-family="IBM Plex Sans, Segoe UI, system-ui, sans-serif" text-anchor="middle">0</text>';
+    html += '<text x="' + p100.x.toFixed(2) + '" y="' + (p100.y + 20).toFixed(1) + '" fill="#8b98a5" font-size="11" font-family="IBM Plex Sans, Segoe UI, system-ui, sans-serif" text-anchor="middle">100</text>';
+    if (isNum(val)) {
+      const v = Math.max(0, Math.min(100, val));
+      const tip = pt(v, r - sw / 2 - 1);
+      const left = pt(Math.max(0, v - 2.2), 7);
+      const right = pt(Math.min(100, v + 2.2), 7);
+      html += '<polygon points="' + tip.x.toFixed(2) + ',' + tip.y.toFixed(2) + ' ' +
+        left.x.toFixed(2) + ',' + left.y.toFixed(2) + ' ' +
+        right.x.toFixed(2) + ',' + right.y.toFixed(2) + '" fill="#e8eef4"/>';
+      html += '<circle cx="' + cx + '" cy="' + cy + '" r="6" fill="#e8eef4"/>';
+      html += '<circle cx="' + cx + '" cy="' + cy + '" r="2.4" fill="#10161d"/>';
+      el.setAttribute("aria-label", "BTC confidence " + Math.round(v) + " of 100, " + confBand(v).label);
+    } else {
+      el.setAttribute("aria-label", "BTC confidence gauge unavailable");
+    }
+    el.innerHTML = html;
+  }
+  function renderConfHistory(el, history) {
+    if (!el) return;
+    el.textContent = "";
+    if (!history || history.length < 1) return;
+    const rows = history.filter(function (r) { return r && r.date && isNum(r.score); })
+      .slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    if (!rows.length) return;
+    rows.forEach(function (row, i) {
+      const s = Math.max(0, Math.min(100, row.score));
+      const band = confBand(s);
+      const col = document.createElement("div");
+      col.className = "conf-hist-col" + (i === rows.length - 1 ? " is-last" : "");
+      const wrap = document.createElement("div");
+      wrap.className = "conf-hist-barwrap";
+      const score = document.createElement("div");
+      score.className = "conf-hist-score";
+      score.textContent = String(Math.round(s));
+      score.style.color = band.color;
+      const bar = document.createElement("div");
+      bar.className = "conf-hist-bar";
+      bar.style.height = Math.max(3, s) + "%";
+      bar.style.background = band.color;
+      wrap.appendChild(score);
+      wrap.appendChild(bar);
+      const date = document.createElement("div");
+      date.className = "conf-hist-date";
+      const ms = Date.parse(row.date + "T00:00:00Z");
+      date.textContent = isNaN(ms) ? String(row.date).slice(5) :
+        new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", day: "numeric", month: "short" }).format(new Date(ms));
+      col.appendChild(wrap);
+      col.appendChild(date);
+      col.title = row.date + " · " + Math.round(s);
+      el.appendChild(col);
+    });
+    el.setAttribute("aria-label", "Recent confidence scores: " + rows.map(function (r) { return r.date + " " + r.score; }).join(", "));
+  }
+  function confidenceFromDj() {
+    const c = S.ext.dataJson && S.ext.dataJson.confidence;
+    if (!c || typeof c !== "object") return null;
+    const score = isNum(c.score) ? c.score : null;
+    const prev = isNum(c.prev) ? c.prev : null;
+    return {
+      score: score,
+      prev: prev,
+      asOf: c.asOf || null,
+      rationale: c.rationale ? String(c.rationale) : "",
+      history: Array.isArray(c.history) ? c.history : []
+    };
+  }
+  function renderConfidence() {
+    const conf = confidenceFromDj();
+    const valEl = document.getElementById("conf-val");
+    const chgEl = document.getElementById("conf-chg");
+    const bandEl = document.getElementById("conf-band");
+    const ratEl = document.getElementById("conf-rationale");
+    const note = document.getElementById("conf-note");
+    if (note && !note.textContent) note.textContent = "Assistant's daily score, not investment advice.";
+    if (!valEl) return;
+    if (!conf || !isNum(conf.score)) {
+      valEl.textContent = "—";
+      valEl.style.color = "";
+      if (chgEl) { chgEl.textContent = ""; chgEl.className = "conf-chg"; }
+      if (bandEl) { bandEl.textContent = S.ext.dataJsonOk ? "No confidence field in data.json" : "data.json not loaded"; bandEl.style.color = ""; }
+      if (ratEl) ratEl.textContent = "";
+      renderConfDial(null);
+      renderConfHistory(document.getElementById("conf-hist"), []);
+      if (typeof paintFreshness === "function") paintFreshness();
+      return;
+    }
+    const band = confBand(conf.score);
+    valEl.textContent = "";
+    const n = document.createElement("span");
+    n.textContent = String(Math.round(conf.score));
+    const over = document.createElement("span");
+    over.className = "over";
+    over.textContent = "/100";
+    valEl.appendChild(n);
+    valEl.appendChild(over);
+    valEl.style.color = band.color;
+    if (bandEl) { bandEl.textContent = band.label; bandEl.style.color = band.color; }
+    if (chgEl) {
+      if (isNum(conf.prev)) {
+        const d = Math.round(conf.score) - Math.round(conf.prev);
+        chgEl.className = "conf-chg " + (d > 0 ? "up" : d < 0 ? "down" : "flat");
+        const arrow = d > 0 ? "↑" : d < 0 ? "↓" : "→";
+        chgEl.textContent = arrow + " " + (d === 0 ? "unchanged from " : Math.abs(d) + " from ") + Math.round(conf.prev);
+      } else {
+        chgEl.className = "conf-chg flat";
+        chgEl.textContent = "";
+      }
+    }
+    if (ratEl) ratEl.textContent = conf.rationale || "";
+    renderConfDial(conf.score);
+    renderConfHistory(document.getElementById("conf-hist"), conf.history);
+    if (typeof paintFreshness === "function") paintFreshness();
+  }
+
   async function loadDataJson() {
     const data = await quietFetch("data.json", 8000);
     if (data && typeof data === "object") {
@@ -2277,6 +2512,7 @@
     renderMacro();
     renderCalendar();
     renderEtf();
+    if (typeof renderConfidence === "function") renderConfidence();
     if (typeof renderSummary === "function") renderSummary();
     if (typeof updateDataJsonBanner === "function") updateDataJsonBanner();
     if (typeof paintFreshness === "function") paintFreshness();
@@ -3140,6 +3376,8 @@
     setFresh("ratio", S.ext.ratio && S.ext.ratio.asOf, STALE_SLOW, !!(lazy.ratio && S.ext.ratioFailed));
     const etfDate = S.ext.dataJson && S.ext.dataJson.etfFlows && S.ext.dataJson.etfFlows.latestDate;
     setFresh("etf", etfDate || djAsOf, STALE_DJ, djFail);
+    const conf = S.ext.dataJson && S.ext.dataJson.confidence;
+    setFresh("conf", conf && conf.asOf, STALE_DAILY, !!(djFail || (S.ext.dataJsonOk && !(conf && isNum(conf.score)))));
     const t10 = S.ext.top10;
     setFresh("top10", t10 && (t10.lastTick || t10.asOf), STALE_LIVE, !!(lazy.top10 && t10 && t10.failed && !(t10.coins && t10.coins.length)));
     if (t10 && t10.coins && typeof updateTop10Row === "function") {
@@ -3236,6 +3474,27 @@
     if (yEl) {
       yEl.textContent = y10 ? fmtYieldPct(y10.value) : "—";
       yEl.className = "v";
+    }
+    const confEl = document.getElementById("sum-conf-v");
+    const confChg = document.getElementById("sum-conf-chg");
+    const conf = typeof confidenceFromDj === "function" ? confidenceFromDj() : null;
+    if (confEl) {
+      if (conf && isNum(conf.score)) {
+        const band = confBand(conf.score);
+        confEl.textContent = Math.round(conf.score) + " " + band.label;
+        confEl.style.color = band.color;
+        if (confChg) {
+          if (isNum(conf.prev)) {
+            const d = Math.round(conf.score) - Math.round(conf.prev);
+            confChg.textContent = (d > 0 ? "↑ +" : d < 0 ? "↓ " : "→ ") + (d === 0 ? "unchanged" : String(Math.abs(d))) + " vs prev";
+            confChg.className = "sub " + (d > 0 ? "up" : d < 0 ? "down" : "");
+          } else confChg.textContent = "";
+        }
+      } else {
+        confEl.textContent = "—";
+        confEl.style.color = "";
+        if (confChg) confChg.textContent = "";
+      }
     }
     const fng = S.ext.fng;
     if (fgEl) {
@@ -3417,6 +3676,7 @@
       const host = into ? root.querySelector(into) : root;
       (host || root).appendChild(span);
     }
+    add(document.getElementById("panel-conf"), "conf", "h2");
     add(document.getElementById("macro-strip"), "macro", ".strip-head");
     add(document.getElementById("calendar-strip"), "calendar", ".strip-head");
     add(document.getElementById("mtf-wrap"), "mtf", ".strip-head");
@@ -3544,6 +3804,7 @@
     window.__im.renderSummary = renderSummary;
     window.__im.getTop10 = function () { return S.ext.top10; };
     window.__im.getNews = function () { return S.ext.news; };
+    window.__im.getConfidence = function () { return typeof confidenceFromDj === "function" ? confidenceFromDj() : null; };
   }
 
 
@@ -3807,6 +4068,7 @@
     renderMacro();
     renderEtf();
     renderSetupLog();
+    if (typeof renderConfidence === "function") renderConfidence();
     renderSummary();
     updateDataJsonBanner();
     paintFreshness();

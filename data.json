@@ -1,10 +1,11 @@
 {
-  "_schema": "Optional sidecar for the Indicator Monitor (same folder as index.html). The page is static and has no API keys. Fields here OVERRIDE live values when present, or FILL gaps when a live CORS-friendly source is unavailable (US Treasury yields and the HY credit spread cannot be fetched in-browser without a key). Omitted fields are left to live APIs or shown as n/a with a source link. All dates are calendar dates (YYYY-MM-DD) or ISO-8601 timestamps; the page displays times in Europe/London. Numbers: yields and spreads in percent (4.98 means 4.98%), ETF flows in millions of USD (−95 means −$95.0M), gold and DXY in the usual spot units, strategyAvgCost in USD per BTC.",
+  "_schema": "Optional sidecar for the Indicator Monitor (same folder as index.html). The page is static and has no API keys. Fields here OVERRIDE live values when present, or FILL gaps when a live CORS-friendly source is unavailable (US Treasury yields and the HY credit spread cannot be fetched in-browser without a key). Omitted fields are left to live APIs or shown as n/a with a source link. All dates are calendar dates (YYYY-MM-DD) or ISO-8601 timestamps; the page displays times in Europe/London. Numbers: yields and spreads in percent (4.98 means 4.98%), ETF flows in millions of USD (−95 means −$95.0M), gold and DXY in the usual spot units, strategyAvgCost in USD per BTC. Optional confidence is the assistant's daily BTC Investment Confidence Dial (0–100) and is ignored if omitted.",
   "_fields": {
     "macro.us2y / us10y / hyCredit / dxy / gold": "{ value: number, asOf: 'YYYY-MM-DD' or ISO, source?: string, url?: string }. 2s10s is computed from 10y−2y when both are present; you may also set macro.us2s10s the same way.",
     "etfFlows": "{ source, url, latestDate, days: [{ date, total, IBIT?, FBTC?, MSBT?, ...other tickers }] }. Totals and per-fund flows are USD millions.",
     "strategyAvgCost": "USD average cost to mark as a labelled line on the BTC chart (Strategy / MicroStrategy).",
-    "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }]."
+    "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
+    "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }] }. Backward compatible: omit the field on older files. The page renders the dial from this object only (no live API)."
   },
   "asOf": "2026-11-12",
   "macro": {
@@ -261,5 +262,18 @@
     ]
   },
   "strategyAvgCost": 75456,
+  "confidence": {
+    "score": 18,
+    "prev": 20,
+    "asOf": "2026-11-12T07:05:00Z",
+    "rationale": "ETF selling picked up again, Nvidia's leadership shock hit AI-heavy indexes, and the 2y keeps rising with a hike priced in. BTC holding the SMA200, a shrinking MACD histogram, lower open interest and tight credit spreads keep it off the floor.",
+    "history": [
+      { "date": "2026-11-08", "score": 26 },
+      { "date": "2026-11-09", "score": 23 },
+      { "date": "2026-11-10", "score": 25 },
+      { "date": "2026-11-11", "score": 20 },
+      { "date": "2026-11-12", "score": 18 }
+    ]
+  },
   "calendar": []
 }
