@@ -1558,10 +1558,93 @@
     }
     throw last || new Error("All REST hosts failed");
   }
+  const KLINE_PAGE = 1000;
+  const KLINE_TARGET = 2000;
+  const KLINE_MAX = 8000;
+  const KLINE_BACKFILL_EDGE = 50;
+  const klineCache = {};
+  function klineCacheKey(symbol, interval) { return symbol + "|" + interval; }
+  function visibleBarsFor(interval) {
+    if (interval === "1d") return 180;
+    return 200;
+  }
+  function getKlineCache(symbol, interval) {
+    const key = klineCacheKey(symbol, interval);
+    if (!klineCache[key]) klineCache[key] = { candles: [], eof: false, loading: false, pending: null };
+    return klineCache[key];
+  }
+  async function fetchKlinesPage(symbol, interval, opts) {
+    opts = opts || {};
+    const limit = Math.min(1000, opts.limit || KLINE_PAGE);
+    let q = "/api/v3/klines?symbol=" + symbol + "&interval=" + interval + "&limit=" + limit;
+    if (opts.endTimeMs) q += "&endTime=" + opts.endTimeMs;
+    const d = await fetchJson(q);
+    if (!Array.isArray(d)) throw new Error("Unexpected kline payload");
+    return d.map(parseKline);
+  }
   async function fetchKlines(symbol, interval, limit) {
     const d = await fetchJson("/api/v3/klines?symbol=" + symbol + "&interval=" + interval + "&limit=" + (limit || 500));
     if (!Array.isArray(d) || d.length < 50) throw new Error("Unexpected kline payload");
     return d.map(parseKline);
+  }
+  async function loadKlinesFirstPage(symbol, interval) {
+    const st = getKlineCache(symbol, interval);
+    if (st.candles.length >= 200) return st.candles;
+    const page = await fetchKlinesPage(symbol, interval, { limit: KLINE_PAGE });
+    if (page.length < 50) throw new Error("Unexpected kline payload");
+    st.candles = page;
+    if (page.length < KLINE_PAGE) st.eof = true;
+    return st.candles;
+  }
+  async function extendKlinesOlder(symbol, interval, targetCount) {
+    const st = getKlineCache(symbol, interval);
+    if (st.eof) return st.candles;
+    const want = Math.min(KLINE_MAX, targetCount || (st.candles.length + KLINE_PAGE));
+    if (st.candles.length >= want) return st.candles;
+    if (st.loading && st.pending) return st.pending;
+    st.loading = true;
+    const work = (async function () {
+      try {
+        while (st.candles.length < want && !st.eof) {
+          if (!st.candles.length) break;
+          const endTimeMs = st.candles[0].time * 1000 - 1;
+          const page = await fetchKlinesPage(symbol, interval, { limit: KLINE_PAGE, endTimeMs: endTimeMs });
+          if (!page.length) { st.eof = true; break; }
+          const firstT = st.candles[0].time;
+          const older = [];
+          for (let i = 0; i < page.length; i++) {
+            if (page[i].time < firstT) older.push(page[i]);
+          }
+          if (!older.length) { st.eof = true; break; }
+          st.candles = older.concat(st.candles);
+          if (page.length < KLINE_PAGE || st.candles.length >= KLINE_MAX) {
+            if (page.length < KLINE_PAGE || st.candles.length >= KLINE_MAX) st.eof = st.candles.length >= KLINE_MAX || page.length < KLINE_PAGE;
+          }
+        }
+      } finally {
+        st.loading = false;
+        st.pending = null;
+      }
+      return st.candles;
+    })();
+    st.pending = work;
+    return work;
+  }
+  function captureTimeRange(chart) {
+    if (!chart || !chart.timeScale) return null;
+    try { return chart.timeScale().getVisibleRange(); } catch (e) { return null; }
+  }
+  function restoreTimeRange(chart, range) {
+    if (!chart || !range || range.from == null || range.to == null) return false;
+    try { chart.timeScale().setVisibleRange(range); return true; } catch (e) { return false; }
+  }
+  function setDefaultView(chart, n, interval) {
+    if (!chart || !chart.timeScale) return;
+    const visible = visibleBarsFor(interval);
+    chart.timeScale().setVisibleLogicalRange({
+      from: Math.max(0, n - visible),
+      to: n + 3
+    });
   }
   async function fetchTicker(symbol) {
     try {
@@ -1645,7 +1728,7 @@
     } else if (bar.time > last.time) {
       last.closed = true;
       candles.push(bar);
-      if (candles.length > 520) candles.shift();
+      if (candles.length > KLINE_MAX + 50) candles.shift();
     } else return;
     if (S.ticker) S.ticker.last = bar.close;
     else S.ticker = { last: bar.close, pct: null, change: null };
@@ -1772,7 +1855,7 @@
   /* ---------- chart ---------- */
   function destroyChart() {
     if (S.chart) { try { S.chart.remove(); } catch (e) {} }
-    S.chart = null; S.series = {}; S.priceLines = [];
+    S.chart = null; S.series = {}; S.priceLines = []; S._backfillBound = false;
   }
   function initChart() {
     destroyChart();
@@ -1835,6 +1918,8 @@
 
     S.chart = chart;
     S.series = { candle: candle, ema12: ema12s, ema21: ema21s, sma200: sma200s, macdHist: macdHist, macdLine: macdLine, macdSig: macdSig, rsi: rsiLine };
+    S._backfillBound = false;
+    bindMainBackfill();
   }
   function seriesLine(arr, candles) {
     const out = [];
@@ -1872,7 +1957,7 @@
     if (typeof addStrategyLine === "function") addStrategyLine();
     if (typeof addSetupLines === "function") addSetupLines();
   }
-  function fullChartSet() {
+  function fullChartSet(opts) {
     if (!S.series.candle || !S.ind) return;
     const c = S.candles, ind = S.ind;
     S.series.candle.setData(c.map(x => ({ time: x.time, open: x.open, high: x.high, low: x.low, close: x.close })));
@@ -1881,15 +1966,16 @@
     S.series.sma200.setData(seriesLine(ind.sma200, c));
     S.series.macdLine.setData(seriesLine(ind.macd, c));
     S.series.macdSig.setData(seriesLine(ind.signal, c));
-    S.series.macdHist.setData(paintHist(ind.hist));
+    S.series.macdHist.setData(paintHist(ind.hist, c));
     S.series.rsi.setData(seriesLine(ind.rsi14, c));
     applyPriceLines(S.levels);
     const n = c.length;
-    const visible = S.interval === "1d" ? 160 : S.interval === "4h" ? 180 : 168;
-    S.chart.timeScale().setVisibleLogicalRange({
-      from: Math.max(0, n - visible),
-      to: n + 3
-    });
+    if (opts && opts.keepView) {
+      if (!restoreTimeRange(S.chart, opts.range)) setDefaultView(S.chart, n, S.interval);
+    } else {
+      setDefaultView(S.chart, n, S.interval);
+    }
+    try { S.series.candle.priceScale().applyOptions({ autoScale: true }); } catch (e) {}
     if (typeof markChartReady === "function") markChartReady();
   }
   function updateLastBar() {
@@ -1957,7 +2043,7 @@
     }
     return "mixed";
   }
-  function recompute(fullSet) {
+  function recompute(fullSet, opts) {
     if (!S.candles.length) return;
     S.ind = computeAll(S.candles);
     const i = S.candles.length - 1;
@@ -1968,7 +2054,7 @@
     renderCards();
     if (typeof renderSummary === "function") renderSummary();
     if (typeof paintFreshness === "function") paintFreshness();
-    if (fullSet) fullChartSet();
+    if (fullSet) fullChartSet(opts);
     else {
       updateLastBar();
       applyPriceLines(S.levels);
@@ -2011,8 +2097,16 @@
     document.getElementById("agreement").className = "agreement";
     document.getElementById("agreement").textContent = "Loading " + S.pair + " " + S.interval + " candles…";
     try {
-      const jobs = [fetchKlines(S.pair, S.interval, 500), fetchTicker(S.pair)];
-      if (S.interval !== "1d") jobs.push(fetchKlines(S.pair, "1d", 500).catch(function () { return []; }));
+      const t0 = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+      const jobs = [loadKlinesFirstPage(S.pair, S.interval), fetchTicker(S.pair)];
+      if (S.interval !== "1d") {
+        const cachedDaily = getKlineCache(S.pair, "1d");
+        if (cachedDaily.candles.length >= 200) {
+          jobs.push(Promise.resolve(cachedDaily.candles));
+        } else {
+          jobs.push(fetchKlines(S.pair, "1d", 500).catch(function () { return []; }));
+        }
+      }
       const results = await Promise.all(jobs);
       S.candles = results[0];
       S.ticker = results[1];
@@ -2021,10 +2115,15 @@
         S.dailyInd = S.dailyCandles.length ? computeAll(S.dailyCandles) : null;
       } else { S.dailyCandles = []; S.dailyInd = null; }
       recompute(true);
+      const t1 = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+      S.histTiming = S.histTiming || {};
+      S.histTiming.firstMs = Math.round(t1 - t0);
+      S.histTiming.firstCount = S.candles.length;
       scanHistory();
       S.ready = true;
       connectWs();
       if (typeof refreshPairExt === "function") refreshPairExt();
+      deepenMainHistory();
     } catch (e) {
       S.errors.push(String(e && e.message || e));
       setConn("error", "Error");
@@ -2081,6 +2180,54 @@
       }
     }
     persist();
+  }
+  async function deepenMainHistory() {
+    const symbol = S.pair, interval = S.interval;
+    const before = S.candles.length;
+    const t0 = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    try {
+      const next = await extendKlinesOlder(symbol, interval, KLINE_TARGET);
+      if (symbol !== S.pair || interval !== S.interval) return;
+      if (!next || next.length <= before) return;
+      const range = captureTimeRange(S.chart);
+      S.candles = getKlineCache(symbol, interval).candles;
+      recompute(true, { keepView: true, range: range });
+      const t1 = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+      S.histTiming = S.histTiming || {};
+      S.histTiming.deepMs = Math.round(t1 - t0);
+      S.histTiming.deepCount = S.candles.length;
+    } catch (e) {}
+  }
+  async function backfillMain(force) {
+    if (!S.ready || !S.candles.length) return false;
+    const st = getKlineCache(S.pair, S.interval);
+    if (st.loading || st.eof) return false;
+    if (!force) {
+      const vr = S.chart && S.chart.timeScale().getVisibleLogicalRange();
+      if (!vr || vr.from > KLINE_BACKFILL_EDGE) return false;
+    }
+    const symbol = S.pair, interval = S.interval;
+    const before = S.candles.length;
+    const range = captureTimeRange(S.chart);
+    try {
+      const next = await extendKlinesOlder(symbol, interval, before + KLINE_PAGE);
+      if (symbol !== S.pair || interval !== S.interval) return false;
+      if (!next || next.length <= before) return false;
+      S.candles = getKlineCache(symbol, interval).candles;
+      recompute(true, { keepView: true, range: range });
+      return true;
+    } catch (e) { return false; }
+  }
+  function bindMainBackfill() {
+    if (!S.chart || S._backfillBound) return;
+    S._backfillBound = true;
+    let timer = null;
+    S.chart.timeScale().subscribeVisibleLogicalRangeChange(function (range) {
+      if (!range || !S.ready) return;
+      if (range.from > KLINE_BACKFILL_EDGE) return;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () { backfillMain(); }, 180);
+    });
   }
   function onBtcTf(interval) {
     if (INTERVALS.indexOf(interval) < 0 || interval === S.interval) return;
@@ -3805,6 +3952,39 @@
     window.__im.getTop10 = function () { return S.ext.top10; };
     window.__im.getNews = function () { return S.ext.news; };
     window.__im.getConfidence = function () { return typeof confidenceFromDj === "function" ? confidenceFromDj() : null; };
+    window.__im.getChartDepth = function () {
+      const c = S.candles || [];
+      const sma = S.ind && S.ind.sma200 ? seriesLine(S.ind.sma200, c) : [];
+      let vr = null, vtime = null;
+      try { if (S.chart) vr = S.chart.timeScale().getVisibleLogicalRange(); } catch (e) {}
+      try { if (S.chart) vtime = S.chart.timeScale().getVisibleRange(); } catch (e) {}
+      const st = getKlineCache(S.pair, S.interval);
+      function iso(sec) { return sec ? new Date(sec * 1000).toISOString() : null; }
+      const visFrom = vr && isNum(vr.from) ? Math.max(0, Math.ceil(vr.from)) : 0;
+      return {
+        interval: S.interval, n: c.length,
+        firstTime: iso(c[0] && c[0].time), lastTime: iso(c.length && c[c.length - 1].time),
+        firstSmaTime: iso(sma[0] && sma[0].time), smaPoints: sma.length,
+        firstSmaIndex: sma[0] && c[0] ? c.findIndex(function (x) { return x.time === sma[0].time; }) : -1,
+        visibleHasSma: !!(S.ind && visFrom < c.length && isNum(S.ind.sma200[visFrom])),
+        visible: vr, eof: !!st.eof, loading: !!st.loading,
+        timing: S.histTiming || null
+      };
+    };
+    window.__im.setLogicalRange = function (from, to) {
+      if (S.chart) S.chart.timeScale().setVisibleLogicalRange({ from: from, to: to });
+    };
+    window.__im.deepenHistory = function () { return deepenMainHistory(); };
+    window.__im.backfillNow = function () { return backfillMain(true); };
+    window.__im.getMiniDepth = function (pair) {
+      const m = minis[pair];
+      if (!m) return null;
+      const c = m.candles || [];
+      const sma = m.ind && m.ind.sma200 ? seriesLine(m.ind.sma200, c) : [];
+      function iso(sec) { return sec ? new Date(sec * 1000).toISOString() : null; }
+      return { pair: pair, interval: m.interval, n: c.length, firstTime: iso(c[0] && c[0].time), firstSmaTime: iso(sma[0] && sma[0].time), smaPoints: sma.length };
+    };
+
   }
 
 
@@ -4384,7 +4564,7 @@
   }
   function destroyMiniChart(m) {
     if (m.chart) { try { m.chart.remove(); } catch (e) {} }
-    m.chart = null; m.series = {};
+    m.chart = null; m.series = {}; m._backfillBound = false;
   }
   function initMiniChart(m) {
     destroyMiniChart(m);
@@ -4427,6 +4607,8 @@
     const sma200s = chart.addSeries(LC.LineSeries, { color: "#9b8cff", lineWidth: 2, priceLineVisible: false, lastValueVisible: true, title: "SMA200" });
     m.chart = chart;
     m.series = { candle: candle, ema12: ema12s, ema21: ema21s, sma200: sma200s };
+    m._backfillBound = false;
+    bindMiniBackfill(m);
   }
   async function initMiniCharts() {
     try { await loadChartsLib(); } catch (e) {}
@@ -4435,7 +4617,7 @@
       if (!minis[pair].chart) initMiniChart(minis[pair]);
     });
   }
-  function fullMiniSet(m) {
+  function fullMiniSet(m, opts) {
     if (!m.series.candle || !m.ind) return;
     const c = m.candles, ind = m.ind;
     m.series.candle.setData(c.map(function (x) { return { time: x.time, open: x.open, high: x.high, low: x.low, close: x.close }; }));
@@ -4443,11 +4625,12 @@
     m.series.ema21.setData(seriesLine(ind.ema21, c));
     m.series.sma200.setData(seriesLine(ind.sma200, c));
     const n = c.length;
-    const visible = m.interval === "1d" ? 160 : m.interval === "4h" ? 180 : 168;
-    m.chart.timeScale().setVisibleLogicalRange({
-      from: Math.max(0, n - visible),
-      to: n + 3
-    });
+    if (opts && opts.keepView) {
+      if (!restoreTimeRange(m.chart, opts.range)) setDefaultView(m.chart, n, m.interval);
+    } else {
+      setDefaultView(m.chart, n, m.interval);
+    }
+    try { m.series.candle.priceScale().applyOptions({ autoScale: true }); } catch (e) {}
   }
   function updateMiniLastBar(m) {
     if (!m.series.candle || !m.ind || !m.candles.length) return;
@@ -4519,13 +4702,13 @@
       return "<span class=\"chip " + c.tone + "\">" + c.text + "</span>";
     }).join("");
   }
-  function recomputeMini(m, fullSet) {
+  function recomputeMini(m, fullSet, opts) {
     if (!m.candles.length) return;
     m.ind = computeAll(m.candles);
     m.lastUpdate = Date.now();
     renderMiniHeader(m);
     renderMiniStrip(m);
-    if (fullSet) fullMiniSet(m);
+    if (fullSet) fullMiniSet(m, opts);
     else updateMiniLastBar(m);
   }
   function onMiniTicker(m, t) {
@@ -4546,7 +4729,7 @@
     } else if (bar.time > last.time) {
       last.closed = true;
       candles.push(bar);
-      if (candles.length > 520) candles.shift();
+      if (candles.length > KLINE_MAX + 50) candles.shift();
     } else return;
     if (m.ticker) m.ticker.last = bar.close;
     else m.ticker = { last: bar.close, pct: null, change: null };
@@ -4600,17 +4783,61 @@
     const root = miniRoot(m.pair);
     const el = root && root.querySelector("[data-mini-chart]");
     try {
-      const results = await Promise.all([fetchKlines(m.pair, m.interval, 500), fetchTicker(m.pair)]);
+      const results = await Promise.all([loadKlinesFirstPage(m.pair, m.interval), fetchTicker(m.pair)]);
       m.candles = results[0];
       m.ticker = results[1];
       recomputeMini(m, true);
       m.ready = true;
       connectMiniWs(m);
+      deepenMiniHistory(m);
     } catch (e) {
       m.errors.push(String(e && e.message || e));
       renderMiniHeader(m);
       if (el) el.innerHTML = "<div class=\"chart-error\">Could not load " + m.pair + " data. " + (e && e.message ? e.message : "") + "</div>";
     }
+  }
+  async function deepenMiniHistory(m) {
+    const symbol = m.pair, interval = m.interval;
+    const before = m.candles.length;
+    try {
+      const next = await extendKlinesOlder(symbol, interval, KLINE_TARGET);
+      if (m.pair !== symbol || m.interval !== interval) return;
+      if (!next || next.length <= before) return;
+      const range = captureTimeRange(m.chart);
+      m.candles = getKlineCache(symbol, interval).candles;
+      recomputeMini(m, true, { keepView: true, range: range });
+    } catch (e) {}
+  }
+  async function backfillMini(m, force) {
+    if (!m || !m.ready || !m.candles.length) return false;
+    const st = getKlineCache(m.pair, m.interval);
+    if (st.loading || st.eof) return false;
+    if (!force) {
+      const vr = m.chart && m.chart.timeScale().getVisibleLogicalRange();
+      if (!vr || vr.from > KLINE_BACKFILL_EDGE) return false;
+    }
+    const symbol = m.pair, interval = m.interval;
+    const before = m.candles.length;
+    const range = captureTimeRange(m.chart);
+    try {
+      const next = await extendKlinesOlder(symbol, interval, before + KLINE_PAGE);
+      if (m.pair !== symbol || m.interval !== interval) return false;
+      if (!next || next.length <= before) return false;
+      m.candles = getKlineCache(symbol, interval).candles;
+      recomputeMini(m, true, { keepView: true, range: range });
+      return true;
+    } catch (e) { return false; }
+  }
+  function bindMiniBackfill(m) {
+    if (!m || !m.chart || m._backfillBound) return;
+    m._backfillBound = true;
+    let timer = null;
+    m.chart.timeScale().subscribeVisibleLogicalRangeChange(function (range) {
+      if (!range || !m.ready) return;
+      if (range.from > KLINE_BACKFILL_EDGE) return;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () { backfillMini(m); }, 180);
+    });
   }
   function loadAllMinis() {
     return Promise.all(MINI_PAIRS.map(function (pair) {
