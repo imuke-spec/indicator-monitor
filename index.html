@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("im.view") === "compact") {
+          document.documentElement.classList.add("compact");
+        }
+      } catch (e) {}
+    })();
+  </script>
   <meta name="color-scheme" content="dark">
   <title>Indicator Monitor</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='8' width='32' height='32' fill='%23f5a623'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-size='13' font-family='Arial,sans-serif' font-weight='700' fill='%231a1206'%3EIM%3C/text%3E%3C/svg%3E">
@@ -782,6 +791,327 @@
       .conf-frow { gap: 8px; padding: 7px 0; }
       .impact-pill, .out-pill { font-size: 9.5px; padding: 2px 7px; }
     }
+
+    /* ---- v13: Standard / Compact view (compact only; standard unchanged) ---- */
+    .view-toggle {
+      display: inline-flex; border: 1px solid var(--border); border-radius: 8px;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .view-toggle button {
+      background: transparent; color: var(--muted); border: 0;
+      border-right: 1px solid var(--border);
+      padding: 3px 9px; font: inherit; font-size: 11px; font-weight: 650;
+      cursor: pointer; letter-spacing: 0.02em;
+    }
+    .view-toggle button:last-child { border-right: 0; }
+    .view-toggle button:hover { color: var(--text); }
+    .view-toggle button[aria-pressed="true"] { background: var(--bg-card); color: var(--text); }
+    html:not(.compact) #view-standard,
+    html.compact #view-compact { background: var(--bg-card); color: var(--text); }
+
+    html.compact .app { padding: 8px 10px 10px; }
+    html.compact header { padding: 0 0 6px; gap: 10px; align-items: center; }
+    html.compact .logo { width: 28px; height: 28px; border-radius: 7px; font-size: 11px; }
+    html.compact h1 { font-size: 15px; }
+    html.compact .sub { display: none; }
+    html.compact .header-status { padding-top: 0; gap: 8px; font-size: 11px; }
+
+    html.compact #stale-banner { padding: 5px 10px; margin: 0 0 6px; font-size: 12px; }
+    html.compact .summary-row { margin: 0; gap: 5px; }
+    html.compact .sum-cell { padding: 5px 8px; border-radius: 8px; flex: 1 1 110px; }
+    html.compact .sum-cell .k { font-size: 9px; }
+    html.compact .sum-cell .v { font-size: 13px; margin-top: 1px; }
+    html.compact .sum-cell .sub { font-size: 10px; }
+
+    html.compact .panel,
+    html.compact .strip,
+    html.compact .chart-wrap,
+    html.compact .signals,
+    html.compact .mini-panel,
+    html.compact .agreement {
+      padding: 7px 8px;
+      margin-bottom: 0;
+      border-radius: 10px;
+      box-shadow: none;
+    }
+    html.compact .panel h2,
+    html.compact .signals .sig-head h2 { margin: 0 0 5px; font-size: 12px; }
+    html.compact .strip-head { margin-bottom: 5px; gap: 6px; }
+    html.compact .strip-head h2 { font-size: 11px; }
+    html.compact .panel .src-line, html.compact .src-line, html.compact .spark-lbl, html.compact .note { margin-top: 3px; font-size: 10px; }
+    html.compact .im-sec { margin: 0; min-width: 0; }
+    html.compact .im-sec-title {
+      font-size: 9px; margin: 0 0 3px; letter-spacing: 0.08em;
+    }
+    html.compact .im-sec > .panel,
+    html.compact .im-sec > .strip,
+    html.compact .im-sec > .chart-wrap,
+    html.compact .im-sec > .signals,
+    html.compact .im-sec > .mini-charts,
+    html.compact .im-sec > .cards,
+    html.compact .im-sec > .agreement,
+    html.compact .im-sec > .pair-grid { margin-bottom: 6px; }
+    html.compact .pair-grid { gap: 6px; }
+    html.compact .mini-charts { gap: 6px; margin-bottom: 0; }
+
+    /* Hide jump nav on desktop compact; keep it on small screens where the page still scrolls */
+    html.compact .jump-nav { display: none; }
+    @media (max-width: 640px) {
+      html.compact .jump-nav { display: flex; margin: 6px -2px 8px; padding: 4px 2px; }
+    }
+
+    html.compact .conf-dial, html.compact .fg-dial { width: 112px; height: 72px; }
+    html.compact .conf-val { font-size: 22px; }
+    html.compact .conf-chg, html.compact .conf-band { font-size: 11px; margin-top: 2px; }
+    html.compact .conf-rationale { font-size: 11px; margin: 2px 0 4px; line-height: 1.3; }
+    html.compact .conf-hist { height: 48px; margin: 2px 0; max-width: 220px; }
+    html.compact .conf-factors { margin-top: 6px; padding-top: 6px; }
+    html.compact .conf-factors-title { font-size: 12px; margin: 0 0 3px; }
+    html.compact .conf-tally { font-size: 11px; margin: 0 0 6px; }
+    html.compact .conf-fg { margin: 0 0 4px; }
+    html.compact .conf-fg-h { font-size: 9px; margin: 0; }
+    html.compact .conf-frow { padding: 2px 0; gap: 6px; }
+    html.compact .conf-fname { font-size: 11px; }
+    html.compact .conf-fstate { font-size: 10px; }
+    html.compact .impact-pill { font-size: 9px; padding: 1px 6px; margin-top: 0; }
+    html.compact #conf-factors { max-height: 210px; overflow-y: auto; padding-right: 4px; }
+
+    html.compact .fg-val { font-size: 20px; }
+    html.compact .spark { height: 28px; margin-top: 4px; }
+    html.compact .stat-big { font-size: 18px; }
+    html.compact .macro-grid { gap: 5px; }
+    html.compact .macro-item { padding: 5px 7px; border-radius: 8px; }
+    html.compact .macro-item .k { font-size: 9px; }
+    html.compact .macro-item .v { font-size: 14px; margin-top: 1px; }
+    html.compact .macro-item .asof { font-size: 10px; margin-top: 1px; }
+    html.compact .cal-item { padding: 6px 8px; min-width: 120px; border-radius: 8px; }
+    html.compact .cal-item .title { font-size: 12px; }
+    html.compact .cal-item .cd { font-size: 13px; margin-top: 3px; }
+
+    html.compact #chart { height: 220px; }
+    html.compact .mini-el { height: 150px; }
+    html.compact .mini-price { font-size: 16px; }
+    html.compact .mini-head { padding: 2px 4px; gap: 6px; }
+    html.compact .btc-tools { padding: 0 4px 4px; font-size: 11px; gap: 8px; }
+    html.compact .legend { padding: 2px 4px 4px; gap: 8px 10px; font-size: 10px; }
+    html.compact .tf-toggle button { padding: 3px 7px; font-size: 11px; }
+
+    html.compact .agreement { padding: 6px 8px; font-size: 12px; margin-bottom: 6px; }
+    html.compact .agreement .daily { font-size: 11px; margin-top: 2px; }
+    html.compact .cards { gap: 5px; margin-bottom: 6px; }
+    html.compact .card { padding: 6px 7px 7px; border-top-width: 2px; }
+    html.compact .card h3 { font-size: 9px; margin: 0 0 3px; }
+    html.compact .card .value { font-size: 13px; }
+    html.compact .card .detail { font-size: 9.5px; margin-top: 2px; line-height: 1.25; }
+    html.compact #forming-note { font-size: 10px; width: auto; margin-left: auto; }
+
+    html.compact .mtf-wrap { margin-bottom: 0; }
+    html.compact .mtf-table { font-size: 11px; }
+    html.compact .mtf-table th, html.compact .mtf-table td { padding: 3px 5px; }
+    html.compact .mtf-align { margin-top: 4px; font-size: 11px; }
+
+    html.compact .etf-chart { height: 80px; margin-bottom: 6px; }
+    html.compact .etf-table th, html.compact .etf-table td,
+    html.compact .top10-table th, html.compact .top10-table td { padding: 3px 5px; }
+    html.compact .top10-table, html.compact .etf-table, html.compact .setup-table { font-size: 11px; }
+    html.compact .kv { font-size: 12px; gap: 3px 8px; }
+    html.compact .form-grid { gap: 5px 8px; }
+    html.compact .form-grid input, html.compact .form-grid select { padding: 4px 6px; font-size: 12px; }
+    html.compact .btn { padding: 4px 8px; font-size: 11px; }
+    html.compact .setup-toolbar { margin: 0 0 5px; gap: 6px 10px; font-size: 11px; }
+    html.compact .setup-track { margin: 0 0 6px; gap: 4px 10px; font-size: 11px; }
+    html.compact .setup-card { padding: 6px 0; }
+
+    html.compact #etf-body { max-height: 200px; overflow-y: auto; }
+    html.compact .etf-sum { margin-bottom: 6px; gap: 5px; }
+    html.compact #panel-calc, html.compact #panel-conc { max-height: 170px; overflow-y: auto; }
+    html.compact #calendar-strip .cal-item .note { font-size: 10px; margin-top: 1px; }
+    html.compact #setups-body { max-height: 170px; overflow-y: auto; }
+    html.compact #signal-list { max-height: 110px; }
+    html.compact #top10-body { max-height: 170px; overflow-y: auto; }
+    html.compact #news-body { max-height: 180px; overflow-y: auto; }
+    html.compact .news-item { padding: 5px 0; }
+    html.compact .news-title { font-size: 12px; }
+    html.compact .news-thumb { width: 36px; height: 36px; }
+    html.compact footer { margin-top: 4px; font-size: 10px; }
+
+    /* Desktop compact: pack into a dense multi-column grid */
+    @media (min-width: 1024px) {
+      html.compact .app {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-template-areas:
+          "head head head head head head head head head head head head"
+          "ban  ban  ban  ban  ban  ban  ban  ban  ban  ban  ban  ban"
+          "sum  sum  sum  sum  sum  sum  sum  sum  sum  sum  sum  sum"
+          "conf conf conf conf mac  mac  mac  mac  mac  mac  mac  mac"
+          "btc  btc  btc  btc  btc  btc  btc  flo  flo  flo  flo  flo"
+          "mkt  mkt  mkt  mkt  mkt  mkt  sig  sig  sig  sig  sig  sig"
+          "news news news news news news news news news news news news"
+          "foot foot foot foot foot foot foot foot foot foot foot foot";
+        gap: 6px 8px;
+        align-items: start;
+      }
+      html.compact header { grid-area: head; }
+      html.compact #stale-banner { grid-area: ban; }
+      html.compact #summary-row { grid-area: sum; }
+      html.compact #panel-conf { grid-area: conf; min-width: 0; }
+      html.compact #sec-macro { grid-area: mac; min-width: 0; }
+      html.compact #sec-btc { grid-area: btc; min-width: 0; }
+      html.compact #sec-flows { grid-area: flo; min-width: 0; }
+      html.compact #sec-market { grid-area: mkt; min-width: 0; }
+      html.compact #sec-signals { grid-area: sig; min-width: 0; }
+      html.compact #sec-news { grid-area: news; min-width: 0; }
+      html.compact footer { grid-area: foot; }
+      html.compact #stale-banner[hidden] { display: none !important; }
+      html.compact .pair-grid { grid-template-columns: 1fr 1fr; }
+      html.compact .pair-macro { grid-template-columns: 1.15fr 0.85fr; }
+      html.compact .pair-macro .macro-grid { grid-template-columns: repeat(3, 1fr); }
+      html.compact .cards { grid-template-columns: repeat(3, 1fr); }
+      html.compact .mini-charts { grid-template-columns: 1fr 1fr; }
+      html.compact #chart { height: 200px; }
+      html.compact .mini-el { height: 130px; }
+      html.compact #conf-factors { max-height: 200px; }
+      html.compact #panel-conf {
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+        gap: 2px 10px;
+        align-items: start;
+      }
+      html.compact #panel-conf > h2 { grid-column: 1 / -1; }
+      html.compact #panel-conf .conf-row,
+      html.compact #panel-conf .conf-rationale,
+      html.compact #panel-conf .conf-hist,
+      html.compact #panel-conf #conf-spark-lbl,
+      html.compact #panel-conf #conf-note { grid-column: 1; }
+      html.compact #panel-conf #conf-factors {
+        grid-column: 2;
+        grid-row: 2 / 8;
+        max-height: 210px;
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+      }
+      html.compact .conf-hist { max-width: 100%; }
+      html.compact #etf-body { max-height: 160px; }
+      html.compact #setups-body { max-height: 130px; }
+      html.compact #top10-body { max-height: 140px; }
+      html.compact #news-body { max-height: 140px; }
+      html.compact #signal-list { max-height: 90px; }
+      html.compact #panel-calc, html.compact #panel-conc { max-height: 150px; }
+    }
+    @media (min-width: 1280px) {
+      html.compact .app {
+        grid-template-areas:
+          "head head head head head head head head head head head head"
+          "ban  ban  ban  ban  ban  ban  ban  ban  ban  ban  ban  ban"
+          "sum  sum  sum  sum  sum  sum  sum  sum  sum  sum  sum  sum"
+          "conf conf conf conf mac  mac  mac  mac  mac  mac  mac  mac"
+          "btc  btc  btc  btc  btc  btc  btc  flo  flo  flo  flo  flo"
+          "mkt  mkt  mkt  mkt  mkt  sig  sig  sig  news news news news"
+          "foot foot foot foot foot foot foot foot foot foot foot foot";
+      }
+      /* Macro: cost of money | F&G | calendar in one row */
+      html.compact #sec-macro {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.75fr) minmax(0, 1.1fr);
+        gap: 6px;
+        align-items: start;
+      }
+      html.compact #sec-macro > .im-sec-title { grid-column: 1 / -1; }
+      html.compact #sec-macro .pair-macro { display: contents; }
+      html.compact #calendar-strip .cal-row { flex-direction: column; overflow: visible; gap: 4px; }
+      html.compact #calendar-strip .cal-item { min-width: 0; padding: 4px 7px; }
+      html.compact #conf-factors { max-height: 200px; }
+
+      /* BTC: chart beside agreement / cards / MTF */
+      html.compact #sec-btc {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(240px, 0.9fr);
+        gap: 6px;
+        align-items: start;
+      }
+      html.compact #sec-btc > .im-sec-title { grid-column: 1 / -1; }
+      html.compact #btc-chart { grid-column: 1; grid-row: 2 / 5; }
+      html.compact #agreement { grid-column: 2; grid-row: 2; }
+      html.compact #cards { grid-column: 2; grid-row: 3; grid-template-columns: repeat(2, 1fr); margin-bottom: 0; max-height: 150px; overflow-y: auto; }
+      html.compact #mtf-wrap { grid-column: 2; grid-row: 4; max-height: 96px; overflow: auto; }
+      html.compact #chart { height: 260px; }
+      html.compact .card { padding: 4px 6px 5px; }
+      html.compact .card .value { font-size: 12px; }
+      html.compact .card .detail { font-size: 9px; }
+      html.compact .mtf-table { font-size: 10px; }
+      html.compact .mtf-table th, html.compact .mtf-table td { padding: 2px 4px; }
+      html.compact .mtf-align { margin-top: 2px; font-size: 10px; }
+      html.compact #calendar-strip .cal-item .when { font-size: 10px; }
+      html.compact #calendar-strip .cal-item .title { font-size: 11px; margin-top: 1px; }
+      html.compact #calendar-strip .cal-item .cd { font-size: 12px; margin-top: 1px; }
+      html.compact #calendar-strip .cal-item .note { display: block; font-size: 9px; margin-top: 0; line-height: 1.25; }
+      html.compact #calendar-strip .cal-item { padding: 3px 6px; }
+      html.compact .mini-el { height: 120px; }
+
+      /* Market: top10 | dominance/ratio | ETH/SOL */
+      html.compact #sec-market {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr) minmax(0, 1.1fr);
+        gap: 6px;
+        align-items: start;
+      }
+      html.compact #sec-market > .im-sec-title { grid-column: 1 / -1; }
+      html.compact #sec-market .pair-structure { display: flex; flex-direction: column; gap: 6px; }
+      html.compact #alt-charts { display: flex; flex-direction: column; gap: 6px; }
+      html.compact #alt-charts .mini-el { height: 110px; }
+
+      /* Signals column: setups + tools + journal, all capped */
+      html.compact #sec-signals { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+      html.compact #sec-signals > .pair-tools { grid-template-columns: 1fr; gap: 6px; }
+      html.compact #sec-signals > .pair-tools { grid-template-columns: 1fr 1fr; gap: 6px; }
+      html.compact #sec-flows { max-height: 340px; overflow: auto; }
+      html.compact #sec-market,
+      html.compact #sec-signals,
+      html.compact #sec-news { max-height: 320px; overflow: auto; }
+      html.compact #news-body { max-height: none; }
+      html.compact #sec-news { display: flex; flex-direction: column; min-height: 0; }
+      html.compact #sec-news > .panel { flex: 1; display: flex; flex-direction: column; min-height: 0; margin-bottom: 0; }
+      html.compact #news-body { flex: 1; min-height: 0; max-height: none; overflow-y: auto; }
+      html.compact #panel-conf #conf-factors { max-height: 180px; }
+    }
+    @media (min-width: 1440px) {
+      html.compact .app { gap: 5px 8px; padding: 6px 10px 8px; }
+      html.compact #chart { height: 220px; }
+      html.compact .mini-el { height: 110px; }
+      html.compact #alt-charts .mini-el { height: 110px; }
+      html.compact #panel-conf #conf-factors { max-height: 170px; }
+      html.compact #cards { max-height: 150px; }
+      html.compact #mtf-wrap { max-height: 96px; }
+      html.compact #sec-flows { max-height: 360px; }
+      html.compact #sec-market,
+      html.compact #sec-signals,
+      html.compact #sec-news { max-height: 340px; }
+    }
+    @media (max-height: 820px) and (min-width: 1024px) {
+      html.compact #chart { height: 170px; }
+      html.compact .mini-el { height: 100px; }
+      html.compact #alt-charts .mini-el { height: 100px; }
+      html.compact #conf-factors { max-height: 150px; }
+      html.compact #etf-body { max-height: 130px; }
+      html.compact #setups-body { max-height: 110px; }
+      html.compact #top10-body { max-height: 120px; }
+      html.compact #news-body { max-height: 200px; }
+      html.compact #signal-list { max-height: 80px; }
+      html.compact #panel-calc, html.compact #panel-conc { max-height: 120px; }
+      html.compact .etf-chart { height: 56px; }
+    }
+    @media (max-width: 640px) {
+      html.compact .app { padding: 8px 8px 16px; }
+      html.compact .conf-dial, html.compact .fg-dial { width: 100px; height: 64px; }
+      html.compact #chart { height: 220px; }
+      html.compact .mini-el { height: 180px; }
+      html.compact .cards { grid-template-columns: repeat(2, 1fr); }
+      html.compact .macro-grid { grid-template-columns: repeat(2, 1fr); }
+      html.compact #conf-factors { max-height: 220px; }
+      html.compact header { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
@@ -795,6 +1125,10 @@
         </div>
       </div>
       <div class="header-status meta">
+        <div class="view-toggle" id="view-toggle" role="group" aria-label="Page density">
+          <button type="button" data-view="standard" id="view-standard" aria-pressed="true">Standard</button>
+          <button type="button" data-view="compact" id="view-compact" aria-pressed="false">Compact</button>
+        </div>
         <span id="conn" class="pill connecting">Connecting</span>
         <span id="last-upd">Last update: —</span>
       </div>
@@ -1174,7 +1508,8 @@
     calc: "im.calc",
     cgcache: "im.cgcache",
     miniInterval: function (pair) { return "im.mini." + pair + ".interval"; },
-    setupLines: "im.setupLines"
+    setupLines: "im.setupLines",
+    view: "im.view"
   };
 
   /* Optional same-folder data.json schema (see data.json _schema):
@@ -4360,6 +4695,9 @@
     window.__im.getTop10 = function () { return S.ext.top10; };
     window.__im.getNews = function () { return S.ext.news; };
     window.__im.getConfidence = function () { return typeof confidenceFromDj === "function" ? confidenceFromDj() : null; };
+    window.__im.getView = function () { return currentView(); };
+    window.__im.setView = function (v) { applyView(v === "compact" ? "compact" : "standard"); return currentView(); };
+    window.__im.resizeAllCharts = function () { resizeAllCharts(); };
     window.__im.getFactors = function () {
       const conf = typeof confidenceFromDj === "function" ? confidenceFromDj() : null;
       const list = conf && Array.isArray(conf.factors) ? conf.factors : [];
@@ -5316,6 +5654,35 @@
       if (m) fitChart(m.chart, el);
     });
   }
+  function currentView() {
+    return document.documentElement.classList.contains("compact") ? "compact" : "standard";
+  }
+  function applyView(view, opts) {
+    const compact = view === "compact";
+    document.documentElement.classList.toggle("compact", compact);
+    try { localStorage.setItem(LS.view, compact ? "compact" : "standard"); } catch (e) {}
+    const root = document.getElementById("view-toggle");
+    if (root) {
+      root.querySelectorAll("[data-view]").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.getAttribute("data-view") === (compact ? "compact" : "standard") ? "true" : "false");
+      });
+    }
+    if (opts && opts.resize === false) return;
+    function go() { if (typeof resizeAllCharts === "function") resizeAllCharts(); }
+    requestAnimationFrame(function () { requestAnimationFrame(go); });
+    setTimeout(go, 50);
+    setTimeout(go, 200);
+  }
+  function bindViewToggle() {
+    applyView(currentView(), { resize: false });
+    const root = document.getElementById("view-toggle");
+    if (!root) return;
+    root.addEventListener("click", function (e) {
+      const btn = e.target.closest("[data-view]");
+      if (!btn) return;
+      applyView(btn.getAttribute("data-view"));
+    });
+  }
   function bindChartResize() {
     let t = null;
     window.addEventListener("resize", function () {
@@ -5361,6 +5728,7 @@
     restoreMinis();
     bindMiniUi();
     initExt();
+    bindViewToggle();
     bindBtcTfUi();
     document.getElementById("notify").addEventListener("change", onNotifyToggle);
     document.getElementById("sound").addEventListener("change", function () {
