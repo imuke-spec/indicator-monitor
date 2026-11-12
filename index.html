@@ -336,13 +336,55 @@
     }
     .note { margin-top: 8px; font-size: 11px; color: var(--muted); line-height: 1.4; }
 
-    .hold-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .hold-table th, .hold-table td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--border); }
-    .hold-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
-    .hold-table input { width: 100%; max-width: 110px; background: var(--bg-card); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 5px 7px; font: inherit; font-size: 13px; font-family: "IBM Plex Mono", ui-monospace, monospace; }
-    .hold-table .right, .hold-table th.right { text-align: right; font-family: "IBM Plex Mono", ui-monospace, monospace; }
-    .hold-table .rm { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 4px; }
-    .hold-tot { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font-weight: 650; flex-wrap: wrap; }
+    .top10-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .top10-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .top10-table th, .top10-table td {
+      text-align: right; padding: 7px 8px; border-top: 1px solid var(--border);
+      vertical-align: middle; white-space: nowrap;
+    }
+    .top10-table th:first-child, .top10-table td:first-child,
+    .top10-table th.col-coin, .top10-table td.col-coin { text-align: left; }
+    .top10-table th {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); border-top: 0;
+    }
+    .top10-table td.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 550; }
+    .top10-table td.col-rank { color: var(--muted); font-variant-numeric: tabular-nums; width: 28px; }
+    .top10-coin { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .top10-coin img { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; background: var(--bg-card); }
+    .top10-coin .sym { font-weight: 650; letter-spacing: 0.02em; }
+    .top10-coin .name { display: block; color: var(--muted); font-size: 11px; font-weight: 400; line-height: 1.2; }
+    .top10-table .up { color: var(--green); }
+    .top10-table .down { color: var(--red); }
+    .live-tag {
+      display: inline-block; border-radius: 999px; padding: 1px 7px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .live-tag.live { color: var(--green); background: var(--green-dim); }
+    .live-tag.cg { color: var(--muted); background: var(--grey-dim); }
+    .live-tag.stale { color: #1a1206; background: var(--accent); }
+    .live-dot {
+      display: none; width: 7px; height: 7px; border-radius: 50%;
+      margin-left: 5px; flex-shrink: 0; vertical-align: middle;
+    }
+    .live-dot.live { background: var(--green); }
+    .live-dot.cg { background: var(--grey); }
+    .live-dot.stale { background: var(--accent); }
+    @keyframes top10FlashUp { from { background: rgba(61,214,140,0.35); } to { background: transparent; } }
+    @keyframes top10FlashDown { from { background: rgba(240,98,93,0.35); } to { background: transparent; } }
+    .top10-table td.flash-up { animation: top10FlashUp 0.55s ease; }
+    .top10-table td.flash-down { animation: top10FlashDown 0.55s ease; }
+    @media (max-width: 600px) {
+      .top10-table { font-size: 12px; }
+      .top10-table th, .top10-table td { padding: 6px 5px; }
+      .top10-coin .name,
+      .top10-table th.col-7d, .top10-table td.col-7d,
+      .top10-table th.col-vol, .top10-table td.col-vol,
+      .top10-table th.col-mcap, .top10-table td.col-mcap,
+      .top10-table th.col-live, .top10-table td.col-live { display: none; }
+      .live-dot { display: inline-block; }
+    }
+
 
     .alloc-bar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--bg-card); margin: 10px 0 8px; border: 1px solid var(--border); }
     .alloc-bar span { display: block; height: 100%; }
@@ -673,6 +715,12 @@
       </article>
     </section>
 
+    <section class="panel" id="panel-top10" style="margin-bottom:14px" aria-label="Top 10 crypto">
+      <h2>Top 10 crypto</h2>
+      <div id="top10-body">Loading…</div>
+      <div class="src-line" id="top10-src">Market cap from CoinGecko · live prices from Binance where listed</div>
+    </section>
+
     <section class="panel" id="panel-setups" style="margin-bottom:14px" aria-label="4h signal log">
       <h2>4h signal log</h2>
       <div class="setup-toolbar">
@@ -751,8 +799,7 @@
       <div class="src-line" id="etf-src"></div>
     </section>
 
-    <section class="tools-grid" aria-label="Position size and holdings">
-      <article class="panel" id="panel-calc">
+    <section class="panel" id="panel-calc" style="margin-bottom:14px" aria-label="Position size">
         <h2>Position size</h2>
         <div class="form-grid">
           <label>Pot size (GBP)<input id="calc-pot" type="number" min="0" step="any" inputmode="decimal"></label>
@@ -777,18 +824,6 @@
           <span class="k">R:R to target</span><span class="v" id="calc-rr">—</span>
         </div>
         <div class="warn" id="calc-lev-warn" hidden>Leveraged tokens decay in chop — funding and daily reset work against you when the market ranges. This is a size sketch, not a trade ticket.</div>
-      </article>
-
-      <article class="panel" id="panel-hold">
-        <h2>Holdings</h2>
-        <table class="hold-table">
-          <thead><tr><th>Asset</th><th class="right">Qty</th><th class="right">USD</th><th class="right">GBP</th><th></th></tr></thead>
-          <tbody id="hold-body"></tbody>
-        </table>
-        <div style="margin-top:8px"><button type="button" class="btn" id="hold-add">Add row</button></div>
-        <div class="hold-tot"><span id="hold-usd">Total $—</span><span id="hold-gbp">£—</span></div>
-        <p class="note">Stored only in this browser (localStorage). Nothing is uploaded. Defaults are ATOM 202.26 and BTC 0 until you edit them. FX from Binance GBPUSDT, with open.er-api.com as fallback.</p>
-      </article>
     </section>
 
     <section class="panel" id="panel-conc" style="margin-bottom:8px" aria-label="Concentration check">
@@ -836,7 +871,6 @@
     signals: "im.signals",
     notify: "im.notify",
     sound: "im.sound",
-    holdings: "im.holdings",
     concentration: "im.concentration",
     calc: "im.calc",
     cgcache: "im.cgcache",
@@ -1880,7 +1914,6 @@
     { id: "fomc-2026-12-09", title: "FOMC decision", time: "2026-12-09T19:00:00Z", note: "8–9 Dec · decision 19:00 UK (14:00 ET)" },
     { id: "cpi-2026-12-10", title: "US CPI (Nov)", time: "2026-12-10T13:30:00Z", note: "13:30 UK · BLS" }
   ];
-  const DEFAULT_HOLDINGS = [{ asset: "ATOM", qty: 202.26 }, { asset: "BTC", qty: 0 }];
   const CONC_COLORS = { crypto: "#f5a623", ai: "#9b8cff", eq: "#2ec4d6", bonds: "#3dd68c", other: "#8b98a5" };
   const TREASURY_URL = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026";
   const HY_URL = "https://fred.stlouisfed.org/series/BAMLH0A0HYM2";
@@ -1899,7 +1932,6 @@
     ratio: null,
     deriv: null,
     mtf: null,
-    prices: {},
     calcDirty: false,
     strategyLine: null,
     lazy: {},
@@ -2341,7 +2373,6 @@
       }
     }
     renderMacro();
-    renderHoldings();
     renderCalc();
   }
 
@@ -2640,75 +2671,6 @@
     return gbp * S.ext.gbpUsdt;
   }
 
-  function loadHoldings() {
-    try {
-      const raw = localStorage.getItem(LS.holdings);
-      if (raw) {
-        const arr = JSON.parse(raw);
-        if (Array.isArray(arr) && arr.length) return arr.map(function (r) {
-          return { asset: String(r.asset || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12), qty: +r.qty || 0 };
-        });
-      }
-    } catch (e) {}
-    return DEFAULT_HOLDINGS.map(function (r) { return { asset: r.asset, qty: r.qty }; });
-  }
-  function saveHoldings(rows) {
-    try { localStorage.setItem(LS.holdings, JSON.stringify(rows)); } catch (e) {}
-  }
-  function holdRowsFromDom() {
-    const rows = [];
-    document.querySelectorAll("#hold-body tr").forEach(function (tr) {
-      const asset = (tr.querySelector(".h-asset") && tr.querySelector(".h-asset").value || "").toUpperCase().trim();
-      const qty = parseFloat(tr.querySelector(".h-qty") && tr.querySelector(".h-qty").value);
-      rows.push({ asset: asset, qty: isNum(qty) ? qty : 0 });
-    });
-    return rows;
-  }
-  function renderHoldings() {
-    const body = document.getElementById("hold-body");
-    if (!body) return;
-    if (!body.dataset.ready) {
-      const rows = loadHoldings();
-      body.innerHTML = rows.map(function (r) {
-        return '<tr><td><input class="h-asset" value="' + esc(r.asset) + '" maxlength="12" aria-label="Asset"></td>' +
-          '<td class="right"><input class="h-qty" type="number" step="any" value="' + esc(r.qty) + '" aria-label="Quantity"></td>' +
-          '<td class="right h-usd">—</td><td class="right h-gbp">—</td>' +
-          '<td><button type="button" class="rm" aria-label="Remove">&times;</button></td></tr>';
-      }).join("");
-      body.dataset.ready = "1";
-    }
-    const rows = holdRowsFromDom();
-    saveHoldings(rows);
-    let totUsd = 0, known = true;
-    body.querySelectorAll("tr").forEach(function (tr, i) {
-      const r = rows[i];
-      const px = r && r.asset ? S.ext.prices[r.asset] : null;
-      const usd = r && isNum(px) && isNum(r.qty) ? px * r.qty : NaN;
-      const gbp = usdToGbp(usd);
-      tr.querySelector(".h-usd").textContent = isNum(usd) ? fmtUsd(usd, 2) : "—";
-      tr.querySelector(".h-gbp").textContent = isNum(gbp) ? fmtGbp(gbp, 2) : "—";
-      if (isNum(usd)) totUsd += usd; else if (r && r.qty) known = false;
-    });
-    const totGbp = usdToGbp(totUsd);
-    document.getElementById("hold-usd").textContent = "Total " + (known || totUsd ? fmtUsd(totUsd, 2) : "n/a");
-    document.getElementById("hold-gbp").textContent = isNum(totGbp) ? fmtGbp(totGbp, 2) : "£ n/a";
-  }
-  async function refreshHoldingPrices() {
-    const rows = document.getElementById("hold-body") && document.getElementById("hold-body").dataset.ready ? holdRowsFromDom() : loadHoldings();
-    const assets = [];
-    rows.forEach(function (r) {
-      const a = r.asset;
-      if (a && assets.indexOf(a) < 0) assets.push(a);
-    });
-    await Promise.all(assets.map(function (a) {
-      const sym = a + "USDT";
-      return fetchTicker(sym).then(function (t) {
-        if (t && isNum(t.last)) S.ext.prices[a] = t.last;
-      }).catch(function () {});
-    }));
-    renderHoldings();
-  }
-
   function renderCalc() {
     const pot = parseFloat(document.getElementById("calc-pot").value);
     const riskPct = parseFloat(document.getElementById("calc-risk").value);
@@ -2890,13 +2852,12 @@
     if (typeof renderSummary === "function") renderSummary();
   }
   async function refreshStaticExt() {
-    await Promise.all([refreshFng(), refreshCg(), refreshFxAndGold(), refreshRatio(), refreshHoldingPrices()]);
+    await Promise.all([refreshFng(), refreshCg(), refreshFxAndGold(), refreshRatio()]);
   }
 
   function bindExtUi() {
     restoreCalc();
     restoreConc();
-    renderHoldings();
     ["calc-pot", "calc-risk", "calc-entry", "calc-stop", "calc-target", "calc-lev"].forEach(function (id) {
       const el = document.getElementById(id);
       if (!el) return;
@@ -2912,31 +2873,6 @@
         setTimeout(function () { document.getElementById("calc-from-sig").textContent = "Prefill from latest signal"; }, 2000);
       }
     });
-    const holdBody = document.getElementById("hold-body");
-    holdBody.addEventListener("input", function () {
-      saveHoldings(holdRowsFromDom());
-      renderHoldings();
-    });
-    holdBody.addEventListener("change", function (ev) {
-      if (ev.target && ev.target.classList.contains("h-asset")) refreshHoldingPrices();
-    });
-    holdBody.addEventListener("click", function (ev) {
-      const btn = ev.target.closest(".rm");
-      if (!btn) return;
-      const tr = btn.closest("tr");
-      if (tr) tr.remove();
-      saveHoldings(holdRowsFromDom());
-      renderHoldings();
-    });
-    document.getElementById("hold-add").addEventListener("click", function () {
-      const tr = document.createElement("tr");
-      tr.innerHTML = '<td><input class="h-asset" value="" maxlength="12" aria-label="Asset"></td>' +
-        '<td class="right"><input class="h-qty" type="number" step="any" value="0" aria-label="Quantity"></td>' +
-        '<td class="right h-usd">—</td><td class="right h-gbp">—</td>' +
-        '<td><button type="button" class="rm" aria-label="Remove">&times;</button></td>';
-      holdBody.appendChild(tr);
-      tr.querySelector(".h-asset").focus();
-    });
     ["conc-total", "conc-th", "conc-crypto", "conc-ai", "conc-eq", "conc-bonds", "conc-other"].forEach(function (id) {
       document.getElementById(id).addEventListener("input", renderConc);
     });
@@ -2951,9 +2887,9 @@
     setInterval(function () {
       if (S.ext.lazy && S.ext.lazy.fx) refreshFxAndGold();
       if (S.ext.lazy && S.ext.lazy.ratio) refreshRatio();
-      if (S.ext.lazy && S.ext.lazy.hold) refreshHoldingPrices();
     }, 3 * 60 * 1000);
     setInterval(function () { if (S.ext.lazy && S.ext.lazy.deriv) refreshDeriv(); }, 60 * 1000);
+    setInterval(function () { if (S.ext.lazy && S.ext.lazy.top10) refreshTop10(); }, TOP10_CG_MS);
   }
 
 
@@ -3050,7 +2986,11 @@
     setFresh("ratio", S.ext.ratio && S.ext.ratio.asOf, STALE_SLOW, !!(lazy.ratio && S.ext.ratioFailed));
     const etfDate = S.ext.dataJson && S.ext.dataJson.etfFlows && S.ext.dataJson.etfFlows.latestDate;
     setFresh("etf", etfDate || djAsOf, STALE_DJ, djFail);
-    setFresh("hold", S.ext.gbpAsOf, STALE_SLOW, !!(lazy.fx && !S.ext.gbpUsdt));
+    const t10 = S.ext.top10;
+    setFresh("top10", t10 && (t10.lastTick || t10.asOf), STALE_LIVE, !!(lazy.top10 && t10 && t10.failed && !(t10.coins && t10.coins.length)));
+    if (t10 && t10.coins && typeof updateTop10Row === "function") {
+      t10.coins.forEach(function (c) { updateTop10Row(c, null); });
+    }
     setFresh("calc", Date.now(), STALE_LIVE, false);
     setFresh("conc", Date.now(), STALE_LIVE, false);
     setFresh("signals", S.lastUpdate, STALE_LIVE, liveFail);
@@ -3303,8 +3243,9 @@
   function clearCollapseState() {
     try {
       localStorage.removeItem("im.collapse");
+      localStorage.removeItem("im.holdings");
       Object.keys(localStorage).forEach(function (k) {
-        if (k === "im.collapse" || k.indexOf("im.collapse.") === 0) localStorage.removeItem(k);
+        if (k === "im.collapse" || k.indexOf("im.collapse.") === 0 || k === "im.holdings") localStorage.removeItem(k);
       });
     } catch (e) {}
   }
@@ -3328,7 +3269,7 @@
     add(document.getElementById("panel-ratio"), "ratio", "h2");
     add(document.getElementById("panel-etf"), "etf", "h2");
     add(document.getElementById("panel-calc"), "calc", "h2");
-    add(document.getElementById("panel-hold"), "hold", "h2");
+    add(document.getElementById("panel-top10"), "top10", "h2");
     add(document.getElementById("panel-conc"), "conc", "h2");
     add(document.getElementById("panel-setups"), "setups", "h2");
     add(document.getElementById("panel-signals"), "signals", ".sig-head");
@@ -3407,20 +3348,16 @@
       S.ext.lazy.ratio = true;
       refreshRatio();
     });
-    whenNear(document.getElementById("panel-hold"), function () {
-      S.ext.lazy.hold = true;
-      if (!S.ext.lazy.fx) {
-        S.ext.lazy.fx = true;
-        refreshFxAndGold();
-      } else {
-        refreshHoldingPrices();
-      }
+    whenNear(document.getElementById("panel-top10"), function () {
+      if (S.ext.lazy.top10) return;
+      S.ext.lazy.top10 = true;
+      refreshTop10();
     });
   }
 
   function wakeAll() {
     S.ext.lazy = Object.assign(S.ext.lazy || {}, {
-      minis: true, mtf: true, deriv: true, fng: true, cg: true, ratio: true, hold: true, fx: true, setups: true
+      minis: true, mtf: true, deriv: true, fng: true, cg: true, ratio: true, top10: true, fx: true, setups: true
     });
     if (!minis.ETHUSDT || !minis.ETHUSDT.chart) initMiniCharts();
     return Promise.all([
@@ -3431,7 +3368,8 @@
       refreshCg(),
       refreshRatio(),
       refreshFxAndGold(),
-      loadSignalsJson()
+      loadSignalsJson(),
+      refreshTop10()
     ]);
   }
 
@@ -3442,6 +3380,257 @@
     window.__im.getSetupSignals = function () { return S.ext.signalsJson; };
     window.__im.wakeAll = wakeAll;
     window.__im.renderSummary = renderSummary;
+    window.__im.getTop10 = function () { return S.ext.top10; };
+  }
+
+
+  /* ---------- top 10 crypto (CoinGecko caps + Binance live prices) ---------- */
+  const STABLE_SYMS = {
+    USDT: 1, USDC: 1, USDE: 1, DAI: 1, FDUSD: 1, TUSD: 1, BUSD: 1, USDP: 1, USDD: 1,
+    PYUSD: 1, GUSD: 1, FRAX: 1, LUSD: 1, USD1: 1, USDS: 1, RLUSD: 1, EURC: 1, EURT: 1,
+    USDY: 1, CRVUSD: 1, GHO: 1, USDT0: 1, USDG: 1, USD0: 1, USDF: 1, USDA: 1
+  };
+  const TOP10_CG_URL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h,7d";
+  const TOP10_CG_MS = 5 * 60 * 1000;
+
+  function ensureTop10State() {
+    if (!S.ext.top10) {
+      S.ext.top10 = {
+        coins: [], asOf: null, failed: false, ticks: 0,
+        ws: null, wsHostIndex: 0, reconnectTimer: null, backoff: 1000,
+        binancePx: null, binancePxAt: 0
+      };
+    }
+    return S.ext.top10;
+  }
+  function isStableSymbol(sym) {
+    return !!STABLE_SYMS[String(sym || "").toUpperCase().replace(/[^A-Z0-9]/g, "")];
+  }
+  function fmtTopPrice(x) {
+    if (!isNum(x)) return "—";
+    const abs = Math.abs(x);
+    let d = 2;
+    if (abs < 0.0001) d = 8;
+    else if (abs < 0.01) d = 6;
+    else if (abs < 1) d = 4;
+    else if (abs >= 1000) d = 2;
+    return "$" + x.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  function top10LiveLabel(c) {
+    if (!c) return { text: "—", cls: "cg" };
+    if (!c.binance) return { text: "CoinGecko", cls: "cg" };
+    if (c.lastTick && (Date.now() - c.lastTick) <= STALE_LIVE) return { text: "Live", cls: "live" };
+    if (c.lastTick) return { text: "Stale", cls: "stale" };
+    return { text: "CoinGecko", cls: "cg" };
+  }
+  async function loadBinanceUsdtMap() {
+    const st = ensureTop10State();
+    if (st.binancePx && (Date.now() - st.binancePxAt) < 30 * 60 * 1000) return st.binancePx;
+    try {
+      const all = await fetchJson("/api/v3/ticker/price");
+      const map = {};
+      if (Array.isArray(all)) {
+        all.forEach(function (r) {
+          if (r && r.symbol && /USDT$/.test(r.symbol) && isNum(+r.price)) map[r.symbol] = +r.price;
+        });
+      }
+      st.binancePx = map;
+      st.binancePxAt = Date.now();
+      return map;
+    } catch (e) {
+      return st.binancePx || {};
+    }
+  }
+  function coinsSignature(coins) {
+    return coins.map(function (c) { return c.id + ":" + (c.binance || ""); }).join(",");
+  }
+  function renderTop10Table() {
+    const st = ensureTop10State();
+    const body = document.getElementById("top10-body");
+    if (!body) return;
+    const coins = st.coins || [];
+    if (!coins.length) {
+      body.innerHTML = st.failed
+        ? '<span class="na">n/a</span> — could not load CoinGecko markets'
+        : "Loading…";
+      return;
+    }
+    let html = '<div class="top10-scroll"><table class="top10-table" id="top10-table"><thead><tr>' +
+      "<th class=\"col-rank\">#</th><th class=\"col-coin\">Coin</th><th>Price</th><th>24h</th>" +
+      "<th class=\"col-7d\">7d</th><th class=\"col-mcap\">Market cap</th><th class=\"col-vol\">24h vol</th><th class=\"col-live\">Status</th>" +
+      "</tr></thead><tbody>";
+    coins.forEach(function (c) {
+      const live = top10LiveLabel(c);
+      const chg24 = isNum(c.chg24) ? '<span class="' + toneCls(c.chg24) + '">' + fmtPct(c.chg24) + "</span>" : "—";
+      const chg7 = isNum(c.chg7) ? '<span class="' + toneCls(c.chg7) + '">' + fmtPct(c.chg7) + "</span>" : "—";
+      html += '<tr data-id="' + esc(c.id) + '">' +
+        '<td class="col-rank mono">' + c.rank + "</td>" +
+        '<td class="col-coin"><div class="top10-coin">' +
+          (c.image ? '<img src="' + esc(c.image) + '" alt="" width="20" height="20" loading="lazy">' : "") +
+          "<div><span class=\"sym\">" + esc(c.symbol) + "</span><span class=\"live-dot " + live.cls + "\" title=\"" + live.text + "\"></span><span class=\"name\">" + esc(c.name) + "</span></div></div></td>" +
+        '<td class="col-px mono" data-raw="' + (isNum(c.price) ? c.price : "") + '">' + fmtTopPrice(c.price) + "</td>" +
+        '<td class="col-24 mono">' + chg24 + "</td>" +
+        '<td class="col-7d mono">' + chg7 + "</td>" +
+        '<td class="col-mcap mono">' + fmtCompactUsd(c.mcap) + "</td>" +
+        '<td class="col-vol mono">' + fmtCompactUsd(c.vol) + "</td>" +
+        '<td class="col-live"><span class="live-tag ' + live.cls + '">' + live.text + "</span></td>" +
+        "</tr>";
+    });
+    html += "</tbody></table></div>";
+    body.innerHTML = html;
+    const src = document.getElementById("top10-src");
+    if (src) {
+      src.innerHTML = 'Market cap &amp; 7d from <a class="src" href="https://www.coingecko.com/en/coins" target="_blank" rel="noopener">CoinGecko</a>' +
+        " · live prices from Binance miniTicker where listed, otherwise CoinGecko · stables excluded";
+    }
+  }
+  function updateTop10Row(c, flashDir) {
+    const tr = document.querySelector('#top10-table tr[data-id="' + c.id + '"]');
+    if (!tr) return;
+    const px = tr.querySelector(".col-px");
+    if (px) {
+      px.textContent = fmtTopPrice(c.price);
+      px.setAttribute("data-raw", isNum(c.price) ? String(c.price) : "");
+      if (flashDir) {
+        px.classList.remove("flash-up", "flash-down");
+        void px.offsetWidth;
+        px.classList.add(flashDir === "up" ? "flash-up" : "flash-down");
+      }
+    }
+    const c24 = tr.querySelector(".col-24");
+    if (c24) {
+      c24.innerHTML = isNum(c.chg24) ? '<span class="' + toneCls(c.chg24) + '">' + fmtPct(c.chg24) + "</span>" : "—";
+    }
+    const vol = tr.querySelector(".col-vol");
+    if (vol && isNum(c.vol)) vol.textContent = fmtCompactUsd(c.vol);
+    const live = top10LiveLabel(c);
+    const tag = tr.querySelector(".col-live .live-tag");
+    if (tag) { tag.className = "live-tag " + live.cls; tag.textContent = live.text; }
+    const dot = tr.querySelector(".live-dot");
+    if (dot) { dot.className = "live-dot " + live.cls; dot.setAttribute("title", live.text); }
+  }
+  function paintTop10Freshness() {
+    const st = ensureTop10State();
+    const asOf = st.lastTick || st.asOf;
+    const failed = st.failed && !(st.coins && st.coins.length);
+    setFresh("top10", asOf, STALE_LIVE, failed);
+  }
+  function stopTop10Ws() {
+    const st = ensureTop10State();
+    if (st.reconnectTimer) { clearTimeout(st.reconnectTimer); st.reconnectTimer = null; }
+    if (st.ws) {
+      try { st.ws.onclose = null; st.ws.onerror = null; st.ws.close(); } catch (e) {}
+      st.ws = null;
+    }
+  }
+  function scheduleTop10Reconnect(immediate) {
+    const st = ensureTop10State();
+    if (st.reconnectTimer) clearTimeout(st.reconnectTimer);
+    const wait = immediate ? 200 : st.backoff;
+    if (!immediate) st.backoff = Math.min(st.backoff * 2, 30000);
+    st.reconnectTimer = setTimeout(connectTop10Ws, wait);
+  }
+  function connectTop10Ws() {
+    const st = ensureTop10State();
+    stopTop10Ws();
+    const streams = st.coins.filter(function (c) { return c.binance; })
+      .map(function (c) { return c.binance.toLowerCase() + "@miniTicker"; });
+    if (!streams.length) return;
+    const host = WS_HOSTS[st.wsHostIndex % WS_HOSTS.length];
+    const url = host + "/stream?streams=" + streams.join("/");
+    let ws;
+    try { ws = new WebSocket(url); }
+    catch (e) { scheduleTop10Reconnect(); return; }
+    st.ws = ws;
+    ws.onopen = function () { st.backoff = 1000; };
+    ws.onmessage = function (ev) {
+      try {
+        const msg = JSON.parse(ev.data);
+        const d = msg.data || msg;
+        const sym = d.s;
+        if (!sym) return;
+        const close = parseFloat(d.c);
+        const open = parseFloat(d.o);
+        const quoteVol = parseFloat(d.q);
+        const coin = st.coins.find(function (c) { return c.binance === sym; });
+        if (!coin || !isNum(close)) return;
+        const prev = coin.price;
+        coin.price = close;
+        if (isNum(open) && open) coin.chg24 = (close / open - 1) * 100;
+        if (isNum(quoteVol)) coin.vol = quoteVol;
+        coin.lastTick = Date.now();
+        st.lastTick = coin.lastTick;
+        st.ticks += 1;
+        let flash = null;
+        if (isNum(prev) && close !== prev) flash = close > prev ? "up" : "down";
+        updateTop10Row(coin, flash);
+        if (st.ticks % 8 === 0) paintTop10Freshness();
+      } catch (e) {}
+    };
+    ws.onerror = function () {};
+    ws.onclose = function () {
+      if (S.destroyed) return;
+      st.wsHostIndex = (st.wsHostIndex + 1) % WS_HOSTS.length;
+      scheduleTop10Reconnect(st.backoff <= 1000);
+    };
+  }
+  async function refreshTop10() {
+    const st = ensureTop10State();
+    const rows = await quietFetch(TOP10_CG_URL, 12000);
+    if (!Array.isArray(rows) || !rows.length) {
+      st.failed = true;
+      if (!st.coins.length) renderTop10Table();
+      paintTop10Freshness();
+      return;
+    }
+    const bn = await loadBinanceUsdtMap();
+    const coins = [];
+    rows.forEach(function (r) {
+      if (!r || !r.symbol || coins.length >= 10) return;
+      const symbol = String(r.symbol).toUpperCase();
+      if (isStableSymbol(symbol)) return;
+      const pair = symbol + "USDT";
+      const listed = bn && isNum(bn[pair]);
+      const price = listed ? bn[pair] : (isNum(r.current_price) ? r.current_price : null);
+      const chg7 = r.price_change_percentage_7d_in_currency;
+      coins.push({
+        id: r.id || symbol.toLowerCase(),
+        symbol: symbol,
+        name: r.name || symbol,
+        image: r.image || "",
+        rank: coins.length + 1,
+        cgRank: r.market_cap_rank,
+        price: price,
+        chg24: isNum(r.price_change_percentage_24h) ? r.price_change_percentage_24h : null,
+        chg7: isNum(chg7) ? chg7 : null,
+        mcap: isNum(r.market_cap) ? r.market_cap : null,
+        vol: isNum(r.total_volume) ? r.total_volume : null,
+        binance: listed ? pair : null,
+        lastTick: listed ? Date.now() : null
+      });
+    });
+    const prevSig = coinsSignature(st.coins);
+    const nextSig = coinsSignature(coins);
+    // Keep live ticks/prices if the same coins are still listed
+    if (prevSig === nextSig) {
+      const byId = {};
+      st.coins.forEach(function (c) { byId[c.id] = c; });
+      coins.forEach(function (c) {
+        const prev = byId[c.id];
+        if (!prev) return;
+        if (isNum(prev.price)) c.price = prev.price;
+        if (isNum(prev.chg24) && prev.lastTick) c.chg24 = prev.chg24;
+        if (isNum(prev.vol) && prev.binance) c.vol = prev.vol;
+        c.lastTick = prev.lastTick;
+      });
+    }
+    st.coins = coins;
+    st.failed = !coins.length;
+    st.asOf = Date.now();
+    renderTop10Table();
+    paintTop10Freshness();
+    if (prevSig !== nextSig) connectTop10Ws();
+    else if (!st.ws) connectTop10Ws();
   }
 
   async function initExt() {
