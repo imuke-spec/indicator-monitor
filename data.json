@@ -6,7 +6,7 @@
     "strategyAvgCost": "USD average cost to mark as a labelled line on the BTC chart (Strategy / MicroStrategy).",
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }]."
   },
-  "asOf": "2026-11-10",
+  "asOf": "2026-11-12",
   "macro": {
     "us2y": {
       "value": 4.73,
@@ -21,8 +21,8 @@
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "hyCredit": {
-      "value": 3.48,
-      "asOf": "2026-11-10",
+      "value": 3.34,
+      "asOf": "2026-11-09",
       "source": "ICE BofA HY OAS",
       "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
     }
@@ -31,9 +31,25 @@
     "source": "Farside",
     "url": "https://farside.co.uk/btc/",
     "altUrl": "https://sosovalue.com/assets/etf/us-btc-spot",
-    "latestDate": "2026-11-10",
+    "latestDate": "2026-11-11",
     "unit": "USD millions",
     "days": [
+      {
+        "date": "2026-11-11",
+        "total": -299.8,
+        "IBIT": -269.7,
+        "FBTC": 0.0,
+        "BITB": 0.0,
+        "ARKB": 0.0,
+        "BTCO": 0.0,
+        "EZBC": 0.0,
+        "BRRR": 0.0,
+        "HODL": 0.0,
+        "BTCW": 0.0,
+        "MSBT": 9.0,
+        "GBTC": -39.1,
+        "BTC": 0.0
+      },
       {
         "date": "2026-11-10",
         "total": -95.0,
@@ -240,22 +256,6 @@
         "BTCW": 0.0,
         "MSBT": 4.2,
         "GBTC": 0.0,
-        "BTC": 0.0
-      },
-      {
-        "date": "2026-10-22",
-        "total": -635.6,
-        "IBIT": -254.1,
-        "FBTC": -217.5,
-        "BITB": -27.4,
-        "ARKB": -109.4,
-        "BTCO": 0.0,
-        "EZBC": 0.0,
-        "BRRR": 0.0,
-        "HODL": 0.0,
-        "BTCW": 0.0,
-        "MSBT": 2.3,
-        "GBTC": -29.5,
         "BTC": 0.0
       }
     ]
