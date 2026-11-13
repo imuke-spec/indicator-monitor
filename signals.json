@@ -1,50 +1,65 @@
 {
-  "updated": "2026-11-12T19:17:00Z",
-  "signals": [
-    {
-      "time": "2026-11-12T19:17:00Z",
-      "setup": "4h close below support 72,727 + MACD bearish cross (breakdown)",
-      "direction": "warning",
-      "entry": "72,300-72,700",
-      "stop": 73700,
-      "targets": [
-        70000,
-        69000
-      ],
-      "rr": 2.1,
-      "trend": "with",
-      "invalidation": "4h close back above 72,727",
-      "note": "Reduce, hedge or bear-token idea, not a must-trade. 4h close 71,710, volume 2.4x avg, RSI 27 (oversold, bounce risk). Entry is retest zone."
-    },
-    {
-      "time": "2026-11-12T11:59:00Z",
-      "setup": "4h close below support 73,510 and daily SMA200 73,173 (breakdown)",
-      "direction": "warning",
-      "entry": 72950,
-      "stop": 74300,
-      "targets": [
-        70000,
-        69000
-      ],
-      "rr": 2.2,
-      "trend": "with",
-      "invalidation": "4h close back above 73,510",
-      "note": "Reduce, hedge or bear-token idea, not a must-trade. Price ~71,300 now; entry is a retest zone 72,700-73,200. RSI 34, MACD hist 8 (bearish cross imminent)."
-    },
-    {
-      "time": "2026-11-11T11:59:00Z",
-      "setup": "4h MACD bullish signal cross",
-      "direction": "long",
-      "entry": 74300,
-      "stop": 72500,
-      "targets": [
-        74996,
-        76200
-      ],
-      "rr": 0.39,
-      "trend": "against",
-      "invalidation": "Close below 72,500",
-      "note": "Counter-trend, low quality. Entry zone 74,000\u201374,600."
-    }
-  ]
+ "updated": "2026-11-13T11:09:00Z",
+ "signals": [
+  {
+   "time": "2026-11-13T11:09:00Z",
+   "setup": "4h closes below 71,255 and 70,000 support, vol 2.7x avg (breakdown continuation)",
+   "direction": "warning",
+   "entry": "70,000-70,600 retest",
+   "stop": 71300,
+   "targets": [
+    67568,
+    65000
+   ],
+   "rr": 2.7,
+   "trend": "with",
+   "invalidation": "4h close back above 71,255",
+   "note": "Reduce, hedge or bear-token idea, not a must-trade. RSI 16.7 extremely oversold, so don't chase; bounce risk. Flush low 67,568."
+  },
+  {
+   "time": "2026-11-12T19:17:00Z",
+   "setup": "4h close below support 72,727 + MACD bearish cross (breakdown)",
+   "direction": "warning",
+   "entry": "72,300-72,700",
+   "stop": 73700,
+   "targets": [
+    70000,
+    69000
+   ],
+   "rr": 2.1,
+   "trend": "with",
+   "invalidation": "4h close back above 72,727",
+   "note": "Reduce, hedge or bear-token idea, not a must-trade. 4h close 71,710, volume 2.4x avg, RSI 27 (oversold, bounce risk). Entry is retest zone."
+  },
+  {
+   "time": "2026-11-12T11:59:00Z",
+   "setup": "4h close below support 73,510 and daily SMA200 73,173 (breakdown)",
+   "direction": "warning",
+   "entry": 72950,
+   "stop": 74300,
+   "targets": [
+    70000,
+    69000
+   ],
+   "rr": 2.2,
+   "trend": "with",
+   "invalidation": "4h close back above 73,510",
+   "note": "Reduce, hedge or bear-token idea, not a must-trade. Price ~71,300 now; entry is a retest zone 72,700-73,200. RSI 34, MACD hist 8 (bearish cross imminent)."
+  },
+  {
+   "time": "2026-11-11T11:59:00Z",
+   "setup": "4h MACD bullish signal cross",
+   "direction": "long",
+   "entry": 74300,
+   "stop": 72500,
+   "targets": [
+    74996,
+    76200
+   ],
+   "rr": 0.39,
+   "trend": "against",
+   "invalidation": "Close below 72,500",
+   "note": "Counter-trend, low quality. Entry zone 74,000\u201374,600."
+  }
+ ]
 }
