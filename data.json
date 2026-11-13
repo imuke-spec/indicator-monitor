@@ -7,23 +7,23 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-12",
+  "asOf": "2026-11-13",
   "macro": {
     "us2y": {
-      "value": 4.73,
-      "asOf": "2026-11-10",
-      "source": "US Treasury",
+      "value": 4.867,
+      "asOf": "2026-11-12",
+      "source": "Reuters (Treasury close)",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "us10y": {
-      "value": 4.98,
-      "asOf": "2026-11-10",
-      "source": "US Treasury",
+      "value": 5.105,
+      "asOf": "2026-11-12",
+      "source": "Reuters (Treasury close)",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "hyCredit": {
-      "value": 3.34,
-      "asOf": "2026-11-09",
+      "value": 3.3,
+      "asOf": "2026-11-11",
       "source": "ICE BofA HY OAS",
       "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
     }
@@ -263,10 +263,10 @@
   },
   "strategyAvgCost": 75456,
   "confidence": {
-    "score": 18,
-    "prev": 20,
-    "asOf": "2026-11-12T07:05:00Z",
-    "rationale": "ETF selling picked up again, Nvidia's leadership shock hit AI-heavy indexes, and the 2y keeps rising with a hike priced in. BTC holding the SMA200, a shrinking MACD histogram, lower open interest and tight credit spreads keep it off the floor.",
+    "score": 13,
+    "prev": 18,
+    "asOf": "2026-11-13T07:10:00Z",
+    "rationale": "SMA200 lost on a close and a $1.5B long flush took BTC under 70k, while the 10y is back above 5.1%, the dollar is at a 19-month high and IBIT keeps redeeming; only extreme fear, oversold RSI and calm credit spreads keep it off zero.",
     "history": [
       {
         "date": "2026-11-08",
@@ -287,67 +287,71 @@
       {
         "date": "2026-11-12",
         "score": 18
+      },
+      {
+        "date": "2026-11-13",
+        "score": 13
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "~4.99%, pinned near 5%",
+        "state": "5.105%, back above 5%",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "2y / curve",
-        "state": "2y 4.78% Asia, 2s10s ~22bp flattening",
+        "state": "2y 4.867%, +14bp, bear move",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Credit spreads",
-        "state": "HY OAS 3.34%, tighter",
+        "state": "HY OAS 3.30%, calm",
         "impact": "positive"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Fed path",
-        "state": "Dec hike priced; 50bp / Jan talk",
+        "state": "~29bp Dec hike priced; hawkish speakers",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Oil",
-        "state": "Brent $92.8, rebounding",
+        "state": "Brent $95.8, +3.2%",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Dollar",
-        "state": "DXY two-week high",
+        "state": "DXY 103.19, 19-month high",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Spot BTC ETFs",
-        "state": "−$299.8M, 5th outflow, IBIT-led",
+        "state": "Wed −$299.8M; Thu prelim −$47.7M ex-IBIT",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
-        "factor": "Whales / treasuries",
-        "state": "Whales net selling; Strategy under cost",
+        "factor": "Strategy / treasuries",
+        "state": "MSCI removal; spot 8% under cost",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "OI −1.9%, L/S 2.74 long",
-        "impact": "neutral"
+        "state": "$1.47B liqs; OI up, L/S 3.18 long",
+        "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Funding",
-        "state": "BTC +0.0071%, baseline",
+        "state": "BTC +0.0028%, cooling",
         "impact": "neutral"
       },
       {
@@ -359,52 +363,77 @@
       {
         "category": "Market Structure & Sentiment",
         "factor": "MACD",
-        "state": "Below signal, hist shrinking",
-        "impact": "neutral"
+        "state": "Below signal, hist widening",
+        "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "SMA200",
-        "state": "Holding, +0.4% cushion",
-        "impact": "neutral"
-      },
-      {
-        "category": "Market Structure & Sentiment",
-        "factor": "Fear & Greed",
-        "state": "28 Fear",
-        "impact": "neutral"
-      },
-      {
-        "category": "Event Risk",
-        "factor": "Nvidia CEO / board",
-        "state": "Ouster report, −8% AH",
+        "state": "Lost, price −5.5%",
         "impact": "negative"
       },
       {
+        "category": "Market Structure & Sentiment",
+        "factor": "Fear & Greed / RSI",
+        "state": "F&G 20, RSI 25.5 oversold",
+        "impact": "neutral"
+      },
+      {
         "category": "Event Risk",
-        "factor": "PPI Fri",
-        "state": "Hot print = 50bp talk",
+        "factor": "PPI today 13:30 GMT",
+        "state": "Hot = 50bp talk",
         "impact": "negative"
       },
       {
         "category": "Event Risk",
         "factor": "Nvidia earnings 17 Nov",
-        "state": "Leadership + earnings risk",
+        "state": "Interim CEO + guidance risk",
+        "impact": "negative"
+      },
+      {
+        "category": "Event Risk",
+        "factor": "Middle East",
+        "state": "Iran–US escalation headlines",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "NVDA ~6.3% of S&P, narrow rallies",
+        "state": "Rotation within AI, narrow breadth",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "Wealth-channel ETF bid",
-        "state": "MSBT inflows daily",
+        "state": "MSBT small daily inflows",
         "impact": "positive"
       }
     ]
   },
-  "calendar": []
+  "calendar": [
+    {
+      "id": "ppi-2026-11-13",
+      "title": "US PPI (Oct)",
+      "time": "2026-11-13T13:30:00Z",
+      "note": "Hot print = 50bp December hike talk"
+    },
+    {
+      "id": "nvda-earnings-2026-11-17",
+      "title": "Nvidia Q3 earnings",
+      "time": "2026-11-17T21:20:00Z",
+      "note": "After US close (time approximate); first report under interim CEO Colette Kress"
+    },
+    {
+      "id": "msci-mstr-2026-11-30",
+      "title": "MSCI removes Strategy (MSTR)",
+      "time": "2026-11-30T21:00:00Z",
+      "note": "Effective after the 30 Nov close; ~13M shares of passive selling"
+    },
+    {
+      "id": "fomc-2026-12-09",
+      "title": "FOMC decision + dot plot",
+      "time": "2026-12-09T19:00:00Z",
+      "note": "~29bp hike priced (Reuters, 12 Nov)"
+    }
+  ]
 }
