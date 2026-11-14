@@ -1,6 +1,21 @@
 {
- "updated": "2026-11-13T11:09:00Z",
+ "updated": "2026-11-14T11:16Z",
  "signals": [
+  {
+   "time": "2026-11-14T11:16Z",
+   "setup": "4h closes 66,756 and 67,165 below 67,568 support (breakdown warning)",
+   "direction": "warning",
+   "entry": "67,600-68,200 retest",
+   "stop": 69000,
+   "targets": [
+    65000,
+    62300
+   ],
+   "rr": "~1.6 to 65,000; ~2.8 to 62,300",
+   "trend": "with",
+   "invalidation": "4h close back above 68,200",
+   "note": "Reduce, hedge or bear-token idea; RSI 22 oversold, bounce risk."
+  },
   {
    "time": "2026-11-13T11:09:00Z",
    "setup": "4h closes below 71,255 and 70,000 support, vol 2.7x avg (breakdown continuation)",
