@@ -7,7 +7,7 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-14",
+  "asOf": "2026-11-15",
   "macro": {
     "us2y": {
       "value": 4.88,
@@ -263,10 +263,10 @@
   },
   "strategyAvgCost": 75456,
   "confidence": {
-    "score": 11,
-    "prev": 13,
-    "asOf": "2026-11-14T07:20:00Z",
-    "rationale": "BTC lost another 4% to test the 200-week SMA with seven straight ETF outflow days, the 10y at 5.15% and a fully priced December hike; only extreme fear, deep-oversold RSI, tighter HY spreads and large-wallet accumulation keep it off zero.",
+    "score": 10,
+    "prev": 11,
+    "asOf": "2026-11-15T07:15:00Z",
+    "rationale": "Down from 11 — BTC lost the 200-week SMA and hit 62,006 with F&G 10, seven straight ETF outflow days and the 10y at 5.15%; a $2B long flush, near-flat funding and Glassnode deep-value reads keep it off zero.",
     "history": [
       {
         "date": "2026-11-08",
@@ -295,13 +295,17 @@
       {
         "date": "2026-11-14",
         "score": 11
+      },
+      {
+        "date": "2026-11-15",
+        "score": 10
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "5.151%, 4-week high",
+        "state": "5.151% (Fri), 4-week high",
         "impact": "negative"
       },
       {
@@ -313,7 +317,7 @@
       {
         "category": "Macro / Cost of Money",
         "factor": "Credit spreads",
-        "state": "HY OAS 3.20%, tightening",
+        "state": "HY OAS 3.20%, calm",
         "impact": "positive"
       },
       {
@@ -321,12 +325,6 @@
         "factor": "Fed path",
         "state": "Dec 25bp hike 100% priced",
         "impact": "negative"
-      },
-      {
-        "category": "Macro / Cost of Money",
-        "factor": "Inflation (PPI)",
-        "state": "+0.3% m/m soft; 6.5% y/y",
-        "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
@@ -349,32 +347,26 @@
       {
         "category": "Flows & Positioning",
         "factor": "Strategy / treasuries",
-        "state": "MSCI exit; spot 11% under cost",
+        "state": "$11.1B underwater; MSCI exit",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "$1.26B liqs; OI −4.7%",
+        "state": "$2.02B liqs, 87% longs",
         "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
-        "factor": "Funding",
-        "state": "BTC +0.0056%, still positive",
-        "impact": "negative"
+        "factor": "Funding / OI",
+        "state": "Funding ~flat; shorts adding OI",
+        "impact": "positive"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Stablecoins",
-        "state": "−$14.2B in 30d",
+        "state": "−$17B in a month",
         "impact": "negative"
-      },
-      {
-        "category": "Flows & Positioning",
-        "factor": "Large wallets",
-        "state": "100–10K BTC cohorts accumulating",
-        "impact": "positive"
       },
       {
         "category": "Market Structure & Sentiment",
@@ -391,37 +383,43 @@
       {
         "category": "Market Structure & Sentiment",
         "factor": "SMA200 / 200W",
-        "state": "−7.7% under 200D; testing 200W",
+        "state": "−11.6% under 200D; 200W lost",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Fear & Greed / RSI",
-        "state": "F&G 13, RSI 23 oversold",
+        "state": "F&G 10, RSI 21 capitulation",
         "impact": "neutral"
       },
       {
         "category": "Event Risk",
+        "factor": "Weekly close tonight",
+        "state": "First close under 200W since Jul",
+        "impact": "negative"
+      },
+      {
+        "category": "Event Risk",
         "factor": "Nvidia earnings 17 Nov",
-        "state": "First post-Huang print",
+        "state": "Interim-CEO print",
         "impact": "negative"
       },
       {
         "category": "Event Risk",
         "factor": "FOMC minutes 18 Nov",
-        "state": "50bp debate risk",
-        "impact": "negative"
-      },
-      {
-        "category": "Event Risk",
-        "factor": "Middle East",
-        "state": "IRGC drones at US Bahrain base",
+        "state": "Hike-path detail",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "Semis selling, defensives bid",
+        "state": "NVDA −30%, Anthropic IPO drain",
+        "impact": "negative"
+      },
+      {
+        "category": "Structural",
+        "factor": "Exchange risk",
+        "state": "Binance $6.3B hack fallout",
         "impact": "negative"
       },
       {
