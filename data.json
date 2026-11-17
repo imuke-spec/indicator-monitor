@@ -7,23 +7,23 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-15",
+  "asOf": "2026-11-17",
   "macro": {
     "us2y": {
-      "value": 4.88,
-      "asOf": "2026-11-13",
-      "source": "US Treasury close (via Invested Alpha)",
+      "value": 4.83,
+      "asOf": "2026-11-16",
+      "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "us10y": {
-      "value": 5.151,
-      "asOf": "2026-11-13",
-      "source": "Barchart (Treasury close 5.15%)",
+      "value": 5.12,
+      "asOf": "2026-11-16",
+      "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "hyCredit": {
-      "value": 3.2,
-      "asOf": "2026-11-12",
+      "value": 3.34,
+      "asOf": "2026-11-16",
       "source": "ICE BofA HY OAS",
       "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
     }
@@ -32,9 +32,25 @@
     "source": "Farside",
     "url": "https://farside.co.uk/btc/",
     "altUrl": "https://sosovalue.com/assets/etf/us-btc-spot",
-    "latestDate": "2026-11-13",
+    "latestDate": "2026-11-16",
     "unit": "USD millions",
     "days": [
+      {
+        "date": "2026-11-16",
+        "total": 7.9,
+        "IBIT": 76.5,
+        "FBTC": -11.3,
+        "BITB": 0.0,
+        "ARKB": -4.3,
+        "BTCO": -6.5,
+        "EZBC": -3.8,
+        "BRRR": 0.0,
+        "HODL": 0.0,
+        "BTCW": 0.0,
+        "MSBT": -1.5,
+        "GBTC": -34.6,
+        "BTC": -6.6
+      },
       {
         "date": "2026-11-13",
         "total": -185.4,
@@ -242,31 +258,15 @@
         "MSBT": 0.0,
         "GBTC": 0.0,
         "BTC": 0.0
-      },
-      {
-        "date": "2026-10-27",
-        "total": 176.0,
-        "IBIT": 151.5,
-        "FBTC": 24.5,
-        "BITB": 0.0,
-        "ARKB": 0.0,
-        "BTCO": 0.0,
-        "EZBC": 0.0,
-        "BRRR": 0.0,
-        "HODL": 0.0,
-        "BTCW": 0.0,
-        "MSBT": 0.0,
-        "GBTC": 0.0,
-        "BTC": 0.0
       }
     ]
   },
-  "strategyAvgCost": 75456,
+  "strategyAvgCost": 75452,
   "confidence": {
-    "score": 10,
-    "prev": 11,
-    "asOf": "2026-11-15T07:15:00Z",
-    "rationale": "Down from 11 — BTC lost the 200-week SMA and hit 62,006 with F&G 10, seven straight ETF outflow days and the 10y at 5.15%; a $2B long flush, near-flat funding and Glassnode deep-value reads keep it off zero.",
+    "score": 12,
+    "prev": 10,
+    "asOf": "2026-11-17T15:46:00Z",
+    "rationale": "Up from 10 — BTC held the 62,006 low and US spot ETFs printed a small +$7.9M inflow (IBIT +$76.5M), with the 10y easing to 5.12%; the first weekly close under the 200-week SMA, a still-deep MACD and RMI SELL, and Nvidia due later today keep the dial in Avoid.",
     "history": [
       {
         "date": "2026-11-08",
@@ -299,109 +299,107 @@
       {
         "date": "2026-11-15",
         "score": 10
+      },
+      {
+        "date": "2026-11-17",
+        "score": 12
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "5.151% (Fri), 4-week high",
+        "state": "5.12% (Mon close), off Friday 5.15%",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "2y / curve",
-        "state": "2y 4.88%, bear steepener",
+        "state": "2y 4.83%, 2s10s +29 bp",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Credit spreads",
-        "state": "HY OAS 3.20%, calm",
-        "impact": "positive"
+        "state": "HY OAS 3.34% (Mon), wider from 3.20",
+        "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Fed path",
-        "state": "Dec 25bp hike 100% priced",
+        "state": "Dec hike still majority-priced",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Oil",
-        "state": "Brent $95.84, flat",
+        "state": "Brent $92.44 (Mon close), off $95.84",
         "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Dollar",
-        "state": "DXY 103.40, 19-month high",
+        "state": "DXY ~103.60, still 19-month highs",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Spot BTC ETFs",
-        "state": "7 outflow days; Fri −$185.4M",
-        "impact": "negative"
+        "state": "Mon +$7.9M (IBIT +76.5); first inflow since 4 Nov",
+        "impact": "positive"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Strategy / treasuries",
-        "state": "$11.1B underwater; MSCI exit",
+        "state": "850,849 BTC at $75,452; ~$9.6B underwater; MSCI 30 Nov",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "$2.02B liqs, 87% longs",
+        "state": "Binance OI 91,873 BTC (down from ~98,297); L/S 2.62",
         "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Funding / OI",
-        "state": "Funding ~flat; shorts adding OI",
-        "impact": "positive"
-      },
-      {
-        "category": "Flows & Positioning",
-        "factor": "Stablecoins",
-        "state": "−$17B in a month",
-        "impact": "negative"
+        "state": "BTC funding +0.0040%, still near-flat",
+        "impact": "neutral"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Trend",
-        "state": "RMI SELL; under EMA12/21",
+        "state": "RMI SELL since 15 Oct; under EMA12/21",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "MACD",
-        "state": "Below signal, hist widening",
+        "state": "Below signal, hist −1,099 (trough −1,151)",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "SMA200 / 200W",
-        "state": "−11.6% under 200D; 200W lost",
+        "state": "−11.8% under 200D; first weekly close under 200W",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Fear & Greed / RSI",
-        "state": "F&G 10, RSI 21 capitulation",
+        "state": "F&G 12 (from 10), RSI 23 still oversold",
         "impact": "neutral"
       },
       {
         "category": "Event Risk",
-        "factor": "Weekly close tonight",
-        "state": "First close under 200W since Jul",
+        "factor": "Weekly close 16 Nov",
+        "state": "First close under 200W since July, confirmed",
         "impact": "negative"
       },
       {
         "category": "Event Risk",
         "factor": "Nvidia earnings 17 Nov",
-        "state": "Interim-CEO print",
+        "state": "After the close, still ahead",
         "impact": "negative"
       },
       {
@@ -411,21 +409,27 @@
         "impact": "negative"
       },
       {
+        "category": "Event Risk",
+        "factor": "US retail sales (Oct)",
+        "state": "Result +0.2% m/m in line; +6.8% y/y (Census)",
+        "impact": "neutral"
+      },
+      {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "NVDA −30%, Anthropic IPO drain",
+        "state": "NVDA report later today; Anthropic IPO Thu",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "Exchange risk",
-        "state": "Binance $6.3B hack fallout",
+        "state": "Binance $6.3B hack fallout still in the background",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "Aug trend structure",
-        "state": "Intact above $58.5K June low",
+        "state": "Intact above $58.5K June low / 2026 low 57,742",
         "impact": "neutral"
       }
     ]
@@ -441,7 +445,7 @@
       "id": "us-retail-2026-11-17",
       "title": "US retail sales (Oct)",
       "time": "2026-11-17T13:30:00Z",
-      "note": "Same day as Nvidia earnings"
+      "note": "Result: +0.2% m/m in line ($748.2bn), +6.8% y/y — 90% CI includes zero (Census)"
     },
     {
       "id": "nvda-earnings-2026-11-17",
