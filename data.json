@@ -7,23 +7,23 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-19",
+  "asOf": "2026-11-20",
   "macro": {
     "us2y": {
-      "value": 4.8,
-      "asOf": "2026-11-18",
+      "value": 4.76,
+      "asOf": "2026-11-19",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "us10y": {
-      "value": 5.07,
-      "asOf": "2026-11-18",
+      "value": 5.04,
+      "asOf": "2026-11-19",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "hyCredit": {
-      "value": 3.43,
-      "asOf": "2026-11-17",
+      "value": 3.47,
+      "asOf": "2026-11-18",
       "source": "ICE BofA HY OAS",
       "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
     }
@@ -32,9 +32,25 @@
     "source": "Farside",
     "url": "https://farside.co.uk/btc/",
     "altUrl": "https://sosovalue.com/assets/etf/us-btc-spot",
-    "latestDate": "2026-11-18",
+    "latestDate": "2026-11-19",
     "unit": "USD millions",
     "days": [
+      {
+        "date": "2026-11-19",
+        "total": -582.3,
+        "IBIT": -541.1,
+        "FBTC": -45.9,
+        "BITB": 0.0,
+        "ARKB": -31.3,
+        "BTCO": 0.0,
+        "EZBC": 0.0,
+        "BRRR": 0.0,
+        "HODL": 0.0,
+        "BTCW": 0.3,
+        "MSBT": 49.6,
+        "GBTC": -13.9,
+        "BTC": 0.0
+      },
       {
         "date": "2026-11-18",
         "total": -306.5,
@@ -242,31 +258,15 @@
         "MSBT": 0.0,
         "GBTC": 0.0,
         "BTC": 0.0
-      },
-      {
-        "date": "2026-10-30",
-        "total": -643.2,
-        "IBIT": -233.7,
-        "FBTC": -201.0,
-        "BITB": -25.7,
-        "ARKB": -129.5,
-        "BTCO": 0.0,
-        "EZBC": 0.0,
-        "BRRR": 0.0,
-        "HODL": 0.0,
-        "BTCW": 0.0,
-        "MSBT": 0.0,
-        "GBTC": -53.3,
-        "BTC": 0.0
       }
     ]
   },
   "strategyAvgCost": 75452,
   "confidence": {
-    "score": 11,
-    "prev": 13,
-    "asOf": "2026-11-19T07:00:00Z",
-    "rationale": "Down from 13 — hawkish minutes put a 50bp Dec hike in play, ETF redemptions broadened to −$306.5M, BTC printed a 4-month low with OI and long/short rising into it, and HY OAS is widening; only offsets are oil-led 10y relief to 5.07%, F&G 10 / RSI 24 and a shrinking MACD histogram, so the dial stays in Avoid.",
+    "score": 9,
+    "prev": 11,
+    "asOf": "2026-11-20T07:00:00Z",
+    "rationale": "Down from 11 — record IBIT redemption (−$541.1M) led a −$582.3M ETF day, BTC lost 62k to a 4-month low as the Anthropic debut drained risk cash and AI stocks fell, HY OAS widened to 3.47% and Binance OI/long-short kept rising into the low; offsets are softer US data pulling the 10y to 5.04% and 50bp odds to 3.6%, RSI 20.5 / F&G 12 and a shrinking MACD histogram, so the dial stays in Avoid.",
     "history": [
       {
         "date": "2026-11-08",
@@ -311,67 +311,71 @@
       {
         "date": "2026-11-19",
         "score": 11
+      },
+      {
+        "date": "2026-11-20",
+        "score": 9
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "5.07% (Wed close), oil-led dip",
+        "state": "5.04% (Thu close), soft-data dip",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "2y / curve",
-        "state": "2y 4.80%, 2s10s +27 bp",
+        "state": "2y 4.76%, 2s10s +28 bp",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Credit spreads",
-        "state": "HY OAS 3.43% (17 Nov), +23 bp in 4 prints",
+        "state": "HY OAS 3.47% (18 Nov), +27 bp in 5 prints",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Fed path",
-        "state": "Hawkish minutes; Dec hike ~95%, 50bp ~10%",
+        "state": "Dec 25bp 96.4% priced; 50bp odds 3.6%",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Oil",
-        "state": "Brent $91.84, WTI $83.17 2.75-mo low",
-        "impact": "positive"
+        "state": "Brent $91.98, WTI $83.21 flat",
+        "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Dollar",
-        "state": "DXY 103.79, firm on hike bets",
+        "state": "DXY 103.91 after new year high",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Spot BTC ETFs",
-        "state": "Wed −$306.5M; IBIT, FBTC, BITB all red",
+        "state": "Thu −$582.3M; IBIT −$541.1M record",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Strategy / treasuries",
-        "state": "850,849 BTC at $75,452; STRC $95.75; MSCI 30 Nov",
+        "state": "mNAV 0.97; avg cost $75,452; MSCI 30 Nov",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "BTC liqs ~$170M 24h, 79% longs; no capitulation",
+        "state": "CoinGlass $528M liqs, BTC $169M, 80% longs",
         "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Funding / OI",
-        "state": "OI 95.7k BTC rising, L/S 2.98, funding +",
+        "state": "OI 97.4k BTC rising, L/S 3.41, funding flat",
         "impact": "negative"
       },
       {
@@ -383,56 +387,56 @@
       {
         "category": "Market Structure & Sentiment",
         "factor": "MACD",
-        "state": "Below signal, hist shrinking to −901",
+        "state": "Below signal, hist shrinking to −904",
         "impact": "neutral"
       },
       {
         "category": "Market Structure & Sentiment",
-        "factor": "SMA200 / 200W",
-        "state": "−12.5% under 200D; under 200W ~68k",
+        "factor": "SMA200",
+        "state": "−14.6% under 200D (72,605)",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Fear & Greed / RSI",
-        "state": "F&G 10, RSI 24.1 oversold",
+        "state": "F&G 12, RSI 20.5 deeply oversold",
         "impact": "neutral"
       },
       {
         "category": "Market Structure & Sentiment",
-        "factor": "On-chain",
-        "state": "LTH SOPR 0.94; whale exchange inflows",
+        "factor": "Options",
+        "state": "IV 44.1%, put skew +7.3; $2.23B expiry today",
         "impact": "negative"
       },
       {
         "category": "Event Risk",
-        "factor": "Anthropic IPO",
-        "state": "$83, ~$81B raised; ANT opens ~14:30 GMT",
-        "impact": "negative"
-      },
-      {
-        "category": "Event Risk",
-        "factor": "US data today",
-        "state": "Claims + Philly Fed 13:30 GMT",
+        "factor": "Fed speakers / UMich",
+        "state": "Waller 13:25, UMich 15:00, Cook 17:15 GMT",
         "impact": "neutral"
       },
       {
         "category": "Event Risk",
         "factor": "FOMC 8–9 Dec",
-        "state": "Waller pushing 50bp",
+        "state": "Hike priced; 50bp tail faded",
+        "impact": "negative"
+      },
+      {
+        "category": "Event Risk",
+        "factor": "Weekly close",
+        "state": "7th straight red week in play",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "Fed flags AI debt concentration; NVDA −3% post-beat",
+        "state": "ANT ~$1.3–1.8T; Nasdaq −2.25%, AI sell-off",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "Cycle structure",
-        "state": "Holding 62.0k; 2026 low 57,742 below",
-        "impact": "neutral"
+        "state": "Lost 62k; July low 57,742 below",
+        "impact": "negative"
       }
     ]
   },
@@ -465,19 +469,37 @@
       "id": "us-claims-philly-2026-11-19",
       "title": "US jobless claims + Philly Fed (Nov)",
       "time": "2026-11-19T13:30:00Z",
-      "note": "Hot print = 2y >4.85, 50bp Dec odds up"
+      "note": "Result: claims 203k (est 197k), continuing 1.763M (10-wk high); Philly Fed 6.3 (est ~18–20), prices paid 58.2; yields eased (CNBC)"
     },
     {
       "id": "anthropic-ipo-2026-11-19",
       "title": "Anthropic IPO starts trading (ANT)",
       "time": "2026-11-19T14:30:00Z",
-      "note": "Priced $83 (above $70–78), ~$81.3B raised, ~$1.5T valuation (Anthropic/AP); AI concentration event"
+      "note": "Result: opened $111.50, closed $97.17 (+17% vs $83 IPO), ~$92.60 after hours; Nasdaq −2.25%, S&P −2.02% (CNBC/Yahoo)"
+    },
+    {
+      "id": "deribit-expiry-2026-11-20",
+      "title": "Deribit BTC/ETH options expiry",
+      "time": "2026-11-20T08:00:00Z",
+      "note": "$2.23B BTC, max pain $70k, P/C 0.62 (OptimistFi)"
+    },
+    {
+      "id": "waller-2026-11-20",
+      "title": "Fed Governor Waller remarks",
+      "time": "2026-11-20T13:25:00Z",
+      "note": "Welcoming remarks (Fed Board calendar)"
     },
     {
       "id": "umich-2026-11-20",
       "title": "UMich consumer sentiment (Nov final)",
       "time": "2026-11-20T15:00:00Z",
-      "note": "Inflation expectations component"
+      "note": "Prelim 51.0; inflation expectations component"
+    },
+    {
+      "id": "cook-2026-11-20",
+      "title": "Fed Governor Cook speech",
+      "time": "2026-11-20T17:15:00Z",
+      "note": "\"The U.S. Economy in Global Context\" (Fed Board calendar)"
     },
     {
       "id": "msci-mstr-2026-11-30",
@@ -489,7 +511,7 @@
       "id": "fomc-2026-12-09",
       "title": "FOMC decision + dot plot",
       "time": "2026-12-09T19:00:00Z",
-      "note": "Dec hike ~95% priced, 50bp ~10% (CME FedWatch via GMT Eight, 19 Nov); Waller pushing 50bp"
+      "note": "Dec 25bp 96.4%, 50bp 3.6% (CME FedWatch via GMT Eight, 20 Nov)"
     }
   ]
 }
