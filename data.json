@@ -7,23 +7,23 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-20",
+  "asOf": "2026-11-21",
   "macro": {
     "us2y": {
-      "value": 4.76,
-      "asOf": "2026-11-19",
+      "value": 4.63,
+      "asOf": "2026-11-20",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "us10y": {
-      "value": 5.04,
-      "asOf": "2026-11-19",
+      "value": 4.92,
+      "asOf": "2026-11-20",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "hyCredit": {
-      "value": 3.47,
-      "asOf": "2026-11-18",
+      "value": 3.52,
+      "asOf": "2026-11-19",
       "source": "ICE BofA HY OAS",
       "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
     }
@@ -32,9 +32,25 @@
     "source": "Farside",
     "url": "https://farside.co.uk/btc/",
     "altUrl": "https://sosovalue.com/assets/etf/us-btc-spot",
-    "latestDate": "2026-11-19",
+    "latestDate": "2026-11-20",
     "unit": "USD millions",
     "days": [
+      {
+        "date": "2026-11-20",
+        "total": -124.5,
+        "FBTC": -72.4,
+        "BITB": -7.0,
+        "ARKB": 0.0,
+        "BTCO": 0.0,
+        "EZBC": -1.7,
+        "BRRR": 0.0,
+        "HODL": 0.0,
+        "BTCW": 0.0,
+        "MSBT": 2.3,
+        "GBTC": -32.8,
+        "BTC": -12.9,
+        "note": "Partial: IBIT not yet reported (Farside, 21 Nov 07:00 GMT); total excludes IBIT"
+      },
       {
         "date": "2026-11-19",
         "total": -582.3,
@@ -242,31 +258,15 @@
         "MSBT": 3.3,
         "GBTC": 0.0,
         "BTC": -52.6
-      },
-      {
-        "date": "2026-11-02",
-        "total": -398.6,
-        "IBIT": -405.3,
-        "FBTC": 6.7,
-        "BITB": 0.0,
-        "ARKB": 0.0,
-        "BTCO": 0.0,
-        "EZBC": 0.0,
-        "BRRR": 0.0,
-        "HODL": 0.0,
-        "BTCW": 0.0,
-        "MSBT": 0.0,
-        "GBTC": 0.0,
-        "BTC": 0.0
       }
     ]
   },
   "strategyAvgCost": 75452,
   "confidence": {
-    "score": 9,
-    "prev": 11,
-    "asOf": "2026-11-20T07:00:00Z",
-    "rationale": "Down from 11 — record IBIT redemption (−$541.1M) led a −$582.3M ETF day, BTC lost 62k to a 4-month low as the Anthropic debut drained risk cash and AI stocks fell, HY OAS widened to 3.47% and Binance OI/long-short kept rising into the low; offsets are softer US data pulling the 10y to 5.04% and 50bp odds to 3.6%, RSI 20.5 / F&G 12 and a shrinking MACD histogram, so the dial stays in Avoid.",
+    "score": 7,
+    "prev": 9,
+    "asOf": "2026-11-21T07:00:00Z",
+    "rationale": "Down from 9 — BTC broke the July cycle low to a 2-year low (55,130) on $2.4B of liquidations as the AI rout hit Nasdaq −5.28%, HY OAS pushed through 3.50% to 3.52%, ETFs bled a 4th day and MSTR fell under 1× NAV; offsets are the 12–13bp drop in 10y/2y yields, UMich 1-yr inflation expectations at 3.7%, a first OI flush with flat/negative funding, RSI 16.5 / F&G 12 and a V-reclaim of 57.7k, so the dial stays deep in Avoid.",
     "history": [
       {
         "date": "2026-11-08",
@@ -315,68 +315,72 @@
       {
         "date": "2026-11-20",
         "score": 9
+      },
+      {
+        "date": "2026-11-21",
+        "score": 7
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "5.04% (Thu close), soft-data dip",
-        "impact": "negative"
+        "state": "4.92% (Fri, −12bp) haven bid",
+        "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "2y / curve",
-        "state": "2y 4.76%, 2s10s +28 bp",
-        "impact": "negative"
+        "state": "2y 4.63% (−13bp), 2s10s +29 bp",
+        "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Credit spreads",
-        "state": "HY OAS 3.47% (18 Nov), +27 bp in 5 prints",
+        "state": "HY OAS 3.52% (19 Nov), through 3.50",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Fed path",
-        "state": "Dec 25bp 96.4% priced; 50bp odds 3.6%",
+        "state": "Dec 25bp ~92% priced; Waller 50bp talk",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Oil",
-        "state": "Brent $91.98, WTI $83.21 flat",
+        "state": "Brent $92.57, WTI $83.98; 3rd weekly fall",
         "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Dollar",
-        "state": "DXY 103.91 after new year high",
-        "impact": "negative"
+        "state": "DXY 103.84 flat near year high",
+        "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Spot BTC ETFs",
-        "state": "Thu −$582.3M; IBIT −$541.1M record",
+        "state": "Fri −$124.5M ex-IBIT; week −$1.25B",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Strategy / treasuries",
-        "state": "mNAV 0.97; avg cost $75,452; MSCI 30 Nov",
+        "state": "MSTR −9.7%, mNAV ~0.96; cost $75,452",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "CoinGlass $528M liqs, BTC $169M, 80% longs",
+        "state": "CoinGlass $2.40B liqs, BTC >$1B, longs",
         "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Funding / OI",
-        "state": "OI 97.4k BTC rising, L/S 3.41, funding flat",
-        "impact": "negative"
+        "state": "OI −1.8k BTC, funding flat, L/S 3.48",
+        "impact": "neutral"
       },
       {
         "category": "Market Structure & Sentiment",
@@ -387,55 +391,55 @@
       {
         "category": "Market Structure & Sentiment",
         "factor": "MACD",
-        "state": "Below signal, hist shrinking to −904",
-        "impact": "neutral"
+        "state": "Below signal, hist widening to −1,100",
+        "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "SMA200",
-        "state": "−14.6% under 200D (72,605)",
+        "state": "−20.0% under 200D (72,474)",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Fear & Greed / RSI",
-        "state": "F&G 12, RSI 20.5 deeply oversold",
+        "state": "F&G 12, RSI 16.5 extreme oversold",
         "impact": "neutral"
       },
       {
         "category": "Market Structure & Sentiment",
-        "factor": "Options",
-        "state": "IV 44.1%, put skew +7.3; $2.23B expiry today",
+        "factor": "Price action",
+        "state": "55,130 wick, V to 58k, July low reclaimed",
+        "impact": "neutral"
+      },
+      {
+        "category": "Event Risk",
+        "factor": "Weekend / weekly close",
+        "state": "Thin book; 7th red week; 57.8k close",
         "impact": "negative"
       },
       {
         "category": "Event Risk",
-        "factor": "Fed speakers / UMich",
-        "state": "Waller 13:25, UMich 15:00, Cook 17:15 GMT",
+        "factor": "PCE / GDP 25 Nov",
+        "state": "13:30 GMT; Thanksgiving 26 Nov",
         "impact": "neutral"
       },
       {
         "category": "Event Risk",
         "factor": "FOMC 8–9 Dec",
-        "state": "Hike priced; 50bp tail faded",
-        "impact": "negative"
-      },
-      {
-        "category": "Event Risk",
-        "factor": "Weekly close",
-        "state": "7th straight red week in play",
+        "state": "Hike priced; 50bp tail alive",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "ANT ~$1.3–1.8T; Nasdaq −2.25%, AI sell-off",
+        "state": "Nasdaq −5.28%, SOX −10.7%, NDX bear",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "Cycle structure",
-        "state": "Lost 62k; July low 57,742 below",
+        "state": "July low broken; 2-yr low; −56% from ATH",
         "impact": "negative"
       }
     ]
@@ -487,19 +491,31 @@
       "id": "waller-2026-11-20",
       "title": "Fed Governor Waller remarks",
       "time": "2026-11-20T13:25:00Z",
-      "note": "Welcoming remarks (Fed Board calendar)"
+      "note": "Result: routine welcoming remarks; Wed CNBC: 50bp \"likely necessary\""
     },
     {
       "id": "umich-2026-11-20",
       "title": "UMich consumer sentiment (Nov final)",
       "time": "2026-11-20T15:00:00Z",
-      "note": "Prelim 51.0; inflation expectations component"
+      "note": "Result: 51.5 (in line, prelim 51.0); 1-yr inflation exp 3.7% (from 4.3%), 5-yr 3.3% (CNBC)"
     },
     {
       "id": "cook-2026-11-20",
       "title": "Fed Governor Cook speech",
       "time": "2026-11-20T17:15:00Z",
       "note": "\"The U.S. Economy in Global Context\" (Fed Board calendar)"
+    },
+    {
+      "id": "us-pce-gdp-2026-11-25",
+      "title": "US Oct PCE + Q3 GDP (2nd) + claims, income/spending, durables",
+      "time": "2026-11-25T13:30:00Z",
+      "note": "Moved to Wed for Thanksgiving; Fed Beige Book same day (Newsquawk/Kiplinger)"
+    },
+    {
+      "id": "thanksgiving-2026-11-26",
+      "title": "US Thanksgiving — markets closed",
+      "time": "2026-11-26T00:00:00Z",
+      "note": "Thin crypto liquidity; Fri 27 Nov half-day"
     },
     {
       "id": "msci-mstr-2026-11-30",
