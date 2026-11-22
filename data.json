@@ -7,7 +7,7 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-21",
+  "asOf": "2026-11-22",
   "macro": {
     "us2y": {
       "value": 4.63,
@@ -263,10 +263,10 @@
   },
   "strategyAvgCost": 75452,
   "confidence": {
-    "score": 7,
-    "prev": 9,
-    "asOf": "2026-11-21T07:00:00Z",
-    "rationale": "Down from 9 — BTC broke the July cycle low to a 2-year low (55,130) on $2.4B of liquidations as the AI rout hit Nasdaq −5.28%, HY OAS pushed through 3.50% to 3.52%, ETFs bled a 4th day and MSTR fell under 1× NAV; offsets are the 12–13bp drop in 10y/2y yields, UMich 1-yr inflation expectations at 3.7%, a first OI flush with flat/negative funding, RSI 16.5 / F&G 12 and a V-reclaim of 57.7k, so the dial stays deep in Avoid.",
+    "score": 9,
+    "prev": 7,
+    "asOf": "2026-11-22T07:00:00Z",
+    "rationale": "Up from 7 — Saturday's hammer off the 55,130 2-year low, a leverage reset (L/S 3.48→2.18, OI −4.4k BTC, flat funding, 59–62k long cluster cleared) and contracting MACD momentum take the edge off; but RMI SELL, −18% under SMA200, four red ETF days, HY OAS 3.52%, an AI-led equity rout and a hike-priced Fed keep the dial deep in Avoid.",
     "history": [
       {
         "date": "2026-11-08",
@@ -319,19 +319,23 @@
       {
         "date": "2026-11-21",
         "score": 7
+      },
+      {
+        "date": "2026-11-22",
+        "score": 9
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "4.92% (Fri, −12bp) haven bid",
+        "state": "4.92% (Fri) haven bid, no weekend change",
         "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "2y / curve",
-        "state": "2y 4.63% (−13bp), 2s10s +29 bp",
+        "state": "2y 4.63%, 2s10s +29 bp",
         "impact": "neutral"
       },
       {
@@ -343,7 +347,7 @@
       {
         "category": "Macro / Cost of Money",
         "factor": "Fed path",
-        "state": "Dec 25bp ~92% priced; Waller 50bp talk",
+        "state": "Dec hike ~92% priced; 50bp tail",
         "impact": "negative"
       },
       {
@@ -355,32 +359,32 @@
       {
         "category": "Macro / Cost of Money",
         "factor": "Dollar",
-        "state": "DXY 103.84 flat near year high",
+        "state": "DXY 103.84 near year high",
         "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Spot BTC ETFs",
-        "state": "Fri −$124.5M ex-IBIT; week −$1.25B",
+        "state": "Fri −$124.5M ex-IBIT; 30d −$3.72B",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Strategy / treasuries",
-        "state": "MSTR −9.7%, mNAV ~0.96; cost $75,452",
+        "state": "mNAV <1, STRC under par; Twenty One buying",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "CoinGlass $2.40B liqs, BTC >$1B, longs",
-        "impact": "neutral"
+        "state": "L/S 3.48→2.18; 59–62k long cluster cleared",
+        "impact": "positive"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Funding / OI",
-        "state": "OI −1.8k BTC, funding flat, L/S 3.48",
-        "impact": "neutral"
+        "state": "OI 92.6k BTC (−4.4k since Fri), funding flat",
+        "impact": "positive"
       },
       {
         "category": "Market Structure & Sentiment",
@@ -391,37 +395,37 @@
       {
         "category": "Market Structure & Sentiment",
         "factor": "MACD",
-        "state": "Below signal, hist widening to −1,100",
-        "impact": "negative"
+        "state": "Below signal, hist contracting to −893",
+        "impact": "neutral"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "SMA200",
-        "state": "−20.0% under 200D (72,474)",
+        "state": "−18.2% under 200D (72,374)",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Fear & Greed / RSI",
-        "state": "F&G 12, RSI 16.5 extreme oversold",
+        "state": "F&G 11, RSI 21 oversold",
         "impact": "neutral"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Price action",
-        "state": "55,130 wick, V to 58k, July low reclaimed",
-        "impact": "neutral"
+        "state": "Sat hammer 55,130→60,216; 60k not held",
+        "impact": "positive"
       },
       {
         "category": "Event Risk",
-        "factor": "Weekend / weekly close",
-        "state": "Thin book; 7th red week; 57.8k close",
+        "factor": "Weekly close tonight",
+        "state": "7th red week; 57.7k / 60k closes matter",
         "impact": "negative"
       },
       {
         "category": "Event Risk",
         "factor": "PCE / GDP 25 Nov",
-        "state": "13:30 GMT; Thanksgiving 26 Nov",
+        "state": "13:30 GMT; core ~3.2% y/y expected",
         "impact": "neutral"
       },
       {
@@ -433,13 +437,13 @@
       {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "Nasdaq −5.28%, SOX −10.7%, NDX bear",
+        "state": "Nasdaq negative YTD, NDX bear, ANT −10%",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "Cycle structure",
-        "state": "July low broken; 2-yr low; −56% from ATH",
+        "state": "2-yr low; STH underwater; LTH holding",
         "impact": "negative"
       }
     ]
@@ -506,10 +510,28 @@
       "note": "\"The U.S. Economy in Global Context\" (Fed Board calendar)"
     },
     {
+      "id": "weekly-close-2026-11-22",
+      "title": "BTC weekly close",
+      "time": "2026-11-22T23:59:00Z",
+      "note": "Weekly open 65,351; 7th straight red week; watch 57.7k / 60.0k close"
+    },
+    {
+      "id": "flash-pmi-2026-11-23",
+      "title": "US S&P Global flash PMIs (Nov)",
+      "time": "2026-11-23T14:45:00Z",
+      "note": "Manufacturing + services preliminary (CNBC week ahead)"
+    },
+    {
+      "id": "conf-board-2026-11-24",
+      "title": "US Conference Board consumer confidence (Nov)",
+      "time": "2026-11-24T15:00:00Z",
+      "note": "CNBC week ahead"
+    },
+    {
       "id": "us-pce-gdp-2026-11-25",
       "title": "US Oct PCE + Q3 GDP (2nd) + claims, income/spending, durables",
       "time": "2026-11-25T13:30:00Z",
-      "note": "Moved to Wed for Thanksgiving; Fed Beige Book same day (Newsquawk/Kiplinger)"
+      "note": "Moved to Wed for Thanksgiving; core PCE consensus ~0.3% m/m, 3.2% y/y; Fed Beige Book same day (CNBC/Globe and Mail/Newsquawk)"
     },
     {
       "id": "thanksgiving-2026-11-26",
