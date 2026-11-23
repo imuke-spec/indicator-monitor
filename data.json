@@ -7,7 +7,7 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-22",
+  "asOf": "2026-11-23",
   "macro": {
     "us2y": {
       "value": 4.63,
@@ -38,6 +38,7 @@
       {
         "date": "2026-11-20",
         "total": -124.5,
+        "IBIT": 0.0,
         "FBTC": -72.4,
         "BITB": -7.0,
         "ARKB": 0.0,
@@ -49,7 +50,7 @@
         "MSBT": 2.3,
         "GBTC": -32.8,
         "BTC": -12.9,
-        "note": "Partial: IBIT not yet reported (Farside, 21 Nov 07:00 GMT); total excludes IBIT"
+        "note": "IBIT 0 per SoSoValue/cryptoetf.today (Farside cell blank as of 23 Nov 06:56 GMT)"
       },
       {
         "date": "2026-11-19",
@@ -263,10 +264,10 @@
   },
   "strategyAvgCost": 75452,
   "confidence": {
-    "score": 9,
-    "prev": 7,
-    "asOf": "2026-11-22T07:00:00Z",
-    "rationale": "Up from 7 — Saturday's hammer off the 55,130 2-year low, a leverage reset (L/S 3.48→2.18, OI −4.4k BTC, flat funding, 59–62k long cluster cleared) and contracting MACD momentum take the edge off; but RMI SELL, −18% under SMA200, four red ETF days, HY OAS 3.52%, an AI-led equity rout and a hike-priced Fed keep the dial deep in Avoid.",
+    "score": 12,
+    "prev": 9,
+    "asOf": "2026-11-23T07:00:00Z",
+    "rationale": "Up from 9 — weekly close held 60k (61,271) after the 55,130 wick, a short-led squeeze with funding ~0, MACD histogram contracting a 3rd day and the 50bp Dec tail priced out; but RMI SELL, −14.9% under SMA200, 62–65k STH supply overhead, four red ETF days, HY OAS 3.52% and an unresolved AI equity unwind keep the dial in Avoid.",
     "history": [
       {
         "date": "2026-11-08",
@@ -323,13 +324,17 @@
       {
         "date": "2026-11-22",
         "score": 9
+      },
+      {
+        "date": "2026-11-23",
+        "score": 12
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "4.92% (Fri) haven bid, no weekend change",
+        "state": "4.92% (Fri), haven bid fading in futures",
         "impact": "neutral"
       },
       {
@@ -341,49 +346,49 @@
       {
         "category": "Macro / Cost of Money",
         "factor": "Credit spreads",
-        "state": "HY OAS 3.52% (19 Nov), through 3.50",
+        "state": "HY OAS 3.52% (19 Nov), widening",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Fed path",
-        "state": "Dec hike ~92% priced; 50bp tail",
+        "state": "Dec 25bp hike 88.6%; 50bp priced out",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Oil",
-        "state": "Brent $92.57, WTI $83.98; 3rd weekly fall",
+        "state": "Brent $92.29, WTI $83.26; 3-week slide",
         "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Dollar",
-        "state": "DXY 103.84 near year high",
+        "state": "DXY ~103.80, off 19-month high",
         "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Spot BTC ETFs",
-        "state": "Fri −$124.5M ex-IBIT; 30d −$3.72B",
+        "state": "Fri −$124.5M (IBIT 0); week −$1.25B",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Strategy / treasuries",
-        "state": "mNAV <1, STRC under par; Twenty One buying",
-        "impact": "negative"
+        "state": "8-K due; avg $75,452, ~18% underwater",
+        "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "L/S 3.48→2.18; 59–62k long cluster cleared",
+        "state": "L/S 2.05; 24h liqs 70% shorts",
         "impact": "positive"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Funding / OI",
-        "state": "OI 92.6k BTC (−4.4k since Fri), funding flat",
+        "state": "OI 92.4k BTC flat, funding ~0",
         "impact": "positive"
       },
       {
@@ -395,32 +400,32 @@
       {
         "category": "Market Structure & Sentiment",
         "factor": "MACD",
-        "state": "Below signal, hist contracting to −893",
-        "impact": "neutral"
+        "state": "Below signal, hist −524, contracting 3 days",
+        "impact": "positive"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "SMA200",
-        "state": "−18.2% under 200D (72,374)",
+        "state": "−14.9% under 200D (72,292)",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Fear & Greed / RSI",
-        "state": "F&G 11, RSI 21 oversold",
+        "state": "F&G 11, RSI 27.6",
         "impact": "neutral"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Price action",
-        "state": "Sat hammer 55,130→60,216; 60k not held",
+        "state": "Weekly close 61,271 >60k; 62–65k overhead",
         "impact": "positive"
       },
       {
         "category": "Event Risk",
-        "factor": "Weekly close tonight",
-        "state": "7th red week; 57.7k / 60k closes matter",
-        "impact": "negative"
+        "factor": "US open / PMIs today",
+        "state": "Futures +2% vs KOSPI −5%",
+        "impact": "neutral"
       },
       {
         "category": "Event Risk",
@@ -431,19 +436,19 @@
       {
         "category": "Event Risk",
         "factor": "FOMC 8–9 Dec",
-        "state": "Hike priced; 50bp tail alive",
+        "state": "25bp hike priced",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "Nasdaq negative YTD, NDX bear, ANT −10%",
+        "state": "Nasdaq −10% week, negative YTD",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "Cycle structure",
-        "state": "2-yr low; STH underwater; LTH holding",
+        "state": "STH underwater; realized losses at cycle-low extremes",
         "impact": "negative"
       }
     ]
@@ -513,7 +518,13 @@
       "id": "weekly-close-2026-11-22",
       "title": "BTC weekly close",
       "time": "2026-11-22T23:59:00Z",
-      "note": "Weekly open 65,351; 7th straight red week; watch 57.7k / 60.0k close"
+      "note": "Result: closed 61,271 (O 65,351 H 65,696 L 55,130, −6.2%); 7th straight red week, held 60k"
+    },
+    {
+      "id": "mstr-8k-2026-11-23",
+      "title": "Strategy weekly 8-K (BTC purchases)",
+      "time": "2026-11-23T12:00:00Z",
+      "note": "Saylor \"The dots aren't done\" (22 Nov); holds 850,849 BTC, avg $75,452"
     },
     {
       "id": "flash-pmi-2026-11-23",
@@ -540,6 +551,12 @@
       "note": "Thin crypto liquidity; Fri 27 Nov half-day"
     },
     {
+      "id": "bok-2026-11-26",
+      "title": "Bank of Korea rate decision",
+      "time": "2026-11-26T01:00:00Z",
+      "note": "Hike expected (Bitcoin.com); KOSPI −5% on 23 Nov"
+    },
+    {
       "id": "msci-mstr-2026-11-30",
       "title": "MSCI removes Strategy (MSTR)",
       "time": "2026-11-30T21:00:00Z",
@@ -549,7 +566,7 @@
       "id": "fomc-2026-12-09",
       "title": "FOMC decision + dot plot",
       "time": "2026-12-09T19:00:00Z",
-      "note": "Dec 25bp 96.4%, 50bp 3.6% (CME FedWatch via GMT Eight, 20 Nov)"
+      "note": "Dec 25bp 88.6%, hold 11.4%, 50bp priced out (CME FedWatch via CNBC, 23 Nov)"
     }
   ]
 }
