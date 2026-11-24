@@ -7,23 +7,23 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-23",
+  "asOf": "2026-11-24T07:00:00Z",
   "macro": {
     "us2y": {
       "value": 4.63,
-      "asOf": "2026-11-20",
+      "asOf": "2026-11-23",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "us10y": {
       "value": 4.92,
-      "asOf": "2026-11-20",
+      "asOf": "2026-11-23",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "hyCredit": {
-      "value": 3.52,
-      "asOf": "2026-11-19",
+      "value": 3.76,
+      "asOf": "2026-11-20",
       "source": "ICE BofA HY OAS",
       "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
     }
@@ -32,13 +32,29 @@
     "source": "Farside",
     "url": "https://farside.co.uk/btc/",
     "altUrl": "https://sosovalue.com/assets/etf/us-btc-spot",
-    "latestDate": "2026-11-20",
+    "latestDate": "2026-11-23",
     "unit": "USD millions",
     "days": [
       {
+        "date": "2026-11-23",
+        "total": -569.7,
+        "IBIT": -509.3,
+        "FBTC": 13.3,
+        "BITB": -12.6,
+        "ARKB": 0.0,
+        "BTCO": 0.0,
+        "EZBC": 0.0,
+        "BRRR": 0.0,
+        "HODL": 0.0,
+        "BTCW": 0.0,
+        "MSBT": 0.0,
+        "GBTC": 0.0,
+        "BTC": -61.1
+      },
+      {
         "date": "2026-11-20",
-        "total": -124.5,
-        "IBIT": 0.0,
+        "total": -669.2,
+        "IBIT": -544.7,
         "FBTC": -72.4,
         "BITB": -7.0,
         "ARKB": 0.0,
@@ -50,7 +66,7 @@
         "MSBT": 2.3,
         "GBTC": -32.8,
         "BTC": -12.9,
-        "note": "IBIT 0 per SoSoValue/cryptoetf.today (Farside cell blank as of 23 Nov 06:56 GMT)"
+        "note": "Revised: IBIT -544.7 (record) per Farside/SoSoValue, 24 Nov"
       },
       {
         "date": "2026-11-19",
@@ -243,31 +259,15 @@
         "MSBT": 0.0,
         "GBTC": 0.0,
         "BTC": 0.0
-      },
-      {
-        "date": "2026-11-03",
-        "total": -115.6,
-        "IBIT": -95.0,
-        "FBTC": 6.8,
-        "BITB": 21.9,
-        "ARKB": 0.0,
-        "BTCO": 0.0,
-        "EZBC": 0.0,
-        "BRRR": 0.0,
-        "HODL": 0.0,
-        "BTCW": 0.0,
-        "MSBT": 3.3,
-        "GBTC": 0.0,
-        "BTC": -52.6
       }
     ]
   },
-  "strategyAvgCost": 75452,
+  "strategyAvgCost": 75446,
   "confidence": {
-    "score": 12,
-    "prev": 9,
-    "asOf": "2026-11-23T07:00:00Z",
-    "rationale": "Up from 9 — weekly close held 60k (61,271) after the 55,130 wick, a short-led squeeze with funding ~0, MACD histogram contracting a 3rd day and the 50bp Dec tail priced out; but RMI SELL, −14.9% under SMA200, 62–65k STH supply overhead, four red ETF days, HY OAS 3.52% and an unresolved AI equity unwind keep the dial in Avoid.",
+    "score": 9,
+    "prev": 12,
+    "asOf": "2026-11-24T07:00:00Z",
+    "rationale": "Down from 12 — the Nvidia/Huang squeeze to 64,603 faded to 60k within hours, IBIT redemptions set a new record (−$544.7M Fri, −$509.3M Mon), HY OAS jumped to 3.76% and longs are re-crowding (L/S 2.68) into PCE; only oversold RSI 25.5, F&G 11 and a 4th day of MACD histogram contraction keep it off the floor.",
     "history": [
       {
         "date": "2026-11-08",
@@ -328,13 +328,17 @@
       {
         "date": "2026-11-23",
         "score": 12
+      },
+      {
+        "date": "2026-11-24",
+        "score": 9
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "4.92% (Fri), haven bid fading in futures",
+        "state": "4.92%, flat; not easing on equity bounce",
         "impact": "neutral"
       },
       {
@@ -346,49 +350,55 @@
       {
         "category": "Macro / Cost of Money",
         "factor": "Credit spreads",
-        "state": "HY OAS 3.52% (19 Nov), widening",
+        "state": "HY OAS 3.76% (20 Nov), +24 bp in a day",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Fed path",
-        "state": "Dec 25bp hike 88.6%; 50bp priced out",
+        "state": "Dec 25bp hike ~88.6%; PCE nowcast hot",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Oil",
-        "state": "Brent $92.29, WTI $83.26; 3-week slide",
-        "impact": "neutral"
+        "state": "Brent ~$88.9, near 3-month low",
+        "impact": "positive"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Dollar",
-        "state": "DXY ~103.80, off 19-month high",
-        "impact": "neutral"
+        "state": "DXY ~104.3, firm",
+        "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Spot BTC ETFs",
-        "state": "Fri −$124.5M (IBIT 0); week −$1.25B",
+        "state": "Mon −$569.7M (IBIT −509.3); 5 red days",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Strategy / treasuries",
-        "state": "8-K due; avg $75,452, ~18% underwater",
+        "state": "+457 BTC token buy; avg $75,446, ~20% underwater",
         "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "L/S 2.05; 24h liqs 70% shorts",
-        "impact": "positive"
+        "state": "OI 96.3k BTC +4.3%, L/S 2.68 longs crowding",
+        "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
-        "factor": "Funding / OI",
-        "state": "OI 92.4k BTC flat, funding ~0",
+        "factor": "Funding / liqs",
+        "state": "Funding +0.007%; $349M BTC liqs, 58% shorts",
+        "impact": "neutral"
+      },
+      {
+        "category": "Flows & Positioning",
+        "factor": "Whales",
+        "state": "Abraxas +2,223 BTC off Kraken (19,820 total)",
         "impact": "positive"
       },
       {
@@ -400,31 +410,25 @@
       {
         "category": "Market Structure & Sentiment",
         "factor": "MACD",
-        "state": "Below signal, hist −524, contracting 3 days",
+        "state": "Below signal, hist −383, contracting 4th day",
         "impact": "positive"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "SMA200",
-        "state": "−14.9% under 200D (72,292)",
+        "state": "−16.2% under 200D (72,193)",
+        "impact": "negative"
+      },
+      {
+        "category": "Market Structure & Sentiment",
+        "factor": "Price action",
+        "state": "64.6k squeeze fully faded; back at 60k",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Fear & Greed / RSI",
-        "state": "F&G 11, RSI 27.6",
-        "impact": "neutral"
-      },
-      {
-        "category": "Market Structure & Sentiment",
-        "factor": "Price action",
-        "state": "Weekly close 61,271 >60k; 62–65k overhead",
-        "impact": "positive"
-      },
-      {
-        "category": "Event Risk",
-        "factor": "US open / PMIs today",
-        "state": "Futures +2% vs KOSPI −5%",
+        "state": "F&G 11, RSI 25.5 oversold",
         "impact": "neutral"
       },
       {
@@ -435,20 +439,26 @@
       },
       {
         "category": "Event Risk",
-        "factor": "FOMC 8–9 Dec",
+        "factor": "Thanksgiving / MSCI",
+        "state": "Thin liquidity 26–27 Nov; MSTR removal 30 Nov",
+        "impact": "negative"
+      },
+      {
+        "category": "Event Risk",
+        "factor": "FOMC 9 Dec",
         "state": "25bp hike priced",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "Nasdaq −10% week, negative YTD",
+        "state": "NVDA ±30% days drive Nasdaq and BTC",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "Cycle structure",
-        "state": "STH underwater; realized losses at cycle-low extremes",
+        "state": "ETF MVRV <1, STH NUPL lowest since June",
         "impact": "negative"
       }
     ]
@@ -524,7 +534,7 @@
       "id": "mstr-8k-2026-11-23",
       "title": "Strategy weekly 8-K (BTC purchases)",
       "time": "2026-11-23T12:00:00Z",
-      "note": "Saylor \"The dots aren't done\" (22 Nov); holds 850,849 BTC, avg $75,452"
+      "note": "Result: +457 BTC for $29.6M at avg $64,898 (16–22 Nov); holds 851,305 BTC, avg $75,446; $212M STRC repurchased (8-K)"
     },
     {
       "id": "flash-pmi-2026-11-23",
