@@ -7,23 +7,23 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-25T07:00:00Z",
+  "asOf": "2026-11-26T07:00:00Z",
   "macro": {
     "us2y": {
-      "value": 4.63,
-      "asOf": "2026-11-24",
+      "value": 4.61,
+      "asOf": "2026-11-25",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "us10y": {
-      "value": 4.91,
-      "asOf": "2026-11-24",
+      "value": 4.85,
+      "asOf": "2026-11-25",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "hyCredit": {
-      "value": 3.63,
-      "asOf": "2026-11-23",
+      "value": 3.72,
+      "asOf": "2026-11-24",
       "source": "ICE BofA HY OAS",
       "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
     }
@@ -32,9 +32,25 @@
     "source": "Farside",
     "url": "https://farside.co.uk/btc/",
     "altUrl": "https://sosovalue.com/assets/etf/us-btc-spot",
-    "latestDate": "2026-11-24",
+    "latestDate": "2026-11-25",
     "unit": "USD millions",
     "days": [
+      {
+        "date": "2026-11-25",
+        "total": -453.0,
+        "IBIT": -329.7,
+        "FBTC": -6.5,
+        "BITB": -18.2,
+        "ARKB": -14.9,
+        "BTCO": 0.0,
+        "EZBC": 0.0,
+        "BRRR": 0.0,
+        "HODL": -9.7,
+        "BTCW": 0.0,
+        "MSBT": 0.0,
+        "GBTC": -13.9,
+        "BTC": -60.1
+      },
       {
         "date": "2026-11-24",
         "total": -231.4,
@@ -243,31 +259,15 @@
         "MSBT": 0.0,
         "GBTC": -11.1,
         "BTC": 0.0
-      },
-      {
-        "date": "2026-11-05",
-        "total": -430.2,
-        "IBIT": -105.0,
-        "FBTC": -199.9,
-        "BITB": 0.0,
-        "ARKB": -18.9,
-        "BTCO": 0.0,
-        "EZBC": -32.9,
-        "BRRR": 0.0,
-        "HODL": -23.6,
-        "BTCW": 0.0,
-        "MSBT": 0.0,
-        "GBTC": -49.9,
-        "BTC": 0.0
       }
     ]
   },
   "strategyAvgCost": 75446,
   "confidence": {
-    "score": 10,
-    "prev": 9,
-    "asOf": "2026-11-25T07:00:00Z",
-    "rationale": "Up 1 from 9 — not because price improved (BTC 59.2k, broke yesterday's 59.4k defence) but because the bleed is decelerating: ETF outflow shrank to −$231.4M from −$569.7M, HY OAS narrowed to 3.63% from 3.76%, 10y eased to 4.91% and MACD histogram contracted a 5th day (−334); RMI SELL, price −17.9% under SMA200, a 97% priced Dec hike, tariff headlines and AI-led Nasdaq −1.5% keep it near the floor into PCE.",
+    "score": 12,
+    "prev": 10,
+    "asOf": "2026-11-26T07:00:00Z",
+    "rationale": "Up 2 from 10 — Wed swept 57.3k and closed 60,458 above Galaxy's 58,525 line, 10y fell 6 bp to 4.85% and MACD histogram is −83, one push from a bullish cross; held down by a −$453.0M ETF day (IBIT −329.7), hot core PCE 3.3% locking a 97.8% Dec hike, HY OAS wider at 3.72%, RMI SELL and price −15.8% under SMA200.",
     "history": [
       {
         "date": "2026-11-08",
@@ -336,73 +336,77 @@
       {
         "date": "2026-11-25",
         "score": 10
+      },
+      {
+        "date": "2026-11-26",
+        "score": 12
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "4.91% (−1 bp); still restrictive",
-        "impact": "neutral"
+        "state": "4.85% (−6 bp); still restrictive",
+        "impact": "positive"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "2y / curve",
-        "state": "2y 4.63%, 2s10s +28 bp",
+        "state": "2y 4.61% (−2 bp), 2s10s +24 bp",
         "impact": "neutral"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Credit spreads",
-        "state": "HY OAS 3.63% (23 Nov), −13 bp off 3.76%",
-        "impact": "neutral"
+        "state": "HY OAS 3.72% (24 Nov), +9 bp",
+        "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Fed path",
-        "state": "Dec 25bp hike 97.4%; Jan 2nd hike ~68%",
+        "state": "Core PCE 3.3% hot; Dec hike 97.8%, Jan 50bp cum 58.4%",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Oil",
-        "state": "Brent $91.40 (+2.3%), Hormuz attacks",
+        "state": "Brent $94.61 (+3.5%), Houthi refinery attack",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Tariffs",
-        "state": "WSJ: tariff hikes on China/Japan/Korea this week",
+        "state": "Section 301 on 14 partners, 20% China, Jan earliest",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Spot BTC ETFs",
-        "state": "Tue −$231.4M (IBIT −175.3); 6 red days",
+        "state": "Wed −$453.0M (IBIT −329.7); 7 red days",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Strategy / treasuries",
-        "state": "MSTR −7% to 52-wk low; avg cost $75,446",
+        "state": "Avg cost $75,446; price 20% under",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "Binance OI 97.1k BTC, L/S 2.70 longs crowded",
+        "state": "OI $40.1B (+3.1%), new longs; L/S 2.62",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Funding / liqs",
-        "state": "Funding +0.007%; $87M BTC liqs, 72% longs",
+        "state": "Funding +0.008%; $265M BTC liqs, 54% shorts",
         "impact": "neutral"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Whales",
-        "state": "Glassnode: 100–10k BTC cohorts accumulating",
+        "state": "Dormant whale +726 BTC at ~$63.1k (Lookonchain)",
         "impact": "positive"
       },
       {
@@ -414,56 +418,56 @@
       {
         "category": "Market Structure & Sentiment",
         "factor": "MACD",
-        "state": "Below signal, hist −334, contracting 5th day",
+        "state": "Hist −83, 6th day contracting; cross pending",
         "impact": "positive"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "SMA200",
-        "state": "−17.9% under 200D (72,082)",
+        "state": "−15.8% under 200D (71,980)",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Price action",
-        "state": "Lost 59.4k; testing June low 58.5k",
-        "impact": "negative"
+        "state": "57.3k sweep, close 60,458; June low held on close",
+        "impact": "positive"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Fear & Greed / RSI",
-        "state": "F&G 13, RSI 23.7 oversold",
+        "state": "F&G 11, RSI 27.8 oversold",
         "impact": "neutral"
       },
       {
         "category": "Event Risk",
-        "factor": "PCE / GDP 25 Nov",
-        "state": "13:30 GMT; core 0.3% m/m, 3.2% y/y expected",
+        "factor": "Thanksgiving",
+        "state": "US closed 26 Nov, half-day 27 Nov; no ETF print",
         "impact": "neutral"
       },
       {
         "category": "Event Risk",
-        "factor": "Thanksgiving / MSCI",
-        "state": "Thin liquidity 26–27 Nov; MSTR removal 30 Nov",
+        "factor": "MSCI / monthly close",
+        "state": "MSTR removal + Nov close 30 Nov",
         "impact": "negative"
       },
       {
         "category": "Event Risk",
-        "factor": "FOMC 9 Dec",
-        "state": "25bp hike 97.4% priced",
+        "factor": "NFP 4 Dec / FOMC 9 Dec",
+        "state": "25bp hike 97.8% priced",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "NVDA +31% then −6%; SOXX −8%; BTC lags upside",
+        "state": "NVDA −3.9% to $149.30, SOX −7.9% Tue; BTC trades as AI beta",
         "impact": "negative"
       },
       {
         "category": "Structural",
-        "factor": "Cycle structure",
-        "state": "Record 11.6M BTC in loss; realized price 53.2k",
-        "impact": "negative"
+        "factor": "Policy",
+        "state": "House committee advanced SBR bill; Warren push vs SEC exemption",
+        "impact": "neutral"
       }
     ]
   },
@@ -556,7 +560,7 @@
       "id": "us-pce-gdp-2026-11-25",
       "title": "US Oct PCE + Q3 GDP (2nd) + claims, income/spending, durables",
       "time": "2026-11-25T13:30:00Z",
-      "note": "Consensus: PCE 0.3% m/m, 3.8% y/y; core 0.3% m/m, 3.2% y/y; Q3 GDP 2nd est 3.5–3.6% (adv 3.4%); income/spending +0.4%; durables +1.1%; claims ~200k (WSJ/ECONPLEX)"
+      "note": "Result: PCE 3.8% y/y (in line), core 3.3% y/y vs 3.2% est; Q3 GDP 4.3% (from 3.4%); income +0.7%, spending +0.3% (CNBC/BEA)"
     },
     {
       "id": "beige-book-2026-11-25",
@@ -589,10 +593,16 @@
       "note": "Same day as MSCI MSTR removal; van de Poppe flags monthly close for December depth"
     },
     {
+      "id": "us-nfp-2026-12-04",
+      "title": "US November jobs report (NFP)",
+      "time": "2026-12-04T13:30:00Z",
+      "note": "Last major data point before 9 Dec FOMC (Forexcrunch)"
+    },
+    {
       "id": "fomc-2026-12-09",
       "title": "FOMC decision + dot plot",
       "time": "2026-12-09T19:00:00Z",
-      "note": "Dec 25bp 97.4%, 50bp 2.6%; Jan cumulative 50bp 67.9% (CME FedWatch via Jin10, 24 Nov)"
+      "note": "Dec 25bp 97.8%, hold 2.2%; Jan cumulative 50bp 58.4% (CME FedWatch via Odaily, post-PCE 25 Nov)"
     }
   ]
 }
