@@ -948,6 +948,7 @@
           "btc  btc  btc  btc  btc  btc  btc  flo  flo  flo  flo  flo"
           "mkt  mkt  mkt  mkt  mkt  mkt  sig  sig  sig  sig  sig  sig"
           "news news news news news news news news news news news news"
+          "bub  bub  bub  bub  bub  bub  bub  bub  bub  bub  bub  bub"
           "foot foot foot foot foot foot foot foot foot foot foot foot";
         gap: 6px 8px;
         align-items: start;
@@ -962,6 +963,7 @@
       html.compact #sec-market { grid-area: mkt; min-width: 0; }
       html.compact #sec-signals { grid-area: sig; min-width: 0; }
       html.compact #sec-news { grid-area: news; min-width: 0; }
+      html.compact #sec-bubbles { grid-area: bub; min-width: 0; }
       html.compact footer { grid-area: foot; }
       html.compact #stale-banner[hidden] { display: none !important; }
       html.compact .pair-grid { grid-template-columns: 1fr 1fr; }
@@ -1091,6 +1093,7 @@
           "conf conf conf conf mac  mac  mac  mac  mac  mac  mac  mac"
           "btc  btc  btc  btc  btc  btc  btc  flo  flo  flo  flo  flo"
           "mkt  mkt  mkt  mkt  mkt  sig  sig  sig  news news news news"
+          "bub  bub  bub  bub  bub  bub  bub  bub  bub  bub  bub  bub"
           "foot foot foot foot foot foot foot foot foot foot foot foot";
       }
       html.compact #chart { height: 220px; }
@@ -1153,6 +1156,42 @@
       html.compact #conf-factors { max-height: 220px; }
       html.compact header { flex-direction: column; align-items: flex-start; }
     }
+
+    /* ---- v14: Asset Bubbles section (static bubbles.json) ---- */
+    #sec-bubbles .bub-intro { margin: 0 0 8px; font-size: 12px; color: var(--muted); line-height: 1.45; }
+    #bub-chart-wrap { position: relative; }
+    #bub-chart { width: 100%; height: 480px; position: relative; }
+    #bub-labels { position: absolute; inset: 8px 8px 4px; pointer-events: none; overflow: hidden; z-index: 3; }
+    .bub-lbl { position: absolute; left: 0; top: 0; font-size: 11px; font-weight: 700; white-space: nowrap; text-shadow: 0 0 3px #10161d, 0 0 6px #10161d; }
+    #bub-tip {
+      position: absolute; z-index: 5; pointer-events: none; display: none; min-width: 190px; max-width: 260px;
+      background: rgba(16,22,29,0.96); border: 1px solid var(--border); border-radius: 8px;
+      padding: 7px 9px; font-size: 11px; line-height: 1.4; box-shadow: var(--shadow);
+    }
+    #bub-tip .bt-row + .bt-row { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+    #bub-tip .bt-name { font-weight: 700; }
+    #bub-tip .bt-date { color: var(--muted); }
+    #bub-tip .bt-vals { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    #bub-tip .bt-vals span { color: var(--muted); }
+    #bub-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 6px 8px 6px; font-size: 11px; color: var(--muted); }
+    #bub-legend .bl { display: inline-flex; align-items: center; gap: 6px; }
+    #bub-legend .bl i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+    #bub-legend .bl b { color: var(--text); font-weight: 600; }
+    #bub-foot { margin-top: 8px; font-size: 11px; color: var(--muted); line-height: 1.5; }
+    #bub-foot ul { margin: 4px 0 6px; padding-left: 16px; }
+    #bub-foot .bf-disc { color: var(--text); }
+    @media (max-width: 600px) {
+      #bub-chart { height: 360px; }
+      .bub-lbl { font-size: 9px; }
+    }
+    html.compact #bub-chart { height: 280px; }
+    @media (min-width: 1024px) { html.compact #bub-chart { height: 260px; } }
+    html.compact #sec-bubbles .bub-intro { margin: 0 0 4px; font-size: 10px; }
+    html.compact #bub-legend { padding: 2px 4px 3px; gap: 3px 10px; font-size: 10px; }
+    html.compact #bub-foot { margin-top: 4px; font-size: 10px; line-height: 1.35; }
+    html.compact #bub-foot ul { margin: 2px 0 3px; }
+    html.compact #bub-tip { padding: 5px 7px; font-size: 10px; }
+    @media (max-width: 600px) { html.compact #bub-chart { height: 250px; } }
   </style>
 </head>
 <body>
@@ -1235,6 +1274,7 @@
       <a href="#sec-signals">Signals</a>
       <a href="#sec-market">Market</a>
       <a href="#sec-news">News</a>
+      <a href="#sec-bubbles">Bubbles</a>
     </nav>
 
     <section class="im-sec" id="sec-macro">
@@ -1524,6 +1564,21 @@
       <div id="news-body">Loading…</div>
       <div class="src-line" id="news-src">Public publisher feeds · NewsBTC, Bitcoinist, AMBCrypto · refreshed every 5 minutes</div>
     </section>
+    </section>
+
+    <section class="im-sec" id="sec-bubbles">
+      <h2 class="im-sec-title">Asset Bubbles</h2>
+      <section class="panel" id="panel-bubbles" aria-label="History of asset bubbles since 1977">
+        <h2>History of asset bubbles since 1977</h2>
+        <p class="bub-intro">Each line is monthly and rebased to 100 at the first month of its run-up window, on a shared calendar axis. Hover or tap a line for the index, date, rebased and raw value.</p>
+        <div class="chart-wrap" id="bub-chart-wrap">
+          <div id="bub-chart" role="img" aria-label="Rebased index lines for eight asset bubbles from 1977 to 2026"><div class="chart-error" id="bub-msg" style="color:var(--muted)">Loading…</div></div>
+          <div id="bub-labels" aria-hidden="true"></div>
+          <div id="bub-tip" role="status"></div>
+          <div id="bub-legend"></div>
+        </div>
+        <div id="bub-foot"></div>
+      </section>
     </section>
 
         <footer>Not investment advice. Past moves don't predict future ones. Signals are mechanical and can be wrong.</footer>
@@ -5795,6 +5850,126 @@
     });
   }
   init();
+})();
+  </script>
+  <script>
+(function () {
+  "use strict";
+  var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function fd(iso) { var p = iso.split("-"); return MON[+p[1] - 1] + " " + p[0]; }
+  function fnum(v) {
+    if (v >= 1000) return v.toLocaleString("en-GB", { maximumFractionDigits: 0 });
+    return v.toLocaleString("en-GB", { maximumFractionDigits: 2 });
+  }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  var el = document.getElementById("bub-chart");
+  if (!el) return;
+  var msg = document.getElementById("bub-msg");
+  function fail(t) { if (msg) { msg.style.color = "var(--red)"; msg.textContent = t; } }
+
+  function waitLib(ms) {
+    return new Promise(function (res, rej) {
+      var t0 = Date.now();
+      (function tick() {
+        if (window.LightweightCharts) return res(window.LightweightCharts);
+        if (Date.now() - t0 > ms) return rej(new Error("Chart library failed to load"));
+        setTimeout(tick, 150);
+      })();
+    });
+  }
+
+  Promise.all([
+    fetch("bubbles.json?v=" + Math.floor(Date.now() / 3600000), { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error("bubbles.json " + r.status); return r.json();
+    }),
+    waitLib(30000)
+  ]).then(function (res) { build(res[0], res[1]); })
+    .catch(function (e) { fail("Asset Bubbles chart unavailable: " + (e && e.message || e)); });
+
+  function build(data, LC) {
+    el.innerHTML = "";
+    var wrap = document.getElementById("bub-chart-wrap");
+    var tip = document.getElementById("bub-tip");
+    var labels = document.getElementById("bub-labels");
+    var chart = LC.createChart(el, {
+      autoSize: true,
+      layout: { background: { type: LC.ColorType.Solid, color: "#10161d" }, textColor: "#8b98a5",
+                fontFamily: "IBM Plex Sans, Segoe UI, system-ui, sans-serif" },
+      grid: { vertLines: { color: "#1a222c" }, horzLines: { color: "#1a222c" } },
+      crosshair: { mode: LC.CrosshairMode.Magnet },
+      rightPriceScale: { borderColor: "#273140", scaleMargins: { top: 0.08, bottom: 0.04 } },
+      timeScale: { borderColor: "#273140", rightOffset: 2, minBarSpacing: 0.4, fixLeftEdge: true, fixRightEdge: true },
+      localization: { priceFormatter: function (p) { return Math.round(p).toLocaleString("en-GB"); } }
+    });
+    var entries = data.series.map(function (s, i) {
+      var ser = chart.addSeries(LC.LineSeries, {
+        color: s.color, lineWidth: 2, priceLineVisible: false, lastValueVisible: false,
+        crosshairMarkerRadius: 4, title: ""
+      });
+      ser.setData(s.points.map(function (p) { return { time: p[0], value: p[2] }; }));
+      if (i === 0) ser.createPriceLine({ price: 100, color: "#3a4656", lineWidth: 1, lineStyle: LC.LineStyle.Dotted, axisLabelVisible: true, title: "100" });
+      var raw = {};
+      s.points.forEach(function (p) { raw[p[0]] = p[1]; });
+      var lbl = document.createElement("div");
+      lbl.className = "bub-lbl"; lbl.style.color = s.color; lbl.textContent = s.label;
+      labels.appendChild(lbl);
+      return { s: s, ser: ser, raw: raw, lbl: lbl };
+    });
+    chart.timeScale().fitContent();
+
+    function placeLabels() {
+      var w = el.clientWidth, h = el.clientHeight;
+      entries.forEach(function (e) {
+        var x = chart.timeScale().timeToCoordinate(e.s.peakDate);
+        var y = e.ser.priceToCoordinate(e.s.peakRebased);
+        if (x == null || y == null || x < 0 || x > w || y < 0 || y > h) { e.lbl.style.display = "none"; return; }
+        e.lbl.style.display = "block";
+        var lw = e.lbl.offsetWidth, lh = e.lbl.offsetHeight;
+        var left = Math.max(2, Math.min(w - lw - 62, x - lw / 2));
+        e.lbl.style.transform = "translate(" + Math.round(left) + "px," + Math.round(Math.max(2, y - lh - 5)) + "px)";
+      });
+    }
+    var raf = 0;
+    function schedule() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; placeLabels(); }); }
+    chart.timeScale().subscribeVisibleLogicalRangeChange(schedule);
+    if (window.ResizeObserver) new ResizeObserver(function () { chart.timeScale().fitContent(); schedule(); }).observe(el);
+    window.addEventListener("resize", schedule);
+    setTimeout(schedule, 0); setTimeout(schedule, 250); setTimeout(schedule, 800);
+
+    chart.subscribeCrosshairMove(function (param) {
+      if (!param || !param.point || !param.time || param.point.x < 0 || param.point.y < 0) { tip.style.display = "none"; return; }
+      var rows = [];
+      entries.forEach(function (e) {
+        var d = param.seriesData.get(e.ser);
+        if (d && d.value != null) rows.push({ e: e, v: d.value });
+      });
+      if (!rows.length) { tip.style.display = "none"; return; }
+      var t = typeof param.time === "string" ? param.time : null;
+      tip.innerHTML = rows.map(function (r) {
+        var dt = t || r.e.s.points[0][0];
+        return "<div class=\"bt-row\"><div><span class=\"bt-name\" style=\"color:" + r.e.s.color + "\">" + esc(r.e.s.label) +
+          "</span> <span class=\"bt-date\">" + fd(dt) + "</span></div>" +
+          "<div class=\"bt-vals\"><span>Rebased</span> " + fnum(r.v) + " &nbsp; <span>Raw</span> " +
+          fnum(r.e.raw[dt] != null ? r.e.raw[dt] : NaN) + " " + esc(r.e.s.unit) + "</div></div>";
+      }).join("");
+      tip.style.display = "block";
+      var pad = 8, ww = wrap.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+      var x = param.point.x + 16 + pad;
+      if (x + tw > ww - 4) x = param.point.x - tw - 8 + pad;
+      var y = Math.min(Math.max(4, param.point.y + pad - th / 2), el.clientHeight - th);
+      tip.style.left = Math.max(2, x) + "px"; tip.style.top = y + "px";
+    });
+
+    document.getElementById("bub-legend").innerHTML = data.series.map(function (s) {
+      return "<span class=\"bl\"><i style=\"background:" + s.color + "\"></i><b>" + esc(s.label) + "</b> " +
+        s.start.slice(0, 4) + "–" + s.end.slice(0, 4) + " · peak " + fnum(s.peakRebased) + " (" + fd(s.peakDate) + ")</span>";
+    }).join("");
+
+    document.getElementById("bub-foot").innerHTML =
+      "<div>Indexes and sources (monthly, each rebased to 100 at its window start):</div><ul>" +
+      data.series.map(function (s) { return "<li><b style=\"color:" + s.color + "\">" + esc(s.label) + "</b>: " + esc(s.source) + "</li>"; }).join("") +
+      "</ul><div class=\"bf-disc\">" + esc(data.footnote) + "</div>";
+  }
 })();
   </script>
 </body>
