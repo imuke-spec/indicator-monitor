@@ -7,23 +7,23 @@
     "calendar": "Extra events merged with the hard-coded list: [{ id, title, time (ISO-8601), note? }].",
     "confidence": "{ score: number 0-100, prev?: previous score, asOf: ISO-8601 timestamp, rationale?: string, history?: [{ date: 'YYYY-MM-DD', score: number }], factors?: [{ category: string, factor: string, state: string, impact: 'positive'|'negative'|'neutral' }] }. Backward compatible: omit the field or omit factors on older files. The page renders the dial and factor table from this object only (no live API)."
   },
-  "asOf": "2026-11-27T07:00:00Z",
+  "asOf": "2026-11-28T07:00:00Z",
   "macro": {
     "us2y": {
-      "value": 4.61,
-      "asOf": "2026-11-25",
+      "value": 4.69,
+      "asOf": "2026-11-27",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "us10y": {
-      "value": 4.85,
-      "asOf": "2026-11-25",
+      "value": 4.94,
+      "asOf": "2026-11-27",
       "source": "US Treasury close",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
     },
     "hyCredit": {
-      "value": 3.72,
-      "asOf": "2026-11-24",
+      "value": 3.77,
+      "asOf": "2026-11-26",
       "source": "ICE BofA HY OAS",
       "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
     }
@@ -32,9 +32,26 @@
     "source": "Farside",
     "url": "https://farside.co.uk/btc/",
     "altUrl": "https://sosovalue.com/assets/etf/us-btc-spot",
-    "latestDate": "2026-11-25",
+    "latestDate": "2026-11-27",
     "unit": "USD millions",
     "days": [
+      {
+        "date": "2026-11-27",
+        "total": -389.0,
+        "IBIT": -327.2,
+        "FBTC": -20.8,
+        "BITB": -12.3,
+        "ARKB": -5.7,
+        "BTCO": 0.0,
+        "EZBC": 0.0,
+        "BRRR": 0.0,
+        "HODL": 0.0,
+        "BTCW": 0.0,
+        "MSBT": 0.0,
+        "GBTC": -23.0,
+        "BTC": 0.0,
+        "note": "US half-day (Thu 26 Nov closed)"
+      },
       {
         "date": "2026-11-25",
         "total": -453.0,
@@ -243,31 +260,15 @@
         "MSBT": 22.1,
         "GBTC": 0.0,
         "BTC": 0.0
-      },
-      {
-        "date": "2026-11-06",
-        "total": -411.9,
-        "IBIT": -403.0,
-        "FBTC": 42.8,
-        "BITB": -20.5,
-        "ARKB": -20.1,
-        "BTCO": 0.0,
-        "EZBC": 0.0,
-        "BRRR": 0.0,
-        "HODL": 0.0,
-        "BTCW": 0.0,
-        "MSBT": 0.0,
-        "GBTC": -11.1,
-        "BTC": 0.0
       }
     ]
   },
   "strategyAvgCost": 75446,
   "confidence": {
-    "score": 15,
-    "prev": 12,
-    "asOf": "2026-11-27T07:00:00Z",
-    "rationale": "Up 3 from 12 — MACD printed its first bullish cross since the sell-off on today's live candle (hist +140; holds on any close above ~59.5k), price reclaimed 61.7k with $51M of shorts squeezed and Asia/Nasdaq futures bounced on AI; held down by seven straight red ETF days (Wed −$453.0M, no print since), a Dec hike priced 97–99%, Brent $96.57, HY OAS 3.72%, RMI still SELL and price −14.1% under SMA200.",
+    "score": 12,
+    "prev": 15,
+    "asOf": "2026-11-28T07:00:00Z",
+    "rationale": "Down 3 from 15 — the MACD bull cross did confirm on the 27 Nov close (hist +25, +123 live), but the bounce was rejected at 62,249 and BTC closed 59,923 while the S&P had its best week since Apr 2025; ETFs bled an 8th straight day (Fri −$389.0M, Nov −$5.78B), 10y jumped 9 bp to 4.94% with a Dec hike ~99–100% priced, HY OAS widened to 3.77%; whale accumulation is the only real offset.",
     "history": [
       {
         "date": "2026-11-08",
@@ -344,139 +345,137 @@
       {
         "date": "2026-11-27",
         "score": 15
+      },
+      {
+        "date": "2026-11-28",
+        "score": 12
       }
     ],
     "factors": [
       {
         "category": "Macro / Cost of Money",
         "factor": "UST 10y",
-        "state": "4.85% (25 Nov; no 26 Nov session); restrictive",
-        "impact": "neutral"
+        "state": "4.94% (27 Nov, +9 bp); 30y 5.33%",
+        "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "2y / curve",
-        "state": "2y 4.61%, 2s10s +24 bp",
-        "impact": "neutral"
+        "state": "2y 4.69% (+8 bp), 2s10s +25 bp",
+        "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Credit spreads",
-        "state": "HY OAS 3.72% (24 Nov), wider vs 3.20% on 12 Nov",
+        "state": "HY OAS 3.77% (26 Nov), from 3.72% / 3.20% on 12 Nov",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Fed path",
-        "state": "Dec 25bp hike 97.2–99.4% priced; Jan 50bp cum 62.5%",
+        "state": "Dec 25bp hike ~99–100% priced; 50bp bets faded",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
         "factor": "Oil",
-        "state": "Brent $96.57 (+2.1%), 3-day +8%; Hormuz mines/Saudi refinery",
+        "state": "Brent $95.44 (−1.2% Fri, +3% wk); Hormuz/Saudi attacks",
         "impact": "negative"
       },
       {
         "category": "Macro / Cost of Money",
-        "factor": "Global tightening",
-        "state": "BoK hiked to 3.25%; dollar heading for 3rd monthly gain",
+        "factor": "Dollar",
+        "state": "Highest since Mar 2025; 3rd monthly gain",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Spot BTC ETFs",
-        "state": "Wed −$453.0M (IBIT −329.7); 7 red days; Nov −$5.39B",
+        "state": "Fri −$389.0M (IBIT −327.2); 8 red days; Nov −$5.78B",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Strategy / treasuries",
-        "state": "Avg cost $75,446; price ~18% under; MSCI exit 30 Nov",
+        "state": "Avg cost $75,446; price ~21% under; MSCI exit 30 Nov",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
+        "factor": "Whales",
+        "state": "1k–10k BTC cohort +121k BTC since 30 Sep (CryptoQuant)",
+        "impact": "positive"
+      },
+      {
+        "category": "Flows & Positioning",
         "factor": "Leverage",
-        "state": "OI $41.5B (+3.6%), new longs; Binance L/S 2.43",
+        "state": "OI $40.97B (−1.3%); Binance L/S 2.91, whales 17% long",
         "impact": "negative"
       },
       {
         "category": "Flows & Positioning",
         "factor": "Funding / liqs",
-        "state": "Funding +0.006%; $68M BTC liqs, 75% shorts",
-        "impact": "positive"
-      },
-      {
-        "category": "Flows & Positioning",
-        "factor": "Stablecoin liquidity",
-        "state": "30d stablecoin mcap ~−12% (CryptoQuant)",
-        "impact": "negative"
+        "state": "Funding +0.004%; $152M liqs, 78% longs",
+        "impact": "neutral"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Trend",
-        "state": "RMI SELL since 15 Oct; under EMA12/21",
+        "state": "RMI SELL since 15 Oct (RMI 26.7); under EMA12/21",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "MACD",
-        "state": "Bull cross on live candle, hist +140 (unconfirmed)",
+        "state": "Bull cross confirmed 27 Nov close; hist +123 live",
         "impact": "positive"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "SMA200",
-        "state": "−14.1% under 200D (71,880)",
+        "state": "−16.7% under 200D (71,767)",
         "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Price action",
-        "state": "Broke 61.7k double top; high 62,025 into 62.5k short cluster",
-        "impact": "positive"
+        "state": "Rejected 62,249; back under 60k; failed vs equity rally",
+        "impact": "negative"
       },
       {
         "category": "Market Structure & Sentiment",
         "factor": "Fear & Greed / RSI",
-        "state": "F&G 12, RSI 32.7",
+        "state": "F&G 10, RSI 26.3 — capitulation zone",
         "impact": "neutral"
       },
       {
         "category": "Event Risk",
-        "factor": "Options expiry",
-        "state": "$6.8B Deribit 08:00 GMT today; max pain $70k, 65k puts",
-        "impact": "neutral"
-      },
-      {
-        "category": "Event Risk",
-        "factor": "ETF print / half-day",
-        "state": "US shuts 18:00 GMT; first flow print since Wed",
+        "factor": "OPEC+ / weekly close",
+        "state": "Sun 29 Nov; 8th red week if close <61,271",
         "impact": "neutral"
       },
       {
         "category": "Event Risk",
         "factor": "MSCI / monthly close",
-        "state": "MSTR removal + Nov close 30 Nov",
+        "state": "MSTR removal + Nov close 30 Nov (−25% month)",
         "impact": "negative"
       },
       {
         "category": "Event Risk",
         "factor": "ISM 1 Dec / NFP 4 Dec / FOMC 9 Dec",
-        "state": "Hike priced; data can only add hawkish tail",
+        "state": "Hike priced; NFP fcst 90k; data can only add hawkish tail",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "AI concentration",
-        "state": "Nasdaq fut +2.4% bounce; NVDA SE Asia halt, BoE AI-finance warning",
+        "state": "Nasdaq +6.7% wk, NVDA +19.9%; BTC not participating",
         "impact": "negative"
       },
       {
         "category": "Structural",
         "factor": "Policy",
-        "state": "SBR bill advanced in committee; narrow path",
+        "state": "No new catalyst; SBR bill narrow path",
         "impact": "neutral"
       }
     ]
@@ -594,19 +593,31 @@
       "id": "deribit-expiry-2026-11-27",
       "title": "Deribit BTC options expiry ($6.8B)",
       "time": "2026-11-27T08:00:00Z",
-      "note": "25.4% of BTC options OI; max pain ~$70k; largest strike $65k, mostly puts (The Daily Digits/CryptoQuant)"
+      "note": "25.4% of BTC options OI; max pain ~$70k; largest strike $65k, mostly puts (The Daily Digits/CryptoQuant). Result: BTC 62,249 high → 58,792 low into US open; $228M liqs in hour to 15:00 GMT"
     },
     {
       "id": "us-half-day-2026-11-27",
       "title": "US half-day — equities close 1pm ET",
       "time": "2026-11-27T18:00:00Z",
-      "note": "First spot ETF flow print since Wed 25 Nov; bonds close 2pm ET"
+      "note": "Result: BTC ETFs −$389.0M (IBIT −327.2), 8th red day; S&P +1.6% (best week since Apr 2025), 10y 4.94% (+9 bp); BTC rejected 62,249 → close 59,923"
     },
     {
       "id": "opec-2026-11-29",
       "title": "OPEC+ ministerial meeting (2027 output policy)",
       "time": "2026-11-29T00:00:00Z",
-      "note": "Sunday; time TBC. Q1 2027 rollover expected (Reuters)"
+      "note": "Sunday; Q1 2027 targets expected unchanged (CNBC/Reuters 27 Nov); Brent $95.44"
+    },
+    {
+      "id": "weekly-close-2026-11-29",
+      "title": "BTC weekly close",
+      "time": "2026-11-29T23:59:00Z",
+      "note": "Week open 61,271; close below = 8th straight red week"
+    },
+    {
+      "id": "mstr-8k-2026-11-30",
+      "title": "Strategy weekly 8-K (BTC purchases)",
+      "time": "2026-11-30T12:00:00Z",
+      "note": "Expected Monday filing; holds 851,305 BTC at avg $75,446 (23 Nov 8-K)"
     },
     {
       "id": "msci-mstr-2026-11-30",
@@ -642,13 +653,13 @@
       "id": "us-nfp-2026-12-04",
       "title": "US November jobs report (NFP)",
       "time": "2026-12-04T13:30:00Z",
-      "note": "Last major data point before 9 Dec FOMC (Forexcrunch)"
+      "note": "Fcst ~90k vs 165k Oct, UR 4.1% (FactSet via CNBC); last major data before 9 Dec FOMC"
     },
     {
       "id": "fomc-2026-12-09",
       "title": "FOMC decision + dot plot",
       "time": "2026-12-09T19:00:00Z",
-      "note": "Dec 25bp hike 97.2% (CME FedWatch 26 Nov, NBD/FXBus), 99.4% (Invezz 26 Nov); Jan cumulative 50bp 62.5%"
+      "note": "Dec 25bp hike ~99% (Reuters 27 Nov) / 100% (Barchart 27 Nov); 50bp bets faded"
     }
   ]
 }
