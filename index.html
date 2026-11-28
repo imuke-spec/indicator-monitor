@@ -1651,7 +1651,7 @@
     if (!isNum(x)) return "—";
     const abs = Math.abs(x);
     let d = 2;
-    if (pair === "ATOMUSDT" || abs < 10) d = 4;
+    if (abs < 10) d = 4;
     else if (abs < 100) d = 3;
     else if (abs >= 1000) d = 2;
     return x.toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
